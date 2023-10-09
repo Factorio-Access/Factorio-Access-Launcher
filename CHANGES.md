@@ -1,3 +1,43 @@
+# Version 0.4.1 BETA
+
+Released on October 9th, 2023.
+
+## New Features
+
+- New Launcher (so you need to use the new release). The launcher supports a wider range of vocalizers including built-in ones.
+
+- Basic multiplayer support, but with limited testing!
+
+##Changes
+
+- Entity part reporting is now more precise and concise.
+
+- The currently selected scanner entity is visually marked with a white circle.
+
+## Bug Fixes
+
+- Fixed a fatal crash that occured when a ore tile is depleted.
+
+- Rewrote large cursor area scanner tool so that it correctly reports entities and resources in an area.
+
+- Fixed the repetition of ingredient and product lists for crafting recipes and technologies.
+
+- Fixed a bug where technologies with prerequisites were incorrectly said to have none.
+
+- Fixed a crash due to teleporting to an entity that no longer exists (like when you mine it).
+
+## Known Bugs 
+
+- Placing a paving tile places it at the player's feet regardless of the size and location of the cursor.
+
+- The scanner tool does not update correctly regarding forest patches.
+
+- Changing the scanner sorting rule causes crashes.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+
+
 # Version 0.4.0 BETA
 
 Released on October 6th, 2023.
