@@ -1,3 +1,38 @@
+# Version 0.4.2 BETA
+
+Released on October *, 2023.
+
+## New Features
+
+
+## Changes
+
+- When you are holding an item in hand while trying to open a building interface, the game will allow it if the item is not a type that can be built or paved.
+
+- Revised tile paving system
+  * When you place down paving tiles, they are now placed at where the cursor is rather than where the player is.
+  * For cursor size 1, the paving radius is 1, such that a 3 by 3 square with the cursor in the middle is paved.
+  * For cursor size 10, the paving radius is 10, such that a 11 by 11 square with the cursor in the middle is paved.
+  * For cursor sizes above 20, the paving radius is 20, such that a 21 by 21 square with the cursor in the middle is paved.
+  * The same changes apply for mining tiles around the cursor. Note that when you remove too many tiles at once, the narrator is overloaded temporarily.
+  * Paving is interrupted if you run out of items for it.
+
+## Bug Fixes
+
+- Fixed the cursor scanner being unable to read paving tiles.
+
+- Fixed a crash related to changing the scanner sorting method.
+
+- Fixed a bug that prevents teleporting to valid resource areas that are not single entities.
+
+## Known Bugs 
+
+- The scanner tool does not update forests correctly after cutting trees.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+
+
 # Version 0.4.1 BETA
 
 Released on October 9th, 2023.
@@ -8,7 +43,7 @@ Released on October 9th, 2023.
 
 - Basic multiplayer support, but with limited testing!
 
-##Changes
+## Changes
 
 - Entity part reporting is now more precise and concise.
 
