@@ -1,9 +1,10 @@
-# Version 0.4.2 BETA
+# Version 0.4.2 BETA (UNRELEASED CHANGES)
 
-Released on October *, 2023.
+Released on October, 2023.
 
 ## New Features
 
+- When building in cursor mode, the size of the building preview in hand is read out after reading coordinates when you press K.
 
 ## Changes
 
