@@ -7,6 +7,8 @@ Released on October *, 2023.
 
 ## Changes
 
+- Changed cursor mode building such that entities are held from their centers instead of their northwest corners. This makes the mod preview match the graphical preview.
+
 - When you are holding an item in hand while trying to open a building interface, the game will allow it if the item is not a type that can be built or paved.
 
 - Revised tile paving system
