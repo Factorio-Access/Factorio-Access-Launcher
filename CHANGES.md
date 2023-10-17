@@ -4,23 +4,45 @@ Released on October, 2023.
 
 ## New Features
 
-- When building in cursor mode, the size of the building preview in hand is read out after reading coordinates when you press K.
+- Added a config file editor where you can edit game settings that appear in the config file. This includes settings such as autosave intervals and keyboard controls.
 
+- When building in cursor mode, press K over an empty tile to learn the dimensions and directions of the building preview in hand.
+
+- Building preview graphical improvements.
+  * Added a direction indicator arrow, because we are unable to rotate the cursor sprite.
+  * Added build preview footprint rectangle drawing, because we are unable to de-render the misaligned cursor sprite.
+
+- Added graphical highlighting for the mod's cursor so that it can be followed on screen much more easily.
+  
 ## Changes
 
-- Changed cursor mode building such that entities are held from their centers instead of their northwest corners. This makes the mod preview match the graphical preview.
+- Improved launcher
+  * Map presets are no longer separate from savegames, for simplicity. The last map generated gets saved once and you need to save it under a new name yourself if you want to keep it.
+  * Multiplayer mode now has basic matchmaking by using the friends list system.
 
-- When you are holding an item in hand while trying to open a building interface, the game will allow it if the item is not a type that can be built or paved.
+- Revised building preview positions for the cursor. Almost always, the cursor holds a building preview from its northwest corner. 
+  * The exceptions are when the preview would overlap with the character: Only when the character is not in cursor mode, looking north will make the building held from the southwest corner, and similarly looking west will make the building held from the northeast corner.
 
 - Revised tile paving system
-  * When you place down paving tiles, they are now placed at where the cursor is rather than where the player is.
-  * For cursor size 1, the paving radius is 1, such that a 3 by 3 square with the cursor in the middle is paved.
-  * For cursor size 10, the paving radius is 10, such that a 11 by 11 square with the cursor in the middle is paved.
-  * For cursor sizes above 20, the paving radius is 20, such that a 21 by 21 square with the cursor in the middle is paved.
+  * When you place down paving tiles, they are now placed at where the cursor is rather than where the player is. Normally, the preview is centered on the cursor tile. **
+  * Changing the cursor size now changes the paving preview size. For example, size 1 means a 1 by 1 paving preview is used.
   * The same changes apply for mining tiles around the cursor. Note that when you remove too many tiles at once, the narrator is overloaded temporarily.
   * Paving is interrupted if you run out of items for it.
 
+- Revised cursor resizing code. Cursor size options are now 1, 3, 5, 11, 21, 101, and 251.
+
+- Entities out of player reach are now noted as such when you try to interact with them using the cursor.
+
+- Scanner announcements explain distances sooner and now with more precision about directions.
+
+- Improved cursor handling, such as making the cursor jump automatically to entries selected on the scanner list.
+
+- When you are holding an item in hand while trying to open a building interface, the game will allow it if the item is not a type that can be built or paved.
+
+
 ## Bug Fixes
+
+- Fixed issues with some entities such as transport belts not being detected during smooth walking.
 
 - Fixed the cursor scanner being unable to read paving tiles.
 
@@ -28,13 +50,17 @@ Released on October, 2023.
 
 - Fixed a bug that prevents teleporting to valid resource areas that are not single entities.
 
+- Fixed an issue that applied incorrect checks to building previews.
+
+- Fixed a crash related to nudging buildings.
+
 ## Known Bugs 
 
 - The scanner tool does not update forests correctly after cutting trees.
 
 - Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
 
-
+- Transport belts and splitters cannot be nudged.
 
 # Version 0.4.1 BETA
 
