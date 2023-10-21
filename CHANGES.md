@@ -14,6 +14,8 @@ Released on October 21st, 2023.
 
 - Added graphical highlighting for the mod's cursor so that it can be followed on screen much more easily.
 
+- Items being held by inserters are read out.
+
 - Rocks can be cleared automatically now.
 
 - New area mining for group mining. If you press SHIFT + X on an empty tile, all nearby trees and rocks are mined automatically. This is in addition to this working when you already select a tree or rock.
