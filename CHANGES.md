@@ -13,6 +13,10 @@ Released on October 21st, 2023.
   * Added build preview footprint rectangle drawing, because we are unable to de-render the misaligned cursor sprite.
 
 - Added graphical highlighting for the mod's cursor so that it can be followed on screen much more easily.
+
+- Rocks can be cleared automatically now.
+
+- New area mining for group mining. If you press SHIFT + X on an empty tile, all nearby trees and rocks are mined automatically. This is in addition to this working when you already select a tree or rock.
   
 ## Changes
 
@@ -61,9 +65,11 @@ Released on October 21st, 2023.
 
 - Fixed a crash related to nudging buildings.
 
-- Fixed bugs related to opening the fast travel menu in situations that do not support it.
+- Fixed bugs related to opening the fast travel menu and warnings menu in situations that do not support it.
 
 - Fixed crashes during using cursor mode while driving.
+
+- Fixed a bug about reading train fuel
 
 ## Known Bugs 
 
