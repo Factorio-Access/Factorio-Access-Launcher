@@ -1,6 +1,6 @@
-# Version 0.4.2 BETA (UNRELEASED CHANGES)
+# Version 0.4.2 BETA
 
-Released on October, 2023.
+Released on October 21st, 2023.
 
 ## New Features
 
@@ -45,8 +45,6 @@ Released on October, 2023.
 
 - When you are holding an item in hand while trying to open a building interface, the game will allow it if the item is not a type that can be built or paved.
 
-- Fixed crashes during using cursor mode while driving.
-
 - Your hand is now cleared when you enter or exit a vehicle.
 
 ## Bug Fixes
@@ -64,6 +62,8 @@ Released on October, 2023.
 - Fixed a crash related to nudging buildings.
 
 - Fixed bugs related to opening the fast travel menu in situations that do not support it.
+
+- Fixed crashes during using cursor mode while driving.
 
 ## Known Bugs 
 
