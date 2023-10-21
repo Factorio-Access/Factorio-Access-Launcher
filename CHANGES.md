@@ -24,12 +24,18 @@ Released on October, 2023.
   * The exceptions are when the preview would overlap with the character: Only when the character is not in cursor mode, looking north will make the building held from the southwest corner, and similarly looking west will make the building held from the northeast corner.
 
 - Revised tile paving system
-  * When you place down paving tiles, they are now placed at where the cursor is rather than where the player is. Normally, the preview is centered on the cursor tile. **
+  * When you place down paving tiles, they are now placed at where the cursor is rather than where the player is. The preview is centered on the cursor tile unlike building previews, which are held from the north west corner.
   * Changing the cursor size now changes the paving preview size. For example, size 1 means a 1 by 1 paving preview is used.
   * The same changes apply for mining tiles around the cursor. Note that when you remove too many tiles at once, the narrator is overloaded temporarily.
   * Paving is interrupted if you run out of items for it.
+  
+- Improved build lock mode.
+  * It now works when smooth walking. Note that hearing the error sound for entities bigger than one tile is normal while the repeated building might continue.
+  * When not in cursor mode and a transport belt is in hand and the character changes direction, the building direction changes with them so that the belt follows the player.
 
 - Revised cursor resizing code. Cursor size options are now 1, 3, 5, 11, 21, 101, and 251.
+
+- Fluid amounts inside fluid containers are now read.
 
 - Entities out of player reach are now noted as such when you try to interact with them using the cursor.
 
