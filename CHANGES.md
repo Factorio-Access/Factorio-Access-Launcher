@@ -8,6 +8,10 @@ Released on October 21st, 2023.
 
 - When building in cursor mode, press K over an empty tile to learn the dimensions and directions of the building preview in hand.
 
+- Checking the status of a machine now provides info about its working speed, power usage, and health.
+
+- Added support for using repair packs to repair buildings. Note that this does not use the internal repair code and may have bugs.
+
 - Building preview graphical improvements.
   * Added a direction indicator arrow, because we are unable to rotate the cursor sprite.
   * Added build preview footprint rectangle drawing, because we are unable to de-render the misaligned cursor sprite.
