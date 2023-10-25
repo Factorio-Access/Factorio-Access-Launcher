@@ -1,3 +1,49 @@
+# Version 0.4.3 BETA
+
+Released on October 26th, 2023.
+
+## New Features
+
+- The scanner and teleporter now have sound effects and visual effects.
+
+- Recipe item lists now include how many seconds it takes to craft the recipe at default speed.
+
+- When you press K for a recipe being selected in a building, its item list is read out. 
+
+- Scanned chests will now summarize items inside
+* "Empty" for empty chests
+* The item name for chests with one item type.
+* "Various items" for chests with more than one item type.
+
+- Non-zero speed bonuses of any machine are now reported in its status message.
+
+- Non-zero productivity bonuses of any machine are now reported in its status message.
+
+  
+## Changes
+
+- Tweaked some aspects of status message reporting.
+
+## Bug Fixes
+
+- Fixed some crashes related to fast travel.
+
+- Fixed some crashes related to multiplayer mode (pindex handling).
+
+## Known Bugs 
+
+- A few item and technology descriptions have errors (speed modules, logistic robotics).
+
+- The scanner tool does not update forests correctly after cutting trees.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+- Transport belts and splitters cannot be nudged.
+
+- Nudged buildings might illegally overlap with each other.
+
+- Lab research speed is reported slightly incorrectly when modules are added.
+
 # Version 0.4.2 BETA
 
 Released on October 21st, 2023.
