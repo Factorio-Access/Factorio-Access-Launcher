@@ -19,6 +19,7 @@ Released on October 26th, 2023.
 
 - Non-zero productivity bonuses of any machine are now reported in its status message.
 
+- Hitting the top and bottom of the scanned item list will make a sound like with the inventory edges.
   
 ## Changes
 
@@ -29,6 +30,10 @@ Released on October 26th, 2023.
 - Fixed some crashes related to fast travel.
 
 - Fixed some crashes related to multiplayer mode (pindex handling).
+
+- Fixed the cursor incorrectly updating after teleporting to it.
+
+- Fixed an unstable teleporting bug that arose from teleporting to the cursor repeatedly.
 
 ## Known Bugs 
 
