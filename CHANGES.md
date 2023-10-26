@@ -1,3 +1,181 @@
+# Version 0.4.3 BETA
+
+Released on October 26th, 2023.
+
+## New Features
+
+- The scanner and teleporter now have sound effects and visual effects.
+
+- Recipe item lists now include how many seconds it takes to craft the recipe at default speed.
+
+- When you press K for a recipe being selected in a building, its item list is read out. 
+
+- Scanned chests will now summarize items inside
+* "Empty" for empty chests
+* The item name for chests with one item type.
+* "Various items" for chests with more than one item type.
+
+- Non-zero speed bonuses of any machine are now reported in its status message.
+
+- Non-zero productivity bonuses of any machine are now reported in its status message.
+
+- Hitting the top and bottom of the scanned item list will make a sound like with the inventory edges.
+  
+## Changes
+
+- Tweaked some aspects of status message reporting.
+
+## Bug Fixes
+
+- Fixed some crashes related to fast travel.
+
+- Fixed some crashes related to multiplayer mode (pindex handling).
+
+- Fixed the cursor incorrectly updating after teleporting to it.
+
+- Fixed an unstable teleporting bug that arose from teleporting to the cursor repeatedly.
+
+## Known Bugs 
+
+- A few item and technology descriptions have errors (speed modules, logistic robotics).
+
+- The scanner tool does not update forests correctly after cutting trees.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+- Transport belts and splitters cannot be nudged.
+
+- Nudged buildings might illegally overlap with each other.
+
+- Lab research speed is reported slightly incorrectly when modules are added.
+
+# Version 0.4.2 BETA
+
+Released on October 21st, 2023.
+
+## New Features
+
+- Added a config file editor where you can edit game settings that appear in the config file. This includes settings such as autosave intervals and keyboard controls.
+
+- When building in cursor mode, press K over an empty tile to learn the dimensions and directions of the building preview in hand.
+
+- Checking the status of a machine now provides info about its working speed, power usage, and health.
+
+- Added support for using repair packs to repair buildings. Note that this does not use the internal repair code and may have bugs.
+
+- Building preview graphical improvements.
+  * Added a direction indicator arrow, because we are unable to rotate the cursor sprite.
+  * Added build preview footprint rectangle drawing, because we are unable to de-render the misaligned cursor sprite.
+
+- Added graphical highlighting for the mod's cursor so that it can be followed on screen much more easily.
+
+- Items being held by inserters are read out.
+
+- Rocks can be cleared automatically now.
+
+- New area mining for group mining. If you press SHIFT + X on an empty tile, all nearby trees and rocks are mined automatically. This is in addition to this working when you already select a tree or rock.
+  
+## Changes
+
+- Improved launcher
+  * Map presets are no longer separate from savegames, for simplicity. The last map generated gets saved once and you need to save it under a new name yourself if you want to keep it.
+  * Multiplayer mode now has basic matchmaking by using the friends list system.
+
+- Revised building preview positions for the cursor. Almost always, the cursor holds a building preview from its northwest corner. 
+  * The exceptions are when the preview would overlap with the character: Only when the character is not in cursor mode, looking north will make the building held from the southwest corner, and similarly looking west will make the building held from the northeast corner.
+
+- Revised tile paving system
+  * When you place down paving tiles, they are now placed at where the cursor is rather than where the player is. The preview is centered on the cursor tile unlike building previews, which are held from the north west corner.
+  * Changing the cursor size now changes the paving preview size. For example, size 1 means a 1 by 1 paving preview is used.
+  * The same changes apply for mining tiles around the cursor. Note that when you remove too many tiles at once, the narrator is overloaded temporarily.
+  * Paving is interrupted if you run out of items for it.
+  
+- Improved build lock mode.
+  * It now works when smooth walking. Note that hearing the error sound for entities bigger than one tile is normal while the repeated building might continue.
+  * When not in cursor mode and a transport belt is in hand and the character changes direction, the building direction changes with them so that the belt follows the player.
+
+- Revised cursor resizing code. Cursor size options are now 1, 3, 5, 11, 21, 101, and 251.
+
+- Fluid amounts inside fluid containers are now read.
+
+- Entities out of player reach are now noted as such when you try to interact with them using the cursor.
+
+- Scanner announcements explain distances sooner and now with more precision about directions.
+
+- Improved cursor handling, such as making the cursor jump automatically to entries selected on the scanner list.
+
+- When you are holding an item in hand while trying to open a building interface, the game will allow it if the item is not a type that can be built or paved.
+
+- Your hand is now cleared when you enter or exit a vehicle.
+
+## Bug Fixes
+
+- Fixed issues with some entities such as transport belts not being detected during smooth walking.
+
+- Fixed the cursor scanner being unable to read paving tiles.
+
+- Fixed a crash related to changing the scanner sorting method.
+
+- Fixed a bug that prevents teleporting to valid resource areas that are not single entities.
+
+- Fixed an issue that applied incorrect checks to building previews.
+
+- Fixed a crash related to nudging buildings.
+
+- Fixed bugs related to opening the fast travel menu and warnings menu in situations that do not support it.
+
+- Fixed crashes during using cursor mode while driving.
+
+- Fixed a bug about reading train fuel
+
+## Known Bugs 
+
+- The scanner tool does not update forests correctly after cutting trees.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+- Transport belts and splitters cannot be nudged.
+
+# Version 0.4.1 BETA
+
+Released on October 9th, 2023.
+
+## New Features
+
+- New Launcher (so you need to use the new release). The launcher supports a wider range of vocalizers including built-in ones.
+
+- Basic multiplayer support, but with limited testing!
+
+## Changes
+
+- Entity part reporting is now more precise and concise.
+
+- The currently selected scanner entity is visually marked with a white circle.
+
+## Bug Fixes
+
+- Fixed a fatal crash that occured when a ore tile is depleted.
+
+- Rewrote large cursor area scanner tool so that it correctly reports entities and resources in an area.
+
+- Fixed the repetition of ingredient and product lists for crafting recipes and technologies.
+
+- Fixed a bug where technologies with prerequisites were incorrectly said to have none.
+
+- Fixed a crash due to teleporting to an entity that no longer exists (like when you mine it).
+
+## Known Bugs 
+
+- Placing a paving tile places it at the player's feet regardless of the size and location of the cursor.
+
+- The scanner tool does not update correctly regarding forest patches.
+
+- Changing the scanner sorting rule causes crashes.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+
+
 # Version 0.4.0 BETA
 
 Released on October 6th, 2023.

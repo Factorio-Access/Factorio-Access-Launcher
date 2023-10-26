@@ -24,11 +24,11 @@ Note:  If you have done a full installation using the .zip instructions, there i
 
 ## Mod .zip file install
 
-1. Download "Factorio Access.zip"
-2. Open the .zip file and copy its contents
-3. Navigate to the folder you have Factorio installed.  It should already contain a /bin folder, a /data folder, etc.  
-4. Paste the files into your factorio folder
-5. That's it!  You are now ready to run launcher.exe in administrator mode
+1. Download the latest release zip file such as "Factorio_Access_Beta_0_X_X.zip"
+2. Put the zip file in an empty folder and open it and copy its contents.
+3. Navigate to the folder you have Factorio installed, with name like "Factorio_1.1.X".  It should already contain a /bin folder, a /data folder, etc.  
+4. Paste the files into this Factorio_1.1 folder
+5. That's it! You are now ready to run launcher.exe in administrator mode.
 6. If you are a jaws user, you may want to copy Factorio.jkm from the .zip into your JAWS settings folder, found in your user's AppData folder. An example file path is `C:\Users\Crimso\AppData\Roaming\Freedom Scientific\JAWS\2022\Settings\enu\`
 
 ## Mod patch install
@@ -441,10 +441,10 @@ Q:  Does this mod work with the demo?
 A:  No, in fact no mods work with the demo.
 
 Q:  Where can I find information about the game?
-A:  There is in-game help via item descriptions, while this page, our own wiki, and the official wiki can provide information and guidance.
+A:  There is in-game help via item descriptions, while this page, our own wiki, and the official wiki can provide information and guidance. The mod now also comes with demo maps that show working systems.
 
 Q:  Can this mod run the game's tutorials?
-A:  No, but there is in-game help via item descriptions, while this page, our own wiki, and the official wiki can provide info and guidance.
+A:  No, but there is in-game help via item descriptions, while this page, our own wiki, and the official wiki can provide info and guidance. The mod now also comes with demo maps that show working systems.
 
 Q:  My game crashed, what gives?
 A:  This mod is currently still in early access.  Bugs are normal and expected.  Please post about it in the issues channel of Discord. Autosave should generally restore your progress.
