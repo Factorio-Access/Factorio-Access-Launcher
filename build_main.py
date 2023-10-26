@@ -23,9 +23,10 @@ if not os.path.isdir('./'+venv):
     os.system(venv_python+' -m pip install -r requirements.txt pyinstaller')
     if sys.platform == 'linux':
         full_paths=' '.join([system_packages+mod for mod in linux_hidden_modules])
-        copy_cmd="cp -r "+full_paths+' ./'+venv+'/lib/python3.8/site-packages/'
+        copy_cmd="cp -r "+full_paths+' ./'+venv+'/lib/python3.*/site-packages/'
         print(copy_cmd)
-        os.system(copy_cmd)
+        if os.system(copy_cmd):
+            raise RuntimeError()
         hidden_imports+=linux_hidden_modules
         
 
