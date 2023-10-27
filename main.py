@@ -12,6 +12,7 @@ import shutil
 
 import fa_paths
 import update_factorio
+import multiplayer
 
 import accessible_output2.outputs.auto
 ao_output = accessible_output2.outputs.auto.Auto()
@@ -123,13 +124,16 @@ def do_menu(branch, name, zero_item=("Back",0)):
                 expanded_branch[option]=result
         keys=list(expanded_branch)
         opt = select_option(keys, prompt=f"{name}:", one_indexed= not zero_item)
-        if zero_item and zero_item[1] == opt:
-            return opt
+        if zero_item and opt==0:
+            return zero_item[1]
         key = keys[opt]
         ret = do_menu(expanded_branch[key],key)
-        if ret > 0 and zero_item and zero_item[1]==0:
-            return ret-1
-
+        try:
+            if ret > 0 and zero_item and zero_item[1]==0:
+                return ret-1
+        except:
+            print(expanded_branch[key],key,"returned",ret)
+            raise ValueError()
 
 
 
@@ -473,19 +477,14 @@ def host_saved_game_menu(game):
     return launch_with_params([],credentials["username"],announce_press_e=True)
 
 def connect_to_address_menu():
-    credentials = update_factorio.get_credentials()
     address = input("Enter the address to connect to:\n")
-    connect_to_address(address,credentials["username"])
+    connect_to_address(address)
     return 5
-def connect_to_address(address,player_name):
-    launch_with_params(["--mp-connect",address],player_name)
-    return 5
+def connect_to_address(address):
+    credentials = update_factorio.get_credentials()
+    return launch_with_params(["--mp-connect",address],credentials["username"])
 
 def create_new_save(map_setting,map_gen_setting):
-    # try:
-        # os.remove('saves/_autosave-manual.zip')
-    # except:
-        # pass
     launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'])
 
 def launch(path):
@@ -506,6 +505,7 @@ def launch_with_params(params,player_name=False,announce_press_e=False):
     except Exception as e:
         print("error running game")
         raise e
+    return 5
     
 
 
@@ -534,7 +534,6 @@ def time_to_exit():
     ao_output.output("Goodbye Factorio", False)
     sys.exit(0)
     
-    
 menu = {
     "Single Player":{
         "New Game" : chooseDifficulty,
@@ -544,8 +543,19 @@ menu = {
         },
     "Multiplayer":{
         "Host Saved Game": {
-            get_menu_saved_games:host_saved_game_menu,
+            get_menu_saved_games: multiplayer.multiplayer_launch,
             },
+        "Browse Public":{
+            "Freind List":{
+                "Add":multiplayer.add_friend_menu,
+                "Remove/View":{
+                    multiplayer.get_friends_menu: multiplayer.remove_friend
+                },
+            },
+            "List Games With Friends":{
+                multiplayer.games_with_friends_menu: connect_to_address
+            }
+        },
         "Connect to Address": connect_to_address_menu,
         },
     "Quit": time_to_exit,
