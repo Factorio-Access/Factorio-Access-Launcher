@@ -59,7 +59,6 @@ def remove_friend(friend:str):
 def multiplayer_launch(game):
     if config.multiplayer_lobby.name == "":
         config.multiplayer_lobby.name="FactorioAccessDefault"
-    credentials = update_factorio.get_credentials()
     player = update_factorio.get_player_data()
     player["last-played"] = {
         "type": "hosted-multiplayer",
@@ -78,16 +77,18 @@ def multiplayer_launch(game):
             "game_time_elapsed": 150,
             "has_password": config.multiplayer_lobby.password!=""
           },
-          "server-username": credentials["username"],
+          "server-username": player["service-username"],
           "autosave-interval": config.other.autosave_interval,
           "afk-autokick-interval": config.multiplayer_lobby.afk_auto_kick
         },
         "save-name": game[:-4]
       }
     update_factorio.set_player_data(player)
-    return main.launch_with_params([],credentials["username"],announce_press_e=True)
+    return main.launch_with_params([],announce_press_e=True)
 
 
+def get_username_menu():
+    return "Username: "+update_factorio.get_player_data()["service-username"]
 
 def get_friends_menu():
     return {f:f for f in get_friend_list()}
@@ -99,6 +100,9 @@ def add_friend_menu():
             add_friend(friend)
             return 0
         print("Factorio usernames must only include letters, numbers, periods, and dashs.")
+def username_menu():
+    update_factorio.get_credentials(False,True)
+    return 0
 
 def games_with_friends_menu():
     games=get_filtered_game_list()

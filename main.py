@@ -9,6 +9,7 @@ import threading
 import queue
 import json
 import shutil
+import re
 
 import fa_paths
 import update_factorio
@@ -118,8 +119,12 @@ def do_menu(branch, name, zero_item=("Back",0)):
         expanded_branch={}
         for option, result in branch.items():
             if callable(option):
-                for opt, res in option().items():
-                    expanded_branch[opt]=lambda res=res:result(res)
+                generated_menu=option()
+                if type(generated_menu)==str:
+                    expanded_branch[generated_menu]=result
+                else:
+                    for opt, res in option().items():
+                        expanded_branch[opt]=lambda res=res:result(res)
             else:
                 expanded_branch[option]=result
         keys=list(expanded_branch)
@@ -393,6 +398,7 @@ def get_updated_presets():
     pass
 
 def process_game_stdout(stdout,player_name,announce_press_e):
+    player_index=""
     for line in iter(stdout.readline, b''):
         print(line)
         line = line.decode('utf-8').rstrip('\r\n')
@@ -400,7 +406,7 @@ def process_game_stdout(stdout,player_name,announce_press_e):
         if len(parts)==2:
             if parts[0] in player_specific_commands:
                 more_parts = parts[1].split(" ",1)
-                if not player_name or (more_parts[0] in player_list and player_name == player_list[more_parts[0]]):
+                if not player_index or more_parts[0] == player_index:
                     player_specific_commands[parts[0]](more_parts[1])
                     continue
             elif parts[0] in global_commands:
@@ -415,6 +421,12 @@ def process_game_stdout(stdout,player_name,announce_press_e):
             print(time.time - debug_time)
         elif line[-7:] == "Goodbye":
             break
+        elif m:=re.search(r'PlayerJoinGame .*?playerIndex\((\d+)\)',line):
+            player_index=str(int(m[1])+1)
+            print(f'Player index now {player_index}')
+        elif re.search(r'Quitting multiplayer connection.',line):
+            player_index=""
+            print(f'Player index now {player_index}')
         elif announce_press_e and len(line) > 20 and line[-20:] == "Factorio initialised":
             announce_press_e = False
             ao_output.output("Press e to continue", True)
@@ -481,8 +493,7 @@ def connect_to_address_menu():
     connect_to_address(address)
     return 5
 def connect_to_address(address):
-    credentials = update_factorio.get_credentials()
-    return launch_with_params(["--mp-connect",address],credentials["username"])
+    return launch_with_params(["--mp-connect",address])
 
 def create_new_save(map_setting,map_gen_setting):
     launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'])
@@ -542,6 +553,7 @@ menu = {
             },
         },
     "Multiplayer":{
+        multiplayer.get_username_menu:multiplayer.username_menu,
         "Host Saved Game": {
             get_menu_saved_games: multiplayer.multiplayer_launch,
             },
