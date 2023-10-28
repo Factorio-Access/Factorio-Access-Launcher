@@ -1,3 +1,5 @@
+KNOWN BUG: Scanner crashes if you try to read while scan is not complete
+
 # Version 0.4.3 BETA
 
 Released on October 26th, 2023.
