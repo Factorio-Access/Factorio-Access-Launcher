@@ -113,3 +113,5 @@ if not WRITE_DIR:
     
 MODS=os.path.join(WRITE_DIR,'mods')
 SAVES=os.path.join(WRITE_DIR,'saves')
+PLAYER_DATA_PATH = os.path.join(WRITE_DIR, "player-data.json")
+TEMP_PATH = os.path.join(WRITE_DIR,  'temp')

@@ -8,9 +8,9 @@ import os
 import getpass
 import zipfile
 import webbrowser
-import fa_paths
 import time
 
+from fa_paths import BIN, TEMP_PATH,PLAYER_DATA_PATH
 from shutil import rmtree
 from sys import platform
 
@@ -32,8 +32,7 @@ package_map = {
 
 FACTORIO_INSTALL_PATH = "./"
 
-PLAYER_DATA_PATH = os.path.join(fa_paths.WRITE_DIR, "player-data.json")
-TEMP_PATH = os.path.join(fa_paths.WRITE_DIR,  'temp')
+
 
 
 
@@ -79,11 +78,11 @@ def prompt_login():
 
 def service_token_promt():
     username=""
-    while len(username) == 0 :
+    while not re.fullmatch(r'[\w.-]+',username) :
         username=input("Factorio Username:")
     token=''
     while True:
-        print("To get your service token, which is required for updates, and most multiplayer functions, please follow the instructions below:")
+        print("To get your service token, which is required for updates, and many multiplayer functions, please follow the instructions below:")
         print("1. Go to https://factorio.com/profile in your browser. An option to launch is at the end of the instructions.")
         print('2. Once logged in and on your profile page, Click the link with the text "reveal".')
         print("3. Once clicked, your token string will be just before the link that will have disapeared. The token consists of a string of 30 numbers and letters between a and f. The text after the token starts with an i.")
@@ -245,12 +244,14 @@ def get_player_data():
     with open(PLAYER_DATA_PATH) as player_file:
         return json.load(player_file)
 
-def get_credentials(quiet=False):
+def get_credentials(quiet=False,reset=False):
     if not os.path.exists(PLAYER_DATA_PATH):
         if not quiet:
             print("Player data does not exist yet. Please start the game in single player first.")
         return None
     player = get_player_data()
+    if reset:
+        player["service-username"]=''
     if not player["service-username"] or not player["service-token"]:
         log_res = service_token_promt()#api_log_in()
         if not log_res:
@@ -266,7 +267,7 @@ def get_credentials(quiet=False):
     
     
 def get_current_version():
-    version_str = subprocess.check_output(fa_paths.BIN + " --version").decode('utf-8')
+    version_str = subprocess.check_output(BIN + " --version").decode('utf-8')
     version_re = r"Version:\s*([\d\.]+)\s*\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\)"
     maybe_match = re.match(version_re , version_str)
     if not maybe_match:
@@ -335,14 +336,14 @@ def prep_update(credentials, current_version, update_canidates):
     
 def execute_update(current_version, update_canidates):
     print(current_version,update_canidates)
-    params=[fa_paths.BIN]
+    params=[BIN]
     for update in update_canidates:
         file = os.path.abspath(update_filename(current_version,update))
         params.append('--apply-update')
         params.append(file)
     print(params)
     print(subprocess.check_output(params).decode('utf-8'))
-    #todo subprocess spawns another process and exits, casueing the cleanup to proceed before the update completes.
+    #todo subprocess spawns another process and exits, causing the cleanup to proceed before the update completes.
 
 def cleanup_update(current_version, update_canidates):
     for update in update_canidates:
