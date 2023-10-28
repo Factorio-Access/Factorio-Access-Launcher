@@ -175,7 +175,7 @@ def get_latest_stable():
 
 def download(url,filename):
     with open(filename,'wb') as fp, opener.open(url) as dl:
-        print(f"saving {url} to {filename}")
+        #print(f"saving {url} to {filename}")
         length = dl.getheader('content-length')
         buffsize = 4096
 
@@ -243,6 +243,7 @@ def set_player_data(player):
 def get_player_data():
     with open(PLAYER_DATA_PATH) as player_file:
         return json.load(player_file)
+    
 
 def get_credentials(quiet=False,reset=False):
     if not os.path.exists(PLAYER_DATA_PATH):
@@ -342,8 +343,10 @@ def execute_update(current_version, update_canidates):
         params.append('--apply-update')
         params.append(file)
     print(params)
-    print(subprocess.check_output(params).decode('utf-8'))
-    #todo subprocess spawns another process and exits, causing the cleanup to proceed before the update completes.
+    child=subprocess.Popen(params,stdout=subprocess.PIPE)
+    for line in child.stdout:
+        print(line.decode())
+    input()
 
 def cleanup_update(current_version, update_canidates):
     for update in update_canidates:

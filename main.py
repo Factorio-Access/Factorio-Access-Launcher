@@ -20,6 +20,7 @@ ao_output = accessible_output2.outputs.auto.Auto()
 
 gui.FAILSAFE = False
 
+debug=False
 
 if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
     os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
@@ -82,6 +83,14 @@ def select_option(options,prompt='Select an option:',one_indexed=True):
             print(i + one_indexed, ": ", val)    
         i=input()
         if not i.isdigit():
+            if i=='debug':
+                global debug
+                debug=True
+                print("debug output")
+                for name,path in fa_paths.__dict__.items():
+                    if type(path)==str:
+                        print(f'{name:20}:{path}')
+
             print("Invalid input, please enter a number.")
             continue
         i=int(i)-one_indexed
@@ -120,6 +129,8 @@ def do_menu(branch, name, zero_item=("Back",0)):
         for option, result in branch.items():
             if callable(option):
                 generated_menu=option()
+                if not generated_menu:
+                    continue
                 if type(generated_menu)==str:
                     expanded_branch[generated_menu]=result
                 else:
@@ -397,10 +408,11 @@ def get_updated_presets():
             print(preset_name,len(preset))
     pass
 
-def process_game_stdout(stdout,player_name,announce_press_e):
+def process_game_stdout(stdout,announce_press_e):
     player_index=""
     for line in iter(stdout.readline, b''):
-        print(line)
+        if debug:
+            print(line)
         line = line.decode('utf-8').rstrip('\r\n')
         parts = line.split(' ',1)
         if len(parts)==2:
@@ -431,40 +443,37 @@ def process_game_stdout(stdout,player_name,announce_press_e):
             announce_press_e = False
             ao_output.output("Press e to continue", True)
 
-def save_game_rename():
+def save_game_rename(if_after=None):
     l = get_sorted_saves()
-
-    if len(l) == 0:
-        print("Make sure to save your game next time!")
-    else:
-        print("Would you like to name your last save?  You saved " +
-              get_elapsed_time(save_time(l[0])) + " ago")
-        if getAffirmation():
+    if len(l) > 0:
+        save=l[0]
+        save_t=save_time(save)
+        if if_after and save_t > if_after:
+            print("Would you like to name your last save?  You saved " +
+                get_elapsed_time(save_t) + " ago")
+            if not getAffirmation():
+                return
             print("Enter a name for your save file:")
-            newName = input()
             check = False
             while check == False:
+                newName = input()
                 try:
-                    testFile = open(newName + ".test", "w")
+                    dst = os.path.join(fa_paths.SAVES, newName + ".zip")
+                    testFile = open(dst, "w")
                     testFile.close()
-                    os.remove(newName + ".test")
+                    os.remove(dst)
                     check = True
                 except:
                     print("Invalid file name, please try again.")
-                    newName = input()
-
-            dst = "saves/" + newName + ".zip"
-            src = "saves/" + l[0]
-            try:
-                os.rename(src, dst)
-            except:
-                os.remove(dst)
-                os.rename(src, dst)
+            src = os.path.join(fa_paths.SAVES,save)
+            os.replace(src, dst)
+            print("Renamed.")
+            return
+    print("Looks like you didn't save!")
 
 
 
 def host_saved_game_menu(game):
-    credentials = update_factorio.get_credentials()
     player = update_factorio.get_player_data()
     player["last-played"] = {
         "type": "hosted-multiplayer",
@@ -479,14 +488,15 @@ def host_saved_game_menu(game):
             "game_time_elapsed": 0,
             "has_password": False
           },
-          "server-username": "",
+          "server-username": player["service-username"],
           "autosave-interval": 5,
           "afk-autokick-interval": 0
         },
         "save-name": game[:-4]
       }
     update_factorio.set_player_data(player)
-    return launch_with_params([],credentials["username"],announce_press_e=True)
+    launch_with_params([],announce_press_e=True)
+    return 5
 
 def connect_to_address_menu():
     address = input("Enter the address to connect to:\n")
@@ -496,13 +506,13 @@ def connect_to_address(address):
     return launch_with_params(["--mp-connect",address])
 
 def create_new_save(map_setting,map_gen_setting):
-    launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'])
+    launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'],save_rename=False)
 
 def launch(path):
     launch_with_params(["--load-game", path])
-    save_game_rename()
     return 5
-def launch_with_params(params,player_name=False,announce_press_e=False):
+def launch_with_params(params,announce_press_e=False,save_rename=True):
+    start_time=time.time()
     params = [
         fa_paths.BIN, 
         "--config", fa_paths.CONFIG,
@@ -511,11 +521,13 @@ def launch_with_params(params,player_name=False,announce_press_e=False):
     try:
         print("Launching")
         proc = subprocess.Popen(params , stdout=subprocess.PIPE)
-        threading.Thread(target=process_game_stdout, args=(proc.stdout,player_name,announce_press_e), daemon=True).start()
+        threading.Thread(target=process_game_stdout, args=(proc.stdout,announce_press_e), daemon=True).start()
         proc.wait()
     except Exception as e:
         print("error running game")
         raise e
+    if save_rename:
+        save_game_rename(start_time)
     return 5
     
 

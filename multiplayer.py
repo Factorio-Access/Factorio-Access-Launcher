@@ -88,7 +88,11 @@ def multiplayer_launch(game):
 
 
 def get_username_menu():
-    return "Username: "+update_factorio.get_player_data()["service-username"]
+    try:
+        player=update_factorio.get_player_data()
+        return "Username: "+player["service-username"]
+    except:
+        return False
 
 def get_friends_menu():
     return {f:f for f in get_friend_list()}
