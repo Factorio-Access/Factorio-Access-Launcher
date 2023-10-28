@@ -1,4 +1,71 @@
-KNOWN BUG: Scanner crashes if you try to read while scan is not complete
+# Version 0.4.4 BETA
+
+Released on October Xth, 2023. ***
+
+## New Features
+
+- Extended localisation support. It now includes the scanner tool and inventory slot locking.
+
+- Added comments to localisation file to make it easier to translate. Volunteer translators are welcome!
+
+- In cursor mode, you can now use arrow keys to move the cursor by one tile regardless of the size. This allows more precisely covering the area of interest when scanning areas.
+
+- Added vanilla mode to make the mod more similar to Vanilla Factorio for sighted players playing multiplayer.
+  * Toggle this mode with CONTROL + ALT + V
+  * The narrator is muted and the mouse cursor is unlocked.
+  * Note: As before, the vanilla cursor preview can be rotated using SHIFT + R.
+  
+- Improved visual effects.
+  * Teleporting now produces some smoke.
+  * When the technology or fast travel menu is opened, an icon is drawn over the character's head to note that they are focused on that menu.
+  * Larger cursor sizes are now drawn more responsively.
+  * Entities selected by the cursor are highlighted more effectively.
+  
+  
+## Changes
+
+- Improved group mining tool.
+  * If you press SHIFT + X on a tree or rock or on an empty tile, all such objects within 5 tiles are mined.
+  * If you press SHIFT + X on a rail, all rails and signals within 5 tiles are mined.
+  * If you press SHIFT + X on an item on the ground, all items on the ground within 5 tiles are mined.
+  * If you are holding the instant mining tool (the cut paste tool) in hand and you press SHIFT + X, everything that can be mined within 5 tiles are mined, except for resource patches.
+  
+
+- Changed the config file to support both vanilla and mod-specific controls as much as possible by default.
+  NOTE: If you want to keep your config settings from before the update, save your old config file and restore it after installing the update files.
+
+- New direction and distance calculation functions that should be more accurate.
+
+- The number of output slots announced for a chest is now the number of unlocked slots instead of the maximum capacity.
+
+- Machine inventory slots reserved for particular input or output items or fluids are now read out precisely instead of using crowded "or" statements.
+
+- If you enable cursor mode while smooth walking, the cursor starts at the center of the nearest tile so that it aligns more precisely with entities.
+
+## Bug Fixes
+
+- Changed the way tiles are read such that there should be fewer crashes related to this.
+
+- Fixed a crash due to switching menus while no guns are equipped. 
+
+- Fixed (hopefully) a crash related to the scanner scanning invalid entities.
+
+- Fixed a crash related to while loops used when instant mining.
+
+## Known Bugs 
+
+- A few technology descriptions have errors.
+
+- The scanner tool does not update forests correctly after cutting trees.
+
+- Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
+
+- Transport belts and splitters cannot be nudged.
+
+- Nudged buildings might illegally overlap with each other.
+
+- Lab research speed is reported slightly incorrectly when modules are added.
+
 
 # Version 0.4.3 BETA
 
