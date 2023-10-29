@@ -15,12 +15,9 @@ def get_game_list():
     url=f"https://multiplayer.factorio.com/get-games?username={cred['username']}&token={cred['token']}"
     with update_factorio.opener.open(url) as fp:
         games = json.load(fp)
-        players=set()
-        for game in games:
-            players|=set(game.get("players",[]))
-        with open("players",'w') as fp:
-            fp.writelines(player+"\n" for player in players)
-        return games
+    with open("all_games",'w') as fp:
+        json.dump(games,fp)
+    return games
 
 def get_filtered_game_list():
     games = get_game_list()
@@ -57,35 +54,66 @@ def remove_friend(friend:str):
 
 
 def multiplayer_launch(game):
-    if config.multiplayer_lobby.name == "":
-        config.multiplayer_lobby.name="FactorioAccessDefault"
-    player = update_factorio.get_player_data()
-    player["last-played"] = {
-        "type": "hosted-multiplayer",
-        "host-settings": 
-        {
-          "server-game-data": 
-          {
-            "visibility": {
-                "public": config.multiplayer_lobby.visibility_public,
-                "steam": config.multiplayer_lobby.visibility_steam,
-                "lan": config.multiplayer_lobby.visibility_lan
+    with config.current_conf:
+        if config.multiplayer_lobby.name == "":
+            config.multiplayer_lobby.name="FactorioAccessDefault"
+        player = update_factorio.get_player_data()
+        player["last-played"] = {
+            "type": "hosted-multiplayer",
+            "host-settings": 
+            {
+            "server-game-data": 
+            {
+                "visibility": {
+                    "public": config.multiplayer_lobby.visibility_public,
+                    "steam": config.multiplayer_lobby.visibility_steam,
+                    "lan": config.multiplayer_lobby.visibility_lan
+                },
+                "name": config.multiplayer_lobby.name,
+                "description": config.multiplayer_lobby.description,
+                "max_players": config.multiplayer_lobby.max_players,
+                "game_time_elapsed": 150,
+                "has_password": config.multiplayer_lobby.password!=""
             },
-            "name": config.multiplayer_lobby.name,
-            "description": config.multiplayer_lobby.description,
-            "max_players": config.multiplayer_lobby.max_players,
-            "game_time_elapsed": 150,
-            "has_password": config.multiplayer_lobby.password!=""
-          },
-          "server-username": player["service-username"],
-          "autosave-interval": config.other.autosave_interval,
-          "afk-autokick-interval": config.multiplayer_lobby.afk_auto_kick
-        },
-        "save-name": game[:-4]
-      }
+            "server-username": player["service-username"],
+            "autosave-interval": config.other.autosave_interval,
+            "afk-autokick-interval": config.multiplayer_lobby.afk_auto_kick
+            },
+            "save-name": game[:-4]
+        }
     update_factorio.set_player_data(player)
     return main.launch_with_params([],announce_press_e=True)
 
+def add_toggle_setting(menu,setting,header):
+    name = header+": "
+    t_setting=("multiplayer-lobby",setting)
+    current=config.current_conf.get_setting(*t_setting)
+    if current == "true":
+        name += "Yes"
+        def toggle():
+            with config.current_conf:
+                config.current_conf.set_setting(*t_setting,'false')
+            return 0
+    else:
+        name += "No"
+        def toggle():
+            with config.current_conf:
+                config.current_conf.set_setting(*t_setting,'true')
+            return 0
+    menu[name]=toggle
+
+def get_host_settings_menu():
+    from __main__ import do_menu
+    with config.current_conf:
+        menu={}
+        add_toggle_setting(menu,"visibility-public","Publicly Advertised")
+        add_toggle_setting(menu,"visibility-lan","LAN Advertised")
+        add_toggle_setting(menu,"visibility-steam","Steam Advertised")
+        add_toggle_setting(menu,"enable-whitelist","Friends Only")
+        add_toggle_setting(menu,"verify-user-identity","Verify user")
+        return menu
+def run_func(func):
+    return func()
 
 def get_username_menu():
     try:

@@ -434,8 +434,9 @@ def process_game_stdout(stdout,announce_press_e):
         elif line[-7:] == "Goodbye":
             break
         elif m:=re.search(r'PlayerJoinGame .*?playerIndex\((\d+)\)',line):
-            player_index=str(int(m[1])+1)
-            print(f'Player index now {player_index}')
+            if not player_index:
+                player_index=str(int(m[1])+1)
+                print(f'Player index now {player_index}')
         elif re.search(r'Quitting multiplayer connection.',line):
             player_index=""
             print(f'Player index now {player_index}')
@@ -495,6 +496,9 @@ def host_saved_game_menu(game):
         "save-name": game[:-4]
       }
     update_factorio.set_player_data(player)
+    launch_with_params([],announce_press_e=True)
+    return 5
+def just_launch():
     launch_with_params([],announce_press_e=True)
     return 5
 
@@ -558,6 +562,7 @@ def time_to_exit():
     sys.exit(0)
     
 menu = {
+    "Launch last played":just_launch,
     "Single Player":{
         "New Game" : chooseDifficulty,
         "Load Game" : {
@@ -566,6 +571,9 @@ menu = {
         },
     "Multiplayer":{
         multiplayer.get_username_menu:multiplayer.username_menu,
+        "Host Settings":{
+            multiplayer.get_host_settings_menu:multiplayer.run_func
+        },
         "Host Saved Game": {
             get_menu_saved_games: multiplayer.multiplayer_launch,
             },

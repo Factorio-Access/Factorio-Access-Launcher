@@ -7,10 +7,12 @@ import re
 class Conf_Editor:
     def __init__(self) -> None:
         self.unsaved=False
-        self.load()
+        self.inContext=False
     def load(self):
         if self.unsaved:
             raise RuntimeError("Unsaved Changes")
+        if not self.inContext:
+            raise RuntimeError("Not in context")
         section = ""
         self.c = (c:={section:""})
         with open(CONFIG,"r",newline='') as fp:
@@ -19,14 +21,17 @@ class Conf_Editor:
                     section = m.group(1)
                     c[section]=""
                 c[section]+=line
-        self.unsaved=False
     def get_setting(self,section,setting):
+        if not self.inContext:
+            raise RuntimeError("Not in context")
         if m:=re.search(fr"(?m)^[ \t]*{setting}[ \t]*=(.*)",self.c[section]):
             return m.group(1).strip()
         if m:=re.search(fr"(?m)^[ \t]*;[ \t]*{setting}[ \t]*=(.*)",self.c[section]):
             return m.group(1).strip()
         raise ValueError(f"No {setting} setting found in {section} section.")
     def set_setting(self,section,setting,value):
+        if not self.inContext:
+            raise RuntimeError("Not in context")
         self.unsaved=True
         (self.c[section],n)=re.subn(fr"(?m)^[ \t]*{setting}[ \t]*=(.*)\r?\n",f"{setting}={value.strip()}\n",self.c[section])
         if n==1:
@@ -36,11 +41,27 @@ class Conf_Editor:
         (self.c[section],n)=re.subn(fr"(?m)^[ \t]*;[ \t]*{setting}[ \t]*=(.*)\r?\n",f"{setting}={value.strip()}\n",self.c[section],count=1)
         if n==0:
             raise ValueError(f"Setting [{setting}] not found in section [{section}]")
+    def toggle(self,section,setting):
+        val = self.get_setting(section,setting)
+        val= 'true' if val == 'false' else 'false'
+        self.set_setting(section,setting,val)
+        return 0
     def save(self):
+        if not self.inContext:
+            raise RuntimeError("Not in context")
         with open(CONFIG,"w",newline='') as fp:
             for section in self.c.values():
                 fp.write(section)
         self.unsaved=False
+    def __enter__(self):
+        if self.inContext:
+            raise RuntimeError("config is already open")
+        self.inContext=True
+        self.load()
+    def __exit__(self,exc_type, exc_val, exc_tb):
+        if self.unsaved:
+            self.save()
+        self.inContext=False
     def __del__(self):
         if self.unsaved:
             raise RuntimeError("Unsaved Changes")
@@ -76,9 +97,10 @@ def __remake_section_names():
 current_conf = Conf_Editor()
 
 from config_autogen import *
-
-if version < int(current_conf.get_setting("","version")):
-    print("Newer conf.ini version detected. Please inform Factorio-Access maintainers.")
+with current_conf:
+    conf_ver=int(current_conf.get_setting("","version"))
+if version < conf_ver:
+    print(f"Newer conf.ini version [{conf_ver}] detected. Please inform Factorio-Access maintainers.")
 
 if __name__ == '__main__':
     __remake_section_names()
