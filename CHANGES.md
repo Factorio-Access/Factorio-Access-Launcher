@@ -1,16 +1,23 @@
 # Version 0.4.4 BETA
 
-Released on October Xth, 2023. ***
+Released, proudly, on October 29th, 2023.
 
 ## New Features
+
+- New launcher multiplayer features.
+  * Your player name is read out for you.
+  * The menus have been rearranged to be clearer.
+  
 
 - Extended localisation support. It now includes the scanner tool and inventory slot locking.
 
 - Added comments to localisation file to make it easier to translate. Volunteer translators are welcome!
 
-- In cursor mode, you can now use arrow keys to move the cursor by one tile regardless of the size. This allows more precisely covering the area of interest when scanning areas.
+- In cursor mode, you can now use arrow keys to move the larger cursor by one tile regardless of the size. This allows more precisely covering the area of interest when scanning areas.
 
-- Added vanilla mode to make the mod more similar to Vanilla Factorio for sighted players playing multiplayer.
+- You can now get the relative position of the cursor by pressing SHIFT + K. Meanwhile, just "K" still gives absolute coordinates and entity part.
+
+- Added vanilla mode to make the mod more similar to vanilla Factorio for sighted players playing multiplayer.
   * Toggle this mode with CONTROL + ALT + V
   * The narrator is muted and the mouse cursor is unlocked.
   * Note: As before, the vanilla cursor preview can be rotated using SHIFT + R.
@@ -24,11 +31,10 @@ Released on October Xth, 2023. ***
   
 ## Changes
 
-- Improved group mining tool.
-  * If you press SHIFT + X on a tree or rock or on an empty tile, all such objects within 5 tiles are mined.
-  * If you press SHIFT + X on a rail, all rails and signals within 5 tiles are mined.
-  * If you press SHIFT + X on an item on the ground, all items on the ground within 5 tiles are mined.
-  * If you are holding the instant mining tool (the cut paste tool) in hand and you press SHIFT + X, everything that can be mined within 5 tiles are mined, except for resource patches.
+- Improved group mining feature.
+  * If you press SHIFT + X on a tree or a rock or a ground item or an empty tile, all such obstacle objects within 5 tiles are cleared out.
+  * If you press SHIFT + X on a rail, all rails and signals within 5 tiles are mined. 
+  * If you are holding the instant mining tool (the cut paste tool) in hand and you press SHIFT + X, everything that can be mined within 5 tiles is mined, except for resource patches.
   
 
 - Changed the config file to support both vanilla and mod-specific controls as much as possible by default.
@@ -40,9 +46,9 @@ Released on October Xth, 2023. ***
 
 - Machine inventory slots reserved for particular input or output items or fluids are now read out precisely instead of using crowded "or" statements.
 
-- If you enable cursor mode while smooth walking, the cursor starts at the center of the nearest tile so that it aligns more precisely with entities.
-
 ## Bug Fixes
+
+- The cursor now more effectively centers on entities so that they can be read during smooth walking.
 
 - Changed the way tiles are read such that there should be fewer crashes related to this.
 
@@ -51,6 +57,12 @@ Released on October Xth, 2023. ***
 - Fixed (hopefully) a crash related to the scanner scanning invalid entities.
 
 - Fixed a crash related to while loops used when instant mining.
+
+- Fixed teleporter sound.
+
+- Fixed (hopefully) a bug where aggregated resources like ore patches were lost from the scanner list.
+
+- Fixed (hopefully) multiplayer mode player messages getting mixed up.
 
 ## Known Bugs 
 
@@ -65,6 +77,8 @@ Released on October Xth, 2023. ***
 - Nudged buildings might illegally overlap with each other.
 
 - Lab research speed is reported slightly incorrectly when modules are added.
+
+- Hopefully solved: Some resources do not appear on the scanner list, especially for non-hosting players in multiplayer mode.
 
 
 # Version 0.4.3 BETA
@@ -94,13 +108,15 @@ Released on October 26th, 2023.
 
 - Tweaked some aspects of status message reporting.
 
+- Smooth walking mode now detects every entity including ores on the ground.
+
 ## Bug Fixes
 
 - Fixed some crashes related to fast travel.
 
 - Fixed some crashes related to multiplayer mode (pindex handling).
 
-- Fixed the cursor incorrectly updating after teleporting to it.
+- Fixed the cursor incorrectly updating after several actions such as teleporting to it.
 
 - Fixed an unstable teleporting bug that arose from teleporting to the cursor repeatedly.
 
