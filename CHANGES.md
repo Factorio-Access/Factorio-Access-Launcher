@@ -33,8 +33,9 @@ Released on October 29th, 2023.
   * Larger cursor sizes are now drawn more responsively.
   * Entities selected by the cursor are highlighted more effectively.
   
-- New launcher with revised multiplayer features.
-  * Your player name is read out for you.
+- New launcher with revised features.
+  * You can now continue your last game where you left off.
+  * When entering multiplayer, your player name is read out for you.
   * The menus have been rearranged to be clearer.
   * A matchmaking server issue has been identified as the reason for connection issues. Therefore multiplayer across the internet requires workarounds. you need to use LAN, or port forwarding, or the graphical vanilla matchmaking menus after launch.
   
@@ -66,9 +67,16 @@ Released on October 29th, 2023.
 
 - Fixed (hopefully) multiplayer mode player messages getting mixed up.
 
+- Water tyle types such as deep water are now correctly recognized by the cursor scan.
+
 ## Known Bugs 
 
-- Multiplayer apart from LAN play is not possible unless you use the vanilla graphical menus due to matchmaking restrictions.
+- Nudging bugs
+  * Nudged buildings might illegally overlap with each other.
+  * Fix in progress: Nudged electric poles do not update their wire connections.
+  * Transport belts and splitters cannot be nudged.
+  
+- Due to a matchamking server issue, multiplayer apart from LAN play is not possible unless you use port forwarding, or the vanilla graphical menus.
 
 - A few technology descriptions have errors.
 
@@ -76,13 +84,9 @@ Released on October 29th, 2023.
 
 - Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
 
-- Transport belts and splitters cannot be nudged.
-
-- Nudged buildings might illegally overlap with each other.
-
 - Lab research speed is reported slightly incorrectly when modules are added.
 
-- Hopefully solved: Some resources do not appear on the scanner list, especially for non-hosting players in multiplayer mode.
+- Fix in progress: Some resources do not appear on the scanner list, especially for non-hosting players in multiplayer mode.
 
 - Electricity connection preview information is sometimes incorrect if you are at the edge of a supply zone.
 
