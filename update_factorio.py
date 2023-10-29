@@ -241,7 +241,7 @@ def set_player_data(player):
         json.dump(player,player_file)
 
 def get_player_data():
-    with open(PLAYER_DATA_PATH) as player_file:
+    with open(PLAYER_DATA_PATH,encoding='utf8') as player_file:
         return json.load(player_file)
     
 
