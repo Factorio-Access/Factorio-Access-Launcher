@@ -84,6 +84,7 @@ Released on October 29th, 2023.
 
 - Hopefully solved: Some resources do not appear on the scanner list, especially for non-hosting players in multiplayer mode.
 
+- Electricity connection preview information is sometimes incorrect if you are at the edge of a supply zone.
 
 # Version 0.4.3 BETA
 
