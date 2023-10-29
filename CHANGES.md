@@ -1,14 +1,13 @@
 # Version 0.4.4 BETA
 
-Released, proudly, on October 29th, 2023.
+Proudly released on October 29th, 2023.
 
 ## New Features
 
-- New launcher multiplayer features.
+- New launcher with revised multiplayer features.
   * Your player name is read out for you.
   * The menus have been rearranged to be clearer.
   
-
 - Extended localisation support. It now includes the scanner tool and inventory slot locking.
 
 - Added comments to localisation file to make it easier to translate. Volunteer translators are welcome!
@@ -45,6 +44,8 @@ Released, proudly, on October 29th, 2023.
 - The number of output slots announced for a chest is now the number of unlocked slots instead of the maximum capacity.
 
 - Machine inventory slots reserved for particular input or output items or fluids are now read out precisely instead of using crowded "or" statements.
+
+- Flying text in connection to mining entities is no longer read unless you are moving.
 
 ## Bug Fixes
 
