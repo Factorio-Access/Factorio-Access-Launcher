@@ -93,16 +93,15 @@ for path in configs:
     try:
         fp=open(path)
     except FileNotFoundError:
-        pass
-    else:
-        CONFIG=path
-        with fp:
-            for line in fp:
-                match = re.match(r'write-data=([^\r\n]*)',line)
-                if match:
-                    WRITE_DIR = proccess(match.group(1))
-                    break
-        break
+        continue
+    CONFIG=path
+    with fp:
+        for line in fp:
+            match = re.match(r'write-data=([^\r\n]*)',line)
+            if match:
+                WRITE_DIR = proccess(match.group(1))
+                break
+    break
 
 if not CONFIG:
     print("Unable to find factorio config")
