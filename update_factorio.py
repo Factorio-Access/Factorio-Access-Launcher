@@ -14,6 +14,8 @@ from fa_paths import BIN, TEMP_PATH,PLAYER_DATA_PATH
 from shutil import rmtree
 from sys import platform
 
+debug=True
+
 download_package_map = {
     "win32":"win64-manual",
     "Darwin":"osx",
@@ -268,7 +270,7 @@ def get_credentials(quiet=False,reset=False):
     
     
 def get_current_version():
-    version_str = subprocess.check_output(BIN + " --version").decode('utf-8')
+    version_str = subprocess.check_output([BIN,"--version"]).decode('utf-8')
     version_re = r"Version:\s*([\d\.]+)\s*\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\)"
     maybe_match = re.match(version_re , version_str)
     if not maybe_match:
@@ -283,7 +285,7 @@ def get_current_version():
 
 
 def check_for_updates(credentials,connection,current_version):
-    print("cheing for factotio updates...")
+    print("checking for Factorio updates...")
     params=credentials.copy()
     params["apiVersion"]=2
     connection.request("GET",'/get-available-versions?'+urllib.parse.urlencode(credentials))
@@ -336,6 +338,7 @@ def prep_update(credentials, current_version, update_canidates):
     return
     
 def execute_update(current_version, update_canidates):
+    applying=re.compile(r'Applying update .*-(\d+\.\d+\.\d+)-update')
     print(current_version,update_canidates)
     params=[BIN]
     for update in update_canidates:
@@ -345,8 +348,10 @@ def execute_update(current_version, update_canidates):
     print(params)
     child=subprocess.Popen(params,stdout=subprocess.PIPE)
     for line in child.stdout:
-        print(line.decode())
-    input()
+        if m:=applying.search(line.decode()):
+            print(f'Applying Update:{m[1]}')
+        elif debug:
+            print('--',line.decode(),end='')
 
 def cleanup_update(current_version, update_canidates):
     for update in update_canidates:
@@ -360,6 +365,7 @@ def do_update(confirm=True):
     current_version = get_current_version()
     if not current_version:
         return False
+    print(f"Version: {current_version['from']}")
     connection = http.client.HTTPSConnection("updater.factorio.com")
     update_canidates = check_for_updates(credentials,connection,current_version)
     connection.close()
