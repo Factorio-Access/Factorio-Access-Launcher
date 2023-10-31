@@ -410,6 +410,7 @@ def get_updated_presets():
 
 def process_game_stdout(stdout,announce_press_e):
     player_index=""
+    restarting=False
     for line in iter(stdout.readline, b''):
         if debug:
             print(line)
@@ -431,15 +432,19 @@ def process_game_stdout(stdout,announce_press_e):
             debug_time = time.time
         elif line[:9] == "time start":
             print(time.time - debug_time)
+        elif line[-19:] == "Restarting Factorio":
+            restarting=True
         elif line[-7:] == "Goodbye":
-            break
+            if not restarting:
+                pass#return
+            restarting=False
         elif m:=re.search(r'PlayerJoinGame .*?playerIndex\((\d+)\)',line):
             if not player_index:
                 player_index=str(int(m[1])+1)
                 print(f'Player index now {player_index}')
         elif re.search(r'Quitting multiplayer connection.',line):
             player_index=""
-            print(f'Player index now {player_index}')
+            print(f'Player index cleared')
         elif announce_press_e and len(line) > 20 and line[-20:] == "Factorio initialised":
             announce_press_e = False
             ao_output.output("Press e to continue", True)
