@@ -74,13 +74,13 @@ configs.append("./"+config_path)
 
 #try to append another config path from config-path.cfg
 try:
-    fp=open(proccess('__PATH__executable__/../../config-path.cfg'))
+    fp=open(proccess('__PATH__executable__/../../config-path.cfg'),encoding='utf8')
 except FileNotFoundError:
     pass
 else:
     with fp:
         for line in fp:
-            match = re.fullmatch(r'config-path=([^\r\n]*)',line)
+            match = re.match(r'config-path=(.*)',line)
             if match:
                 configs.append(proccess(match.group(1)))
                 break
@@ -89,28 +89,31 @@ configs.append(proccess(os.path.join('__PATH__system-write-data__',config_path))
 
 CONFIG=''
 WRITE_DIR=''
+READ_DIR=''
 for path in configs:
     try:
-        fp=open(path)
+        fp=open(path,encoding='utf8')
     except FileNotFoundError:
         continue
-    CONFIG=path
-    with fp:
-        for line in fp:
-            match = re.match(r'write-data=([^\r\n]*)',line)
-            if match:
-                WRITE_DIR = proccess(match.group(1))
-                break
     break
+CONFIG=path
+with fp:
+    for line in fp:
+        if match:=re.match(r'write-data=(.*)',line):
+            WRITE_DIR = proccess(match[1])
+        if match:=re.match(r'read-data=(.*)',line):
+            READ_DIR = proccess(match[1])
+        if WRITE_DIR and READ_DIR:
+            break
 
 if not CONFIG:
-    print("Unable to find factorio config")
-    exit(1)
+    raise Exception("Unable to find factorio config")
 if not WRITE_DIR:
-    print("Unable to find factorio write directory")
-    exit(1)
+    raise Exception("Unable to find factorio write directory")
+if not READ_DIR:
+    raise Exception("Unable to find factorio write directory")
     
 MODS=os.path.join(WRITE_DIR,'mods')
 SAVES=os.path.join(WRITE_DIR,'saves')
-PLAYER_DATA_PATH = os.path.join(WRITE_DIR, "player-data.json")
-TEMP_PATH = os.path.join(WRITE_DIR,  'temp')
+PLAYER_DATA = os.path.join(WRITE_DIR, "player-data.json")
+TEMP = os.path.join(WRITE_DIR,  'temp')

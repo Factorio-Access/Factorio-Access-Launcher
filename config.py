@@ -3,6 +3,8 @@ from fa_paths import CONFIG
 import re
 
 
+class Config_Missing(ValueError):
+    pass
 
 class Conf_Editor:
     def __init__(self) -> None:
@@ -28,19 +30,22 @@ class Conf_Editor:
             return m.group(1).strip()
         if m:=re.search(fr"(?m)^[ \t]*;[ \t]*{setting}[ \t]*=(.*)",self.c[section]):
             return m.group(1).strip()
-        raise ValueError(f"No {setting} setting found in {section} section.")
-    def set_setting(self,section,setting,value):
+        raise Config_Missing(f"No {setting} setting found in {section} section.")
+    def set_setting(self,section,setting,value,force=False):
         if not self.inContext:
             raise RuntimeError("Not in context")
         self.unsaved=True
-        (self.c[section],n)=re.subn(fr"(?m)^[ \t]*{setting}[ \t]*=(.*)\r?\n",f"{setting}={value.strip()}\n",self.c[section])
+        set_string=f"{setting}={value.strip()}\n"
+        (self.c[section],n)=re.subn(fr"(?m)^[ \t]*{setting}[ \t]*=(.*)\r?\n",set_string,self.c[section])
         if n==1:
             return
         if n>1:
             raise ValueError(f"Duplicate setting [{setting}] found in section [{section}]")
-        (self.c[section],n)=re.subn(fr"(?m)^[ \t]*;[ \t]*{setting}[ \t]*=(.*)\r?\n",f"{setting}={value.strip()}\n",self.c[section],count=1)
+        (self.c[section],n)=re.subn(fr"(?m)^[ \t]*;[ \t]*{setting}[ \t]*=(.*)\r?\n",set_string,self.c[section],count=1)
         if n==0:
-            raise ValueError(f"Setting [{setting}] not found in section [{section}]")
+            if not force:
+                raise Config_Missing(f"Setting [{setting}] not found in section [{section}]")
+            self.c[section]+=set_string
     def toggle(self,section,setting):
         val = self.get_setting(section,setting)
         val= 'true' if val == 'false' else 'false'

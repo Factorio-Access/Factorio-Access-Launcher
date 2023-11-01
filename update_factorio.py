@@ -10,7 +10,7 @@ import zipfile
 import webbrowser
 import time
 
-from fa_paths import BIN, TEMP_PATH,PLAYER_DATA_PATH
+from fa_paths import BIN, TEMP,PLAYER_DATA
 from shutil import rmtree
 from sys import platform
 
@@ -232,27 +232,28 @@ def install():
     version = input('Enter version to download. Leave blank for latest stable:')
     if not version:
         version= get_latest_stable()
-    os.makedirs(TEMP_PATH, exist_ok=True)
-    filename=TEMP_PATH+'factorio-'+version+'-'+download_package
+    os.makedirs(TEMP, exist_ok=True)
+    filename=os.path.join(TEMP,'factorio-'+version+'-'+download_package)
     print("Downloading version "+version)
     download(f"https://www.factorio.com/get-download/{version}/alpha/{download_package}",filename)
     overwrite_factorio_intall_from_new_zip(filename)
 
 def set_player_data(player):
-    with open(PLAYER_DATA_PATH,'w') as player_file:
-        json.dump(player,player_file)
+    with open(PLAYER_DATA,'w',encoding='utf8') as player_file:
+        json.dump(player,player_file,ensure_ascii=False)
 
-def get_player_data():
-    with open(PLAYER_DATA_PATH,encoding='utf8') as player_file:
-        return json.load(player_file)
-    
-
-def get_credentials(quiet=False,reset=False):
-    if not os.path.exists(PLAYER_DATA_PATH):
+def get_player_data(quiet=False):
+    try:
+        with open(PLAYER_DATA,encoding='utf8') as player_file:
+            return json.load(player_file)
+    except FileNotFoundError:
         if not quiet:
             print("Player data does not exist yet. Please start the game in single player first.")
         return None
-    player = get_player_data()
+    
+
+def get_credentials(quiet=False,reset=False):
+    player = get_player_data(quiet)
     if reset:
         player["service-username"]=''
     if not player["service-username"] or not player["service-token"]:
@@ -320,10 +321,10 @@ def check_for_updates(credentials,connection,current_version):
     return upgrade_list
 
 def update_filename(current_version,update):
-    return os.path.join(TEMP_PATH,current_version['package']+'-'+update['from']+'-'+update['to']+'-update.zip')
+    return os.path.join(TEMP,current_version['package']+'-'+update['from']+'-'+update['to']+'-update.zip')
 
 def prep_update(credentials, current_version, update_canidates):
-    os.makedirs(TEMP_PATH, exist_ok=True)
+    os.makedirs(TEMP, exist_ok=True)
     params=credentials.copy()
     params['package']=current_version['package']
     params['apiVersion']=2

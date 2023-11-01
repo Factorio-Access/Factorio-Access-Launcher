@@ -14,13 +14,13 @@ import re
 import fa_paths
 import update_factorio
 import multiplayer
+import fa_menu
+from fa_menu import *
 
 import accessible_output2.outputs.auto
 ao_output = accessible_output2.outputs.auto.Auto()
 
 gui.FAILSAFE = False
-
-debug=False
 
 if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
     os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
@@ -45,63 +45,6 @@ def get_elapsed_time(t1):
     return str(math.ceil(t2-t1)) + " seconds"
 
 
-def getAffirmation():
-    while True:
-        i = input()
-        if i == 'yes' or i == 'Yes' or i == 'YES' or i == 'y' or i == 'Y':
-            return True
-        elif i == 'no' or i == 'No' or i == 'n' or i == 'N' or i == 'NO':
-            return False
-        else:
-            print("Invalid input, please type either Yes or No")
-
-
-def getBoolean():
-    while True:
-        i = input()
-        if i == 'true' or i == 'True' or i == 't' or i == 'T' or i == 'TRUE':
-            return 'true'
-        elif i == 'false' or i == 'False' or i == 'f' or i == 'F' or i == 'FALSE':
-            return 'false'
-        else:
-            print("Invalid input, please type either true or false")
-
-
-def getNum():
-    while True:
-        i = input()
-        try:
-            result = float(i)
-            return str(result)
-        except:
-            print("Invalid input, please enter a number.\n")
-
-def select_option(options,prompt='Select an option:',one_indexed=True):
-    while True:
-        print(prompt)
-        for i, val in enumerate(options):
-            print(i + one_indexed, ": ", val)    
-        i=input()
-        if not i.isdigit():
-            if i=='debug':
-                global debug
-                debug=True
-                print("debug output")
-                for name,path in fa_paths.__dict__.items():
-                    if type(path)==str:
-                        print(f'{name:20}:{path}')
-
-            print("Invalid input, please enter a number.")
-            continue
-        i=int(i)-one_indexed
-        if i >= len(options):
-            print("Option too high, please enter a smaller number.")
-            continue
-        if i<0:
-            print("Options start at 1. Please enter a larger number.")
-            continue
-        return i
-
 def save_time(file):
     return os.path.getmtime(os.path.join(fa_paths.SAVES,file))
 
@@ -116,40 +59,6 @@ def get_sorted_saves():
 def get_menu_saved_games():
     games = get_sorted_saves()
     return {save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago" : save for save in games}
-
-def do_menu(branch, name, zero_item=("Back",0)):
-    if callable(branch):
-        return branch()
-    if zero_item:
-        old_b = branch
-        branch = {zero_item[0]:zero_item[1]}
-        branch.update(old_b)
-    while True:
-        expanded_branch={}
-        for option, result in branch.items():
-            if callable(option):
-                generated_menu=option()
-                if not generated_menu:
-                    continue
-                if type(generated_menu)==str:
-                    expanded_branch[generated_menu]=result
-                else:
-                    for opt, res in option().items():
-                        expanded_branch[opt]=lambda res=res:result(res)
-            else:
-                expanded_branch[option]=result
-        keys=list(expanded_branch)
-        opt = select_option(keys, prompt=f"{name}:", one_indexed= not zero_item)
-        if zero_item and opt==0:
-            return zero_item[1]
-        key = keys[opt]
-        ret = do_menu(expanded_branch[key],key)
-        try:
-            if ret > 0 and zero_item and zero_item[1]==0:
-                return ret-1
-        except:
-            print(expanded_branch[key],key,"returned",ret)
-            raise ValueError()
 
 
 
@@ -412,7 +321,7 @@ def process_game_stdout(stdout,announce_press_e):
     player_index=""
     restarting=False
     for line in iter(stdout.readline, b''):
-        if debug:
+        if fa_menu.debug:
             print(line)
         line = line.decode('utf-8').rstrip('\r\n')
         parts = line.split(' ',1)
@@ -478,39 +387,13 @@ def save_game_rename(if_after=None):
     print("Looks like you didn't save!")
 
 
-
-def host_saved_game_menu(game):
-    player = update_factorio.get_player_data()
-    player["last-played"] = {
-        "type": "hosted-multiplayer",
-        "host-settings": 
-        {
-          "server-game-data": 
-          {
-            "visibility": None,
-            "name": "hi",
-            "description": "",
-            "max_players": 0,
-            "game_time_elapsed": 0,
-            "has_password": False
-          },
-          "server-username": player["service-username"],
-          "autosave-interval": 5,
-          "afk-autokick-interval": 0
-        },
-        "save-name": game[:-4]
-      }
-    update_factorio.set_player_data(player)
-    launch_with_params([],announce_press_e=True)
-    return 5
 def just_launch():
     launch_with_params([],announce_press_e=True)
     return 5
 
 def connect_to_address_menu():
     address = input("Enter the address to connect to:\n")
-    connect_to_address(address)
-    return 5
+    return connect_to_address(address)
 def connect_to_address(address):
     return launch_with_params(["--mp-connect",address])
 
@@ -518,8 +401,7 @@ def create_new_save(map_setting,map_gen_setting):
     launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'],save_rename=False)
 
 def launch(path):
-    launch_with_params(["--load-game", path])
-    return 5
+    return launch_with_params(["--load-game", path])
 def launch_with_params(params,announce_press_e=False,save_rename=True):
     start_time=time.time()
     params = [
