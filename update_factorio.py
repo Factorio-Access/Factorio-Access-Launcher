@@ -14,7 +14,7 @@ from fa_paths import BIN, TEMP,PLAYER_DATA
 from shutil import rmtree
 from sys import platform
 
-debug=True
+debug=False
 
 download_package_map = {
     "win32":"win64-manual",
