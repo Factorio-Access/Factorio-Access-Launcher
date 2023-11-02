@@ -6,6 +6,7 @@ import re
 import config
 import update_factorio
 import fa_paths
+from fa_menu import do_menu
 import __main__ as main
 
 __ACCESS_LIST_PATH : Final[str] = os.path.join(fa_paths.WRITE_DIR,"server-whitelist.json")
@@ -103,7 +104,6 @@ def add_toggle_setting(menu,setting,header):
     menu[name]=toggle
 
 def get_host_settings_menu():
-    from __main__ import do_menu
     with config.current_conf:
         menu={}
         add_toggle_setting(menu,"visibility-public","Publicly Advertised")
