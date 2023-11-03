@@ -1,3 +1,66 @@
+# Version 0.4.5 BETA
+
+Released November 3rd, 2023.
+
+This is a fairly small update about fixing recent major bugs and requested features. 
+
+## New Features
+
+- You can now change how long a train waits at its stations.
+  * This is done on the train menu. To apply the changed number, you need to recreate the instant schedule.
+  * Increase or decrease by 5 seconds using PAGE UP and PAGE down respectively.
+  * Increase or decrease by 60 seconds using CONTROL + PAGE UP and CONTROL + PAGE down respectively.
+  * The same number is applied to all stations for now. A far more flexible train scheduling system was thought out but will be added later.
+
+- Build lock mode now has special support for big electric poles and substations.
+  * For big electric poles, you place them when 28 to 30 tiles apart, which is the max wire reach.
+  * For substations, you place them about 18 tiles apart, which is both the max wire reach and the supply area.
+
+## Changes
+
+- Improved building slot reading
+  * Fluids are named as inputs or outputs and their counts are given.
+  * Empty module slots are distinguished as such.
+  * Filter slots are now numbered. Note that the last slot is usually the whitelist/blacklist switch which determines the policy for all the other slots.
+
+- Reading another player character will now say their name.
+
+- Visual improvement: The tile highlighter for the cursor is now always drawn, whether an entity is selected or not.
+
+- Many changes under the hood for code cleanup. More is on the way so that we can allow better user settings such as choosing your own keybinds.
+
+## Bugfixes
+
+- Hopefully actually fixed the multiplayer bug of only the host player being able to scan for most resources (the aggregated ones).
+
+- Potentially fixed a multiplayer issue where characters run out of their assigned tiles in telestep mode.
+
+- Fixed filter inserters crashing the game due to a recent inventory reading update.
+
+- Fixed several bugs and crashes that were due to issues exposed after tidying up the tile reader code.
+  * This includes teleporting to the cursor, connecting or disconnecting train wagons, and more.
+
+## Known Bugs 
+
+- Nudging bugs
+  * Nudged buildings might illegally overlap with each other.
+  * Fix in progress: Nudged electric poles do not update their wire connections.
+  * Transport belts and splitters cannot be nudged.
+  
+- Due to a matchamking server issue, multiplayer apart from LAN play is not possible unless you use port forwarding, or the vanilla graphical menus.
+
+- A few technology descriptions have errors.
+
+- The scanner tool does not update forests correctly after cutting trees.
+
+- Extending a rail after building a train stop sometimes causes problems.
+
+- Lab research speed is reported slightly incorrectly when modules are added.
+
+- Electricity connection preview information is sometimes incorrect if you are at the edge of a supply zone.
+
+
+
 # Version 0.4.4 BETA
 
 Released on October 29th, 2023.
