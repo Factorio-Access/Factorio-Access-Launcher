@@ -69,11 +69,29 @@ How would you like to proceed?'''
         ops=[
             "Approve change",
             "Keep Current",
-            "Edit Value"
+            "Edit Value",
+            "Approve All"
         ]
         for change_set_v, change_set in change_sets.items():
             for cat,changes in change_set:
                 for setting,change in changes:
                     if approve_type==2:
-                        p=
-                        select_option(ops)
+                        cats_to_try=translations.check_cats[cat]
+                        p=translations.translate(["",
+                            ["?"]+[[f"{t_cat}.{setting}"] for t_cat in cats_to_try]+[f"{cat}.{setting}"],"\n"
+                            ["?"]+[[f"{t_cat}-description.{setting}"] for t_cat in cats_to_try]+[""],"\n",
+                            change[1],
+                            "Current Value:"+config.current_conf.get_setting(cat,setting)
+                            ])
+                        action=select_option(ops,p)
+                        if action==1:
+                            continue
+                        elif action==2:
+                            change[0]=input("New Value:")
+                        elif action==3:
+                            approve_type=1
+                    config.current_conf.set_setting(cat,setting,change[0],force=True)
+            for i,key in enumerate(change_set_v):
+                config.current_conf.set_setting('controls',f'access-config-version{i+1}-DO-NOT-EDIT',key,force=True)
+
+
