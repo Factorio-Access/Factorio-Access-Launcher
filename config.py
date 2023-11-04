@@ -1,5 +1,5 @@
 from typing import Any
-from fa_paths import CONFIG
+import fa_paths
 import re
 
 
@@ -17,7 +17,7 @@ class Conf_Editor:
             raise RuntimeError("Not in context")
         section = ""
         self.c = (c:={section:""})
-        with open(CONFIG,"r",newline='') as fp:
+        with open(fa_paths.CONFIG,"r",newline='') as fp:
             for line in fp:
                 if m:=re.match(r"(?m)^[ \t]*\[([^\r\n\]]+)\]",line):
                     section = m.group(1)
@@ -54,7 +54,7 @@ class Conf_Editor:
     def save(self):
         if not self.inContext:
             raise RuntimeError("Not in context")
-        with open(CONFIG,"w",newline='') as fp:
+        with open(fa_paths.CONFIG,"w",newline='') as fp:
             for section in self.c.values():
                 fp.write(section)
         self.unsaved=False
