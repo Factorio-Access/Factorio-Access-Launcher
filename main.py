@@ -6,18 +6,19 @@ import os
 import sys
 import subprocess
 import threading
-import queue
 import json
 import shutil
 import re
+
+import accessible_output2.outputs.auto
 
 import fa_paths
 import update_factorio
 import multiplayer
 import fa_menu
 from fa_menu import *
+import modify_config
 
-import accessible_output2.outputs.auto
 ao_output = accessible_output2.outputs.auto.Auto()
 
 gui.FAILSAFE = False
@@ -320,10 +321,10 @@ def get_updated_presets():
 def process_game_stdout(stdout,announce_press_e):
     player_index=""
     restarting=False
-    for line in iter(stdout.readline, b''):
+    for bline in iter(stdout.readline, b''):
         if fa_menu.debug:
-            print(line)
-        line = line.decode('utf-8').rstrip('\r\n')
+            print(bline)
+        line:str = bline.decode('utf-8').rstrip('\r\n')
         parts = line.split(' ',1)
         if len(parts)==2:
             if parts[0] in player_specific_commands:
@@ -337,13 +338,13 @@ def process_game_stdout(stdout,announce_press_e):
                
         if line.endswith("Saving finished"):
             ao_output.output("Saving Complete", True)
-        elif line[:10] == "time start":
+        elif line.endswith("time start"):
             debug_time = time.time
-        elif line[:9] == "time start":
+        elif line.endswith("time end"):
             print(time.time - debug_time)
-        elif line[-19:] == "Restarting Factorio":
+        elif line.endswith("Restarting Factorio"):
             restarting=True
-        elif line[-7:] == "Goodbye":
+        elif line.endswith("Goodbye"):
             if not restarting:
                 pass#return
             restarting=False
@@ -354,7 +355,7 @@ def process_game_stdout(stdout,announce_press_e):
         elif re.search(r'Quitting multiplayer connection.',line):
             player_index=""
             print(f'Player index cleared')
-        elif announce_press_e and len(line) > 20 and line[-20:] == "Factorio initialised":
+        elif announce_press_e and line.endswith("Factorio initialised"):
             announce_press_e = False
             ao_output.output("Press e to continue", True)
 
@@ -446,6 +447,7 @@ def chooseDifficulty():
     
 def time_to_exit():
     ao_output.output("Goodbye Factorio", False)
+    time.sleep(1)
     sys.exit(0)
     
 menu = {
@@ -480,4 +482,5 @@ menu = {
     "Quit": time_to_exit,
     }
 
+modify_config.do_config_check()
 do_menu(menu,"Main Menu",False)

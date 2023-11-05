@@ -11,7 +11,7 @@ from fa_menu import select_option
 MOD_NAME='FactorioAccess'
 CHANGESET_PATH='config_changes'
 
-config_re = re.compile(r'^(\w+)=(.*)')
+config_re = re.compile(r'^([\w-]+)=(.*)')
 comment_re = re.compile(r'^;')
 
 
@@ -50,7 +50,7 @@ def do_config_check():
         try:
             for i in ['1','2']:
                 current+=config.current_conf.get_setting('controls',f'access-config-version{i}-DO-NOT-EDIT')
-        except RuntimeError:
+        except config.Config_Missing:
             current='AA'
         change_sets=get_all_changes(after=current)
         if not change_sets:
@@ -64,16 +64,41 @@ How would you like to proceed?'''
             "Skip for now (not recommended)"
         ]
         approve_type=select_option(ops,p)
-        if approve_type==3:
+        if approve_type==2:
             return
         ops=[
             "Approve change",
             "Keep Current",
-            "Edit Value"
+            "Edit Value",
+            "Approve All"
         ]
         for change_set_v, change_set in change_sets.items():
-            for cat,changes in change_set:
-                for setting,change in changes:
-                    if approve_type==2:
-                        p=
-                        select_option(ops)
+            for cat,changes in change_set.items():
+                for setting,change in changes.items():
+                    current_val=config.current_conf.get_setting(cat,setting)
+                    if current_val==change[0]:
+                        continue
+                    if approve_type==0:
+                        cats_to_try=translations.check_cats[cat]
+                        p=translations.translate(["",
+                            f"{cat}.{setting}\n",
+                            ["?"]+[[f"{t_cat}.{setting.removesuffix('-alternative')}"] for t_cat in cats_to_try]+[""],"\n",
+                            ["?"]+[[f"{t_cat}-description.{setting}"] for t_cat in cats_to_try]+[""],"\n",
+                            change[1],
+                            "Current Value:"+current_val+"\n"+
+                            "Suggested Value:"+change[0]
+                            ])
+                        action=select_option(ops,p)
+                        if action==1:
+                            continue
+                        elif action==2:
+                            change=(input("New Value:"),)
+                        elif action==3:
+                            approve_type=1
+                    config.current_conf.set_setting(cat,setting,change[0],force=True)
+            for i,key in enumerate(change_set_v):
+                config.current_conf.set_setting('controls',f'access-config-version{i+1}-DO-NOT-EDIT',key,force=True)
+
+
+if __name__ == "__main__":
+    do_config_check()
