@@ -51,6 +51,8 @@ This is a fairly small update about fixing recent major bugs and requested featu
 
 - A few technology descriptions have errors.
 
+- Higher tier modules have the same descriptions read as tier 1 modules despite having stronger effects (and different written descriptions).
+
 - The scanner tool does not update forests correctly after cutting trees.
 
 - Extending a rail after building a train stop sometimes causes problems.
