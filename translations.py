@@ -139,6 +139,8 @@ def translate(l_str:localised_str,n=0,error=False):
     if n:
         key=re.sub(r'\bn\b',str(n),key)
     if key not in translation_table[cat]:
+        if error:
+            return None
         return f'Unknown key: "{cat}.{key}"'
     return expand(translation_table[cat][key],args)
     
@@ -315,9 +317,10 @@ def check_config_locale():
         print(ccat)
         for tcat,count in tcats.items():
             print('\t',tcat,count)
-        
+
+
+for locale_file in iterate_over_mod_files('locale/en/.*.cfg'):
+    with locale_file.open(encoding='utf8') as fp:
+        read_cfg(fp,ret=translation_table)
 if __name__ == "__main__":
-    for locale_file in iterate_over_mod_files('locale/en/.*.cfg'):
-        with locale_file.open(encoding='utf8') as fp:
-            read_cfg(fp,ret=translation_table)
     print(expand('__ALT_CONTROL_RIGHT_CLICK__2__'))
