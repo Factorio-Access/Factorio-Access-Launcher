@@ -1,3 +1,47 @@
+# Version 0.4.6 BETA
+
+Will be releasing soon.
+
+## New features
+
+- Added/confirmed compatibility for some other mods
+  * AAI Containers & Warehouses, by Earendel
+  * AAI Loaders, by Earendel (requires a patch made in this update)
+  * Void Chest Plus, by Optera
+  
+- Launcher improvements
+  * New map presets available: Peaceful mode (on any map)and enemies removed completely (on any map)
+  * Config file management. Changes we make to the config file no longer overwrite the existing settings without asking.
+  * There is now support for the Steam version of the game although it takes a few steps.
+  
+## Changes
+
+- Extensive redesign of the main functions of the code to improve readability and keybind support.
+  * Actions are now named more clearly on the key binds list.
+  * Some multi-purpose keys were split into multiple functions that can safely be called at the same time.
+  * Comments were added throughout the code to make it easier to follow.
+  * Improved handling of player preference related code for when we add support for it.
+  
+- Restored support for using arrow keys for the scanner results by default. Note that this works only outside of menus.
+  
+## Bugfixes
+
+- Reduced the reading of flying text after removing objects. This should minimize lag and crashes due to too much flying text.
+
+- Fixed a bug that made smooth walking mode not detect objects well when you turn.
+
+- Fixed a bug where the character would run around unexpectedly.
+
+- Fixed a crash during the rail analyzer reverse direction.
+
+- Fixed a multiplayer issue where resources would not be scanned by non-host players who did not restart the game.
+
+- Fixed cursor area scanning reporting random resources at zero percent.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.5 BETA
 
 Released November 3rd, 2023.
