@@ -14,6 +14,12 @@ Will be releasing soon.
   * Config file management. Changes we make to the config file no longer overwrite the existing settings without asking.
   * There is now support for the Steam version of the game although it takes a few steps.
   
+- Rail intersections are now identified when the cursor is over them.
+
+- Checking the status of any rail now reads the distance and direction to any nearby rail intersection.
+
+- Added basic custom graphical images to indicate which menu is open. The image works alongside the icon popping up over the player's head.
+
 ## Changes
 
 - Extensive redesign of the main functions of the code to improve readability and keybind support.
@@ -37,6 +43,12 @@ Will be releasing soon.
 - Fixed a multiplayer issue where resources would not be scanned by non-host players who did not restart the game.
 
 - Fixed cursor area scanning reporting random resources at zero percent.
+
+- Stopped the reading tiles when driving unless in cursor mode, but even then the reader is limited.
+
+- Fixed the speed reading of vehicles.
+
+- Fixed the speed reading of mining drills affected by modules.
 
 ## Known bugs
 
