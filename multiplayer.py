@@ -125,6 +125,14 @@ def get_username_menu():
 def get_friends_menu():
     return {f:f for f in get_friend_list()}
 
+def specific_friend_menu(friend:str):
+    def s_remove_friend(f=friend):
+        remove_friend(f)
+        return 1
+    return do_menu({
+        "Remove "+friend:s_remove_friend
+    },"Friend "+friend)
+
 def add_friend_menu():
     while True:
         friend = input("Enter the factorio playername to add:\n")

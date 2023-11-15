@@ -469,9 +469,7 @@ menu = {
         "Browse Public":{
             "Freind List":{
                 "Add":multiplayer.add_friend_menu,
-                "Remove/View":{
-                    multiplayer.get_friends_menu: multiplayer.remove_friend
-                },
+                 multiplayer.get_friends_menu: multiplayer.specific_friend_menu
             },
             "List Games With Friends":{
                 multiplayer.games_with_friends_menu: connect_to_address

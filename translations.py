@@ -10,7 +10,7 @@ import fa_paths
 import update_factorio
 import config
 
-localised_str = Union[str,list['localised_str']]
+localised_str = Union[str,Iterator['localised_str']]
 
 def get_control(name:str) ->list[str]:
     if input_type==joy:
