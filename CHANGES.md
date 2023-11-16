@@ -1,25 +1,35 @@
 # Version 0.4.6 BETA
 
-Will be releasing soon.
+Released November 16th, 2023. 
+
+In this update we fixed several bugs and massively cleaned up the code layout to allow more flexibility in setting keybinds. This may have brought about new bugs but we tested and fixed bugs for a few hours. 
+
+We have also improved the launcher and added a new demo map. We also explored if we can support some other mods and started making a list on the Wiki for compatible other mods.
 
 ## New features
 
-- Added/confirmed compatibility for some other mods
+- Added or confirmed compatibility for some other mods, and started listşng them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
   * AAI Containers & Warehouses, by Earendel
   * AAI Loaders, by Earendel (requires a patch made in this update)
   * Void Chest Plus, by Optera
   
-- Launcher improvements
-  * New map presets available: Peaceful mode (on any map)and enemies removed completely (on any map)
-  * Config file management. Changes we make to the config file no longer overwrite the existing settings without asking.
-  * There is now support for the Steam version of the game although it takes a few steps.
+- Launcher improvements.
+  * Revised the multiplayer friends list menu design for improved clarity.
+  * Config file management improved. Changes we make to the config file no longer overwrite the existing settings without asking you when you launch the game.
+  * There is now support for the Steam version of the game although it takes a few steps to configure it, and we still recommend using the standalone version of the game.
+
+- Third demo map added. 
+  * This is a continuation of the first demo map and it features more systems like nuclear power and a rocket silo. 
+  * Note that it was created using game editing and so the factory is missing certain assembling areas, especially those for advanced science packs.
   
 - Rail intersections are now identified when the cursor is over them.
 
-- Checking the status of any rail now reads the distance and direction to any nearby rail intersection.
+- Checking the status of any rail now reads the distance and direction to the nearest rail intersection.
 
-- Added basic custom graphical images to indicate which menu is open. The image works alongside the icon popping up over the player's head.
-
+- Added basic custom graphical images to indicate which menu is open. 
+  * These GUI images appear even on top of other menu interfaces. 
+  * The existing rendered icons have been made cleaner and smaller. We decided to keep them because they are still helpful for others to see what menu you have open.
+  
 ## Changes
 
 - Extensive redesign of the main functions of the code to improve readability and keybind support.
@@ -29,6 +39,8 @@ Will be releasing soon.
   * Improved handling of player preference related code for when we add support for it.
   
 - Restored support for using arrow keys for the scanner results by default. Note that this works only outside of menus.
+
+- Tweaked rail crossing alarm system to extend its range and improve its visuals.
   
 ## Bugfixes
 
@@ -52,7 +64,7 @@ Will be releasing soon.
 
 ## Known bugs
 
-- We have moved the list of known bugs to a Wiki page, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
 
 # Version 0.4.5 BETA
 
