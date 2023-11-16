@@ -1,3 +1,72 @@
+
+# Version 0.4.6 BETA
+
+Released November 16th, 2023. 
+
+In this update we fixed several bugs and massively cleaned up the code layout to allow more flexibility in setting keybinds. This may have brought about new bugs but we tested and fixed bugs for a few hours. 
+
+We have also improved the launcher and added a new demo map. We also explored if we can support some other mods and started making a list on the Wiki for compatible other mods.
+
+## New features
+
+- Added or confirmed compatibility for some other mods, and started listşng them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
+  * AAI Containers & Warehouses, by Earendel
+  * AAI Loaders, by Earendel (requires a patch made in this update)
+  * Void Chest Plus, by Optera
+  
+- Launcher improvements.
+  * Revised the multiplayer friends list menu design for improved clarity.
+  * Config file management improved. Changes we make to the config file no longer overwrite the existing settings without asking you when you launch the game.
+  * There is now support for the Steam version of the game although it takes a few steps to configure it, and we still recommend using the standalone version of the game.
+
+- Third demo map added. 
+  * This is a continuation of the first demo map and it features more systems like nuclear power and a rocket silo. 
+  * Note that it was created using game editing and so the factory is missing certain assembling areas, especially those for advanced science packs.
+  
+- Rail intersections are now identified when the cursor is over them.
+
+- Checking the status of any rail now reads the distance and direction to the nearest rail intersection.
+
+- Added basic custom graphical images to indicate which menu is open. 
+  * These GUI images appear even on top of other menu interfaces. 
+  * The existing rendered icons have been made cleaner and smaller. We decided to keep them because they are still helpful for others to see what menu you have open.
+  
+## Changes
+
+- Extensive redesign of the main functions of the code to improve readability and keybind support.
+  * Actions are now named more clearly on the key binds list.
+  * Some multi-purpose keys were split into multiple functions that can safely be called at the same time.
+  * Comments were added throughout the code to make it easier to follow.
+  * Improved handling of player preference related code for when we add support for it.
+  
+- Restored support for using arrow keys for the scanner results by default. Note that this works only outside of menus.
+
+- Tweaked rail crossing alarm system to extend its range and improve its visuals.
+  
+## Bugfixes
+
+- Reduced the reading of flying text after removing objects. This should minimize lag and crashes due to too much flying text.
+
+- Fixed a bug that made smooth walking mode not detect objects well when you turn.
+
+- Fixed a bug where the character would run around unexpectedly.
+
+- Fixed a crash during the rail analyzer reverse direction.
+
+- Fixed a multiplayer issue where resources would not be scanned by non-host players who did not restart the game.
+
+- Fixed cursor area scanning reporting random resources at zero percent.
+
+- Stopped the reading tiles when driving unless in cursor mode, but even then the reader is limited.
+
+- Fixed the speed reading of vehicles.
+
+- Fixed the speed reading of mining drills affected by modules.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.5 BETA
 
 Released November 3rd, 2023.
@@ -50,6 +119,8 @@ This is a fairly small update about fixing recent major bugs and requested featu
 - Due to a matchamking server issue, multiplayer apart from LAN play is not possible unless you use port forwarding, or the vanilla graphical menus.
 
 - A few technology descriptions have errors.
+
+- Higher tier modules have the same descriptions read as tier 1 modules despite having stronger effects (and different written descriptions).
 
 - The scanner tool does not update forests correctly after cutting trees.
 
