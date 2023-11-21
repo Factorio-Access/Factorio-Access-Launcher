@@ -1,8 +1,8 @@
 # Welcome to Factorio Access BETA!
 
-This is the BETA VERSION for an accessibility mod for the popular game Factorio.  The goal of this mod is to make the game completely accessible to the blind and visually impaired. This beta version includes the latest additions to the main mod and updated documentation files to match. Meanwhile the Mod Wiki remains on the main version's page. As a beta, this version may have a few more bugs and changes.
+This is the BETA VERSION for an accessibility mod for the popular game Factorio. The goal of this mod is to make the game completely accessible to the blind and visually impaired. This beta version is the current main repository for the mod, while the original repository is on hold.
 
-This "read me" file covers the basics of the mod, which include the installation guide, the mod controls, the FAQ and links to other information sources.
+This "read me" file covers the basics of the mod, which include the installation guide, the mod controls, and links to other information sources.
 
 # Installing Factorio
 
@@ -18,28 +18,17 @@ From Factorio.com, either from the main page or the downloads page, you can down
 
 To install the full version, follow the instructions below for the .zip file install.
 
-To update to the most recent patch, follow the instructions below for the patch install.
+## Mod release file install
 
-Note:  If you have done a full installation using the .zip instructions, there is no need to follow the patch install directions until a new patch comes out.  
+1. Download the latest release zip file such as "Factorio_Access_Beta_0_X_X.zip" from the releases page here: https://github.com/LevFendi/Factorio-Access/releases 
+2. Put the zip file in an empty folder and open it and copy its contents which include several folders and files side by side.
+3. Navigate to your Factorio folder where game content is kept, with a name such as "Factorio_1.1.X" for standalone version (recommended), or the location %AppData%/Factorio for the Steam version.
+4. Paste the extracted zip folder files into your Factorio folder.
+5. That's all! Your Factorio folder should now have the mod launcher called launcher.exe, which you should run in administrator mode.
+6. Note that the mod works best with NVDA. If you are a jaws user, you may want to copy Factorio.jkm from the .zip into your JAWS settings folder, found in your user's AppData folder. An example file path is `C:\Users\Crimso\AppData\Roaming\Freedom Scientific\JAWS\2022\Settings\enu\`
 
-## Mod .zip file install
-
-1. Download the latest release zip file such as "Factorio_Access_Beta_0_X_X.zip"
-2. Put the zip file in an empty folder and open it and copy its contents.
-3. Navigate to the folder you have Factorio installed, with name like "Factorio_1.1.X".  It should already contain a /bin folder, a /data folder, etc.  
-4. Paste the files into this Factorio_1.1 folder
-5. That's it! You are now ready to run launcher.exe in administrator mode.
-6. If you are a jaws user, you may want to copy Factorio.jkm from the .zip into your JAWS settings folder, found in your user's AppData folder. An example file path is `C:\Users\Crimso\AppData\Roaming\Freedom Scientific\JAWS\2022\Settings\enu\`
-
-## Mod patch install
-
-1. Download "control.lua" and "data.lua" from the folder "mods / FactorioAccess"
-2. Navigate to your Factorio folder for your local install.
-3. Go to "mods / FactorioAccess"
-4. Paste the new versions of "control.lua" and "data.lua" in this folder.
-5. All done! You can now run launcher.exe in administrator mode to play the game with the new patch.
-   
-   
+## Installing patches
+Sometimes we might release patches, which are intermediate versions that include some quick and important bugfixes. From now on we plan to release these patch versions from the releases page as well. They are installed the same way as major releases, but they include only a few small file changes.
 
 # Factorio Access Controls
 
@@ -423,54 +412,18 @@ For trains, open the train menu: LEFT BRACKET. Navigate with ARROW KEYS.
 
 The screen reader, such as for NVDA, can be used but it is generally not that helpful during gameplay because in-game menus heavily use visual icons and graphs instead of text. We are designing the mod to require the screen reader as little as possible. However, the screen reader is necessary in the following situtaions: When the game crashes, when your character dies, when you win a game, and optionally when you pause the game.
 
-# FAQ:
+# More info at the wiki
 
-Q:  How much of the game is accessible right now?
-A:  All basic interactions with buildings and items are supported. As of Version 0.4, you can complete the main objectives of the game but not every main feature is fully supported. There is currently partial support for combat and trains, and no support for multiplayer and flying robots and circuit networks. We are gradually working on it and some features are a few bugfixes away. Some unique features have been added to increase accessibility. More about this can be found on the wiki.
-
-Q:  What is the development timeline?
-A:  Development is slow overall due to the time constraints of our volunteers but we aim to have at least partial support for all main features before the middle of 2024.
-
-Q:  Do I have to pay to use the mod?
-A:  The mod is and always will be free. The game itself costs $35 on [Factorio.com](www.factorio.com) and prices can vary per country on Steam.
-
-Q:  Does this mod work with the steam version?
-A:  Not yet, however if you buy the game on Steam or another seller, you can use your product key to redeem the standalone version on factorio.com
-
-Q:  Does this mod work with the demo?
-A:  No, in fact no mods work with the demo.
-
-Q:  Where can I find information about the game?
-A:  There is in-game help via item descriptions, while this page, our own wiki, and the official wiki can provide information and guidance. The mod now also comes with demo maps that show working systems.
-
-Q:  Can this mod run the game's tutorials?
-A:  No, but there is in-game help via item descriptions, while this page, our own wiki, and the official wiki can provide info and guidance. The mod now also comes with demo maps that show working systems.
-
-Q:  My game crashed, what gives?
-A:  This mod is currently still in early access.  Bugs are normal and expected.  Please post about it in the issues channel of Discord. Autosave should generally restore your progress.
-
-Q:  Who is working on the mod?
-A:  We are a small group of volunteers who are not officially affiliated with the developers of Factorio.
-
-Q:  Can I contribute to this project?
-A:  Generally, playtesting and feedback from players is always welcome. You can also make suggestions for or assist in writing our wiki pages. Coding assitance from experienced modders would be appreciated. You can talk to us on Discord to discuss details.
-
-
-# Wiki
-
-For information about the game, such as the resources, machines, and systems, please check out our own [Factorio Access Wiki](https://github.com/Crimso777/Factorio-Access/wiki).
+For information about the mod and the game, please check out our own [Factorio Access Wiki](https://github.com/Crimso777/Factorio-Access/wiki) being written by the developers.
 
 Factorio also has an [official wiki](https://wiki.factorio.com/).
 
-
+# Frequently Asked Questions
+Please check the [Factorio Access Wiki main page](https://github.com/Crimso777/Factorio-Access/wiki) for frequently asked questions section.
 
 # Help and Support
 
-If your question wasn't answered here, please check out our [Discord server](https://discord.gg/CC4QA6KtzP), and ask your question there.
-
-If you want to help others or discuss the development of the mod or the wiki, feel free to again join us at the [Discord server](https://discord.gg/CC4QA6KtzP).
-
-
+If your question wasn't answered here or on our wiki, feel free to contact us at our [Discord server](https://discord.gg/CC4QA6KtzP).
 
 # Changes
 
@@ -480,6 +433,6 @@ An updated changelog for the beta can be found [here](https://github.com/LevFend
 
 # Donations
 
-While this mod is completely free for all, our main developer is a full time student working on this mod in their free time, thus any and all support is greatly appreciated.
+While this mod is completely free for all, our small team of volunteers is working on this mod in their free time and our main developer is a full time student.
 
-If you are so inclined, you can donate at my [Patreon](https://www.patreon.com/Crimso777).
+If you are so inclined, you can donate at our [Patreon page](https://www.patreon.com/Crimso777).
