@@ -59,6 +59,10 @@ Pause or unpause the game with the visual pause menu: ESC
   
 Pause or unpause the game with no menu: SHIFT + SPACE
 
+Close most menus: E
+
+Start playing when a new game begins: TAB
+
 ## Movement
 
 Movement: W A S D
@@ -113,22 +117,30 @@ Quickly collect the entire output of a building: With empty hand, CONTROL + LEFT
 
 Quickly collect half of the entire output of a building: With empty hand, CONTROL + RIGHT BRACKET on the building
 
+## Faster mining
+Clear area: SHIFT + X. This automatically clears trees and rocks and dropped items within a 10 tile radius. If you press this shortcut on rails, it clears rails too.
+
+Start instant mining tool: CONTROL + X. When you are holding this tool, everything the cursor touches is mined instantly.
+
+Stop instant mining tool: SHIFT + Q
+
 ## Cursor
 
-Speak cursor coordinates: K. If the cursor is over an entity, its relative location ıupon the entity is read out, such as the Southwest corner.
+Speak cursor coordinates: K. If the cursor is over an entity, its relative location upon the entity is read out, such as the Southwest corner.
 
 Enable or disable cursor mode: I
 
 Move cursor freely in cursor mode: W A S D
-Jump cursor to character: J
 
-Teleport player to cursor: SHIFT + T
+Return the cursor to the character: J
+
+Teleport character to cursor: SHIFT + T
 
 Increase cursor size to examine a larger area: CONTROL + I
 
 Decrease cursor size to examine a smaller area: CONTROL + SHIFT + I
 
-Note: You must be in cursor mode for the size of the cursor to make any difference.
+Note: You must be in cursor mode for the size of the cursor to make any difference in area scans.
 
 ## Inventory
 
@@ -146,7 +158,7 @@ Add selected item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0.
 
 Switch to other menus: TAB
 
-Close menus: E
+Close most menus: E
 
 ## Item in Hand
 
