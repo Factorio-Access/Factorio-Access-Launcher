@@ -10,18 +10,18 @@ The game can be purchased from Factorio.com or from Steam. We recommend installi
 ## Zip Version / Standalone Version (recommended)
 1. Go to https://www.factorio.com/download
 2. If needed, login using your Factorio account or Steam account.
-3. Among the install options, select the Windows zip package, also called the manual install. This is different from the normal Windows version. This will download a zip file that is about 1.4 gigbytes in size.
+3. Among the install options, select the Windows zip package, also called the manual install. This is different from the normal Windows version. This will download a zip file that is about 1.4 gigabytes in size.
 4. Create a folder where you want to host the game. Extract the zip file into this folder.
 5. All done! You need to install the mod next.
 
-## Regular Windows Version (not recommended)
+## Regular Windows Version
 1. Go to https://www.factorio.com/download
 2. If needed, login using your Factorio account or Steam account.
 3. Among the install options, select the Windows the normal Windows version. This will download an exe file which is the setup application.
 4. Run the exe file and follow the instructions.
 5. All done! You need to install the mod next.
    
-## Steam Version (more testing needed)
+## Steam Version
 1. Install Factorio using Steam settings, like any other game on Steam.
 2. Install the mod into the AppData/Factorio folder using the instructions below.
 3. Run launcher.exe to get a string of text that you need to copy.
@@ -37,7 +37,7 @@ To install a mod release, follow the instructions below:
 
 1. Download the latest release zip file such as "Factorio_Access_Beta_0_X_X.zip" from the releases page here: https://github.com/LevFendi/Factorio-Access/releases. There are other files there but you need only the one mentioned.
 2. Put the zip file in an empty folder and open it, and copy its contents which include several folders and files side by side. Note that if you see only one folder that says "Factorio_Access_Beta_content" you need to open it and copy inside of it.
-3. Navigate to your Factorio folder where game content is kept, with a name such as "Factorio_1.1.X" for standalone zip version (recommended), or the folder location %AppData%/Factorio for the Steam version or regular version. Note that this should not be the Factorio folder listed under "Program Files".
+3. Navigate to your Factorio folder where game content is kept, with a name such as "Factorio_1.1.X" for standalone zip version (recommended), or the folder location %AppData%/Factorio for the Steam version or the regular version. Note that this should not be the Factorio folder listed under "Program Files".
 4. Paste the copied zip folder files into your Factorio folder.
 5. That's all! Your Factorio folder should now have the mod launcher called launcher.exe, which you should run in administrator mode. Note that running the regular Factorio App will not activate the mod.
 6. The mod works best with NVDA. If you are a jaws user, you may want to copy Factorio.jkm from the .zip into your JAWS settings folder, found in your user's AppData folder. An example file path is `C:\Users\Crimso\AppData\Roaming\Freedom Scientific\JAWS\2022\Settings\enu\`
