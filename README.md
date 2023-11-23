@@ -63,6 +63,10 @@ Close most menus: E
 
 Start playing when a new game begins: TAB
 
+Toggle Vanilla Mode: CONTROL + ALT + V. Note that this will mute the narrator until you toggle back out.
+
+Rotate vanilla cursor: SHIFT + R
+
 ## Movement
 
 Movement: W A S D
@@ -128,9 +132,13 @@ Stop instant mining tool: SHIFT + Q
 
 Speak cursor coordinates: K. If the cursor is over an entity, its relative location upon the entity is read out, such as the Southwest corner.
 
+Speak relative cursor location: SHIFT + K.
+
 Enable or disable cursor mode: I
 
-Move cursor freely in cursor mode: W A S D
+Move cursor freely in cursor mode, by cursor size distance: W A S D
+
+Move cursor freely in cursor mode, by always one tile distance: ARROW KEYS
 
 Return the cursor to the character: J
 
@@ -141,6 +149,8 @@ Increase cursor size to examine a larger area: CONTROL + I
 Decrease cursor size to examine a smaller area: CONTROL + SHIFT + I
 
 Note: You must be in cursor mode for the size of the cursor to make any difference in area scans.
+
+Check building preview dimensions when building in cursor mode: K
 
 ## Inventory
 
@@ -292,6 +302,8 @@ Navigate inventory slots: W A S D
 
 Coordinates of current inventory slot: K
 
+Check ingredients and products of a recipe: K
+
 Selected item information: L
 
 Grab item in hand: LEFT BRACKET
@@ -316,7 +328,7 @@ Navigate recipe groups: W S
 
 Navigate recipes within a group: A D
 
-Check crafting components required: K
+Check ingredients and products of a recipe: K
 
 Read recipe product description: L
 
@@ -402,6 +414,20 @@ Examine cargo wagon or fluid wagon contents: RIGHT BRACKET. Note that items can 
 
 Add fuel to a locomotive: With fuel items in hand, CONTROL + LEFT BRACKET on the locomotive
 
+## Train Menu
+Move up: UP ARROW KEY
+
+Move down: UP ARROW KEY
+
+Click or select: LEFT BRACKET
+
+Increase station waiting times by 5 seconds: PAGE UP
+
+Increase station waiting times by 60 seconds: CONTROL + PAGE UP
+
+Decrease station waiting times by 5 seconds: PAGE DOWN
+
+Decrease station waiting times by 60 seconds: CONTROL + PAGE DOWN
 
 ## Driving Ground Vehicles or Locomotives
 
