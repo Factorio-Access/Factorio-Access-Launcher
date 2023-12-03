@@ -1,14 +1,14 @@
 # Version 0.4.7 BETA
 
-Not yet released.
+Released on December 3rd, 2023.
 
-In this update we have transport belts report more information about items moving on them and we make some progress for combat support. The wiki pages are being extended to match.
+In this update we have transport belts report more information about items moving on them and we made some good progress for combat support in Peaceful Mode. The wiki pages are being extended to match.
 
 ## New features
 
 - Additional transport belt info.
   * If the belt is empty now but it very recently carried an item, this will be stated so that belts with low traffic can be examined more easily.
-  * Entity info for a belt now explains whether one or both lanes of a belt unit are full and stopped. A lane being full and stopped means that it is backing up due to having more inputs than outputs. Usually this is a good thing in Factorio.
+  * Entity info for a belt now explains whether one or both lanes of a belt unit are full and stopped (also called being saturated or compressed). A lane being full and stopped means that it is backing up due to having more inputs than outputs. Often, this is a good thing in Factorio because it is easier to follow a system with excess supply rather than excess demand.
   
 - Added enemy proximity alert system.
   * You hear a soft alert like a marching sound if you are within 100 tiles of an enemy.
@@ -37,6 +37,8 @@ In this update we have transport belts report more information about items movin
 - Fixed a new crash that occurs when you control-click with an empty hand.
 
 - Fixed a group of crashes that occur when you try to do essentially anything while waiting to respawn.
+
+- Fixed the cursor momentarily picking up your character while changing direction in smooth walking mode.
 
 ## Known bugs
 
