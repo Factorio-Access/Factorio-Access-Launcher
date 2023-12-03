@@ -1,3 +1,48 @@
+# Version 0.4.7 BETA
+
+Not yet released.
+
+In this update we have transport belts report more information about items moving on them and we make some progress for combat support. The wiki pages are being extended to match.
+
+## New features
+
+- Additional transport belt info.
+  * If the belt is empty now but it very recently carried an item, this will be stated so that belts with low traffic can be examined more easily.
+  * Entity info for a belt now explains whether one or both lanes of a belt unit are full and stopped. A lane being full and stopped means that it is backing up due to having more inputs than outputs. Usually this is a good thing in Factorio.
+  
+- Added enemy proximity alert system.
+  * You hear a soft alert like a marching sound if you are within 100 tiles of an enemy.
+  * The alert is more rapid when within 50 tiles and most rapid when within 25 tiles, which usually is when aggressive enemies would notice you and attack you.
+  * The alert does not yet account for the number of enemies, only the position of the nearest one.
+  * Note that enemies already make their own movement and attack sounds when you are nearby.
+  
+- When an entity from your force takes damage, you hear an alert followed by an explanation about it.
+  * This alert has a cooldown of 5 seconds between each warning so that the alerts do not block everything.
+  * Additional features such as teleporting to the attack area are being considered.
+  
+- When an entity from your force is destroyed, you hear an alert followed by an explanation about it.
+   * Additional features such as teleporting to the attack area are being considered.
+
+- Work in progress: When any player is killed, all other players hear an alert about it, including an explanation.
+   * This feature is still being tested.
+   
+
+## Changes
+
+- None.
+
+## Bugfixes
+
+- Fixed a new crash that occurs when you control-click with an empty hand.
+
+- Fixed a group of crashes that occur when you try to do essentially anything while waiting to respawn.
+
+## Known bugs
+
+- Newly noted: The death screen has no keyboard support. The screen reader is required.
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 
 # Version 0.4.6 BETA
 
