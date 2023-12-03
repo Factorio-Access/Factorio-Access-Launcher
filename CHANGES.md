@@ -15,15 +15,16 @@ In this update we have transport belts report more information about items movin
   * The alert is more rapid when within 50 tiles and most rapid when within 25 tiles, which usually is when aggressive enemies would notice you and attack you.
   * The alert does not yet account for the number of enemies, only the position of the nearest one.
   * Note that enemies already make their own movement and attack sounds when you are nearby.
+  * We aim to make this alert system more sophisticated with help from the community.
   
 - When an entity from your force takes damage, you hear an alert followed by an explanation about it.
-  * This alert has a cooldown of 5 seconds between each warning so that the alerts do not block everything.
+  * This alert has a cooldown of 5 seconds between each warning so that the alerts do not block all other sounds.
   * Additional features such as teleporting to the attack area are being considered.
   
 - When an entity from your force is destroyed, you hear an alert followed by an explanation about it.
    * Additional features such as teleporting to the attack area are being considered.
 
-- Work in progress: When any player is killed, all other players hear an alert about it, including an explanation.
+- When any player is killed, all other players hear an alert about it, including an explanation.
    * This feature is still being tested.
    
 
