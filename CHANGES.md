@@ -1,3 +1,120 @@
+# Version 0.4.7 BETA
+
+Released on December 3rd, 2023.
+
+In this update we have transport belts report more information about items moving on them and we made some good progress for combat support in Peaceful Mode. The wiki pages are being extended to match.
+
+## New features
+
+- Additional transport belt info.
+  * If the belt is empty now but it very recently carried an item, this will be stated so that belts with low traffic can be examined more easily.
+  * Entity info for a belt now explains whether one or both lanes of a belt unit are full and stopped (also called being saturated or compressed). A lane being full and stopped means that it is backing up due to having more inputs than outputs. Often, this is a good thing in Factorio because it is easier to follow a system with excess supply rather than excess demand.
+  
+- Added enemy proximity alert system.
+  * You hear a soft alert like a marching sound if you are within 100 tiles of an enemy.
+  * The alert is more rapid when within 50 tiles and most rapid when within 25 tiles, which usually is when aggressive enemies would notice you and attack you.
+  * The alert does not yet account for the number of enemies, only the position of the nearest one.
+  * Note that enemies already make their own movement and attack sounds when you are nearby.
+  * We aim to make this alert system more sophisticated with help from the community.
+  
+- When an entity from your force takes damage, you hear an alert followed by an explanation about it.
+  * This alert has a cooldown of 5 seconds between each warning so that the alerts do not block all other sounds.
+  * Additional features such as teleporting to the attack area are being considered.
+  
+- When an entity from your force is destroyed, you hear an alert followed by an explanation about it.
+   * Additional features such as teleporting to the attack area are being considered.
+
+- When any player is killed, all other players hear an alert about it, including an explanation.
+   * This feature is still being tested.
+   
+
+## Changes
+
+- None.
+
+## Bugfixes
+
+- Fixed a new crash that occurs when you control-click with an empty hand.
+
+- Fixed a group of crashes that occur when you try to do essentially anything while waiting to respawn.
+
+- Fixed the cursor momentarily picking up your character while changing direction in smooth walking mode.
+
+## Known bugs
+
+- Newly noted: The death screen has no keyboard support. The screen reader is required.
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
+
+# Version 0.4.6 BETA
+
+Released November 16th, 2023. 
+
+In this update we fixed several bugs and massively cleaned up the code layout to allow more flexibility in setting keybinds. This may have brought about new bugs but we tested and fixed bugs for a few hours. 
+
+We have also improved the launcher and added a new demo map. We also explored if we can support some other mods and started making a list on the Wiki for compatible other mods.
+
+## New features
+
+- Added or confirmed compatibility for some other mods, and started listşng them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
+  * AAI Containers & Warehouses, by Earendel
+  * AAI Loaders, by Earendel (requires a patch made in this update)
+  * Void Chest Plus, by Optera
+  
+- Launcher improvements.
+  * Revised the multiplayer friends list menu design for improved clarity.
+  * Config file management improved. Changes we make to the config file no longer overwrite the existing settings without asking you when you launch the game.
+  * There is now support for the Steam version of the game although it takes a few steps to configure it, and we still recommend using the standalone version of the game.
+
+- Third demo map added. 
+  * This is a continuation of the first demo map and it features more systems like nuclear power and a rocket silo. 
+  * Note that it was created using game editing and so the factory is missing certain assembling areas, especially those for advanced science packs.
+  
+- Rail intersections are now identified when the cursor is over them.
+
+- Checking the status of any rail now reads the distance and direction to the nearest rail intersection.
+
+- Added basic custom graphical images to indicate which menu is open. 
+  * These GUI images appear even on top of other menu interfaces. 
+  * The existing rendered icons have been made cleaner and smaller. We decided to keep them because they are still helpful for others to see what menu you have open.
+  
+## Changes
+
+- Extensive redesign of the main functions of the code to improve readability and keybind support.
+  * Actions are now named more clearly on the key binds list.
+  * Some multi-purpose keys were split into multiple functions that can safely be called at the same time.
+  * Comments were added throughout the code to make it easier to follow.
+  * Improved handling of player preference related code for when we add support for it.
+  
+- Restored support for using arrow keys for the scanner results by default. Note that this works only outside of menus.
+
+- Tweaked rail crossing alarm system to extend its range and improve its visuals.
+  
+## Bugfixes
+
+- Reduced the reading of flying text after removing objects. This should minimize lag and crashes due to too much flying text.
+
+- Fixed a bug that made smooth walking mode not detect objects well when you turn.
+
+- Fixed a bug where the character would run around unexpectedly.
+
+- Fixed a crash during the rail analyzer reverse direction.
+
+- Fixed a multiplayer issue where resources would not be scanned by non-host players who did not restart the game.
+
+- Fixed cursor area scanning reporting random resources at zero percent.
+
+- Stopped the reading tiles when driving unless in cursor mode, but even then the reader is limited.
+
+- Fixed the speed reading of vehicles.
+
+- Fixed the speed reading of mining drills affected by modules.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.5 BETA
 
 Released November 3rd, 2023.
@@ -50,6 +167,8 @@ This is a fairly small update about fixing recent major bugs and requested featu
 - Due to a matchamking server issue, multiplayer apart from LAN play is not possible unless you use port forwarding, or the vanilla graphical menus.
 
 - A few technology descriptions have errors.
+
+- Higher tier modules have the same descriptions read as tier 1 modules despite having stronger effects (and different written descriptions).
 
 - The scanner tool does not update forests correctly after cutting trees.
 
