@@ -75,7 +75,11 @@ How would you like to proceed?'''
         for change_set_v, change_set in change_sets.items():
             for cat,changes in change_set.items():
                 for setting,change in changes.items():
-                    current_val=config.current_conf.get_setting(cat,setting)
+                    try:
+                        current_val=config.current_conf.get_setting(cat,setting)
+                    except config.Config_Missing as e:
+                        print(e)
+                        continue
                     if current_val==change[0]:
                         continue
                     if approve_type==0:
