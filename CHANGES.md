@@ -1,3 +1,50 @@
+# Version 0.4.8 BETA (Currently at Pre-Release 1)
+
+Pre-release 1 on December 10th, 2023.
+
+This update brings new train features, but due to ongoing development it is a pre-release for now. It includes support for rail forks and for a new sophisticated method to build train schedules from the train stop menus instead of the train menus. 
+
+The update also fixes the recent big bug that crashes the game when a fluid slot of a building is empty. If you will not use the new features but you want the bugfixes, you can download the pre-release anyway.
+
+Before the full release, early feedback is needed for improving the features and also some more train-related additions will be made in order to make complex automatic train systems better supported.
+
+## New features
+
+- Added rail fork building.
+  * At vertical and horizontal end rails, you now have the option to build forks. You can either build a two-way fork that splits to the left and right, or a three-way fork that includes also the forward direction.
+  * The rail analyzer will pick up a fork ahead and list the available directions for it. When manually driving through a fork, you need to hold A or D to pick the direction you want to take.
+  * More than one automatic train and more than zero rail forks in the same railway system is an extra dangerous combination that can have train crashes and deadlocks, and so it is recommended to plan carefully.
+
+- Added a new method of building train schedules, from train stop menus.
+  * The new method allows building more complex train schedules that the instant scheduling tool cannot handle, but for now you need to first manually drive to each station so that you can add it to your schedule.
+  * The new method also brings support for new waiting conditions: The train being inactive, the train being completely full or empty, or the train having any or no players on board.
+  
+- The train menu now has the option to toggle manual or automatic dirving modes.
+
+## Planned Features
+
+- Expanding subautomatic travel so that you can pick any train stop from the map and TRY to make the train go to it. This will be easier and safer than having to manually drive across a system with several trains and forks in it.
+
+- New scanner categories for enemies, players, and vehicles.
+
+- Adding train bypass structures, which will allow improved traffic flow in train systems with multiple automatic trains.
+
+- Improved reading of a train's schedule from its own menu, such as by including the waiting conditions.
+
+## Changes
+
+- In some cases, the rail appender is unable to build a rail somewhere even though you can manually place it. Such cases are now identified and stated.
+
+## Bug fixes
+
+- Fixed a group of crashes that happened when examining fluid-containing buildings that are currently empty.
+
+- Fixed the issue of the player character sometimes randomly walking around when a train related menu is opened.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.7 BETA
 
 Released on December 3rd, 2023.
