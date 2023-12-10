@@ -21,6 +21,11 @@ Before the full release, early feedback is needed for improving the features and
   
 - The train menu now has the option to toggle manual or automatic dirving modes.
 
+- New launcher improvements.
+  * Fixed localization issues.
+  * Improved the automatic config updater.
+  * Greatly increased pause time after printing tracebacks to allow easier bug reporting.
+
 ## Planned Features
 
 - Expanding subautomatic travel so that you can pick any train stop from the map and TRY to make the train go to it. This will be easier and safer than having to manually drive across a system with several trains and forks in it.
