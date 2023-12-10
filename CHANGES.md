@@ -25,6 +25,12 @@ Before the full release, early feedback is needed for improving the features and
   * Fixed localization issues.
   * Improved the automatic config updater.
   * Greatly increased pause time after printing tracebacks to allow easier bug reporting.
+  
+- New sandbox map added with cheats enabled.
+  * This is map where you can design your factory areas or play around with minimal restrictions.
+  * On this map you have all technology unlocked and you can craft almost every recipe by hand instantly.
+  * This map has no enemies or cliffs, forests spread far apart, and just one lake in the middle. Ore patches are extra rich.
+  * The starting area has an infinite electric energy interface and some infinity pipes to supply endless amounts of fluids. The infinity chest will delete anything you put in it.
 
 ## Planned Features
 
