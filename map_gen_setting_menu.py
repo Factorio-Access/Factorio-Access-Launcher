@@ -1,8 +1,9 @@
-
-
+import json
+import fa_paths
+import os
 
 ore_type=0
-{
+menu={
     "Resources":{
         ore_type:{
             "frequency":0,
@@ -83,3 +84,26 @@ ore_type=0
         }
     }
 }
+
+
+#terrain based controls:
+# frequency = 1/scale
+# size      = coverage
+
+# control-setting:x:frequency:multiplier = 1/scale
+# control-setting:x:bias = bias
+
+# cliff settings: 
+# cliff_elevation_interval = 40 / frequency
+# richness = continuity
+
+data=json.load(open(os.path.join(fa_paths.WRITE_DIR,'script-output','data-raw-dump.json')))
+for preset_group in data['map-gen-presets'].values():
+    for preset_name,preset in preset_group.items():
+        if preset_name=='type' or preset_name=='name':
+            continue
+        print(preset_name,len(preset))
+for name,preset_group in data['noise-layer'].items():
+    print(name,preset_group)
+for name,preset_group in data['autoplace-control'].items():
+    print(name,preset_group)
