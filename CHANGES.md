@@ -1,3 +1,54 @@
+# Version 0.4.8 BETA (Full Release)
+
+Released on ? 
+
+This full release of version 0.4.8 brings the additional features needed for making complex train systems. It also improves other features like the scanner, vanilla mode, mining tools, and mod menu visuals. 
+
+## New features
+
+- New subautomatic rail travel system where you can pick the destination.
+  * Opening the subautomatic travel option will create a list of every train stop the train can reach from its current position.
+  * Selecting a stop from this list adds it to the top of the train schedule as a temporary station and sends the train to it.
+  * After reaching the temporary stop, the train will wait for all players to disembark and it will then resume its normal schedule.
+  * This addition will make it safer and easier to build a complex train schedule by making it easier to reach a train stop so that it can be added to the permanent schedule.  
+
+- Added rail bypass junction building option for vertical and horizontal end rails.
+  * Rail bypass areas are meant for reducing traffic in rail systems with multiple trains on them. They are like roundabouts but simpler.
+  * At the bypass junction a regular two-way rail splits into a pair of parallel one-way rails. These rails need to be extended to be longer than the longest train in the system so that two trains can pass by each other in the bypass area without blocking each other's tracks. The two rails need to be joined again at another bypass junction, thus completing the full bypass structure.
+  * The one-way exit rail at the bypass junction is the only place in the mod (for now) that allows regular rail signals because the bypass system is a reliable way to use their advantages without causing deadlocks. 
+
+- New scanner categories added.
+  * Vehicles category includes cars and locomotives and wagons. Locomotives are grouped per train.
+  * Player category lists player characters by name. It also lists character corpses and highlights every player's own character corpse to them exclusively.
+  * Enemy category lists mobile and fixed enemy units and structures.
+  
+## Changes
+
+- Revised and extended train menus to include new features.
+
+- Every mod audio menu now has a GUI icon appearing alongside it for clarity. The same icon appearing over your character for others in game to see.
+
+- Improved vanilla mode
+  * Mod related menus will no longer open and lock you in when you press the relevant keys.
+  * Pressing CONTROL + ALT + C will now toggle hiding the cursor entirely including build previews.
+  * T in vanilla mode key opens technology menu like the default.
+  
+- Area mining now also clears tree stumps and scorch marks.
+
+- Group mining of rails now includes curved rails and covers a 7 tile radius instead of 5.
+
+- Restored being able to go up and down the scanner list while in cursor mode, but only with the PAGE UP and PAGE DOWN keys. The arrow keys in cursor mode are still used to move the cursor.
+  
+## Bug fixes
+
+- Intersections including curved rails are now checked as well when querying the nearest intersection.
+
+- Fixed a crash related to missing recipe descriptions, but there may be more crashes remaining about this.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.8 BETA (Currently at Pre-Release 1)
 
 Pre-release 1 on December 10th, 2023.
