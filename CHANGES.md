@@ -1,6 +1,6 @@
 # Version 0.4.8 BETA (Full Release)
 
-Released on ? 
+Released on December 19th, 2023.
 
 This full release of version 0.4.8 brings the additional features needed for making complex train systems. It also improves other features like the scanner, vanilla mode, mining tools, and mod menu visuals. 
 
@@ -13,7 +13,7 @@ This full release of version 0.4.8 brings the additional features needed for mak
   * This addition will make it safer and easier to build a complex train schedule by making it easier to reach a train stop so that it can be added to the permanent schedule.  
 
 - Added rail bypass junction building option for vertical and horizontal end rails.
-  * Rail bypass areas are meant for reducing traffic in rail systems with multiple trains on them. They are like roundabouts but simpler.
+  * Rail bypass areas are meant for reducing traffic in rail systems with multiple trains on them because trains can wait or pass by each other while inside them.
   * At the bypass junction a regular two-way rail splits into a pair of parallel one-way rails. These rails need to be extended to be longer than the longest train in the system so that two trains can pass by each other in the bypass area without blocking each other's tracks. The two rails need to be joined again at another bypass junction, thus completing the full bypass structure.
   * The one-way exit rail at the bypass junction is the only place in the mod (for now) that allows regular rail signals because the bypass system is a reliable way to use their advantages without causing deadlocks. 
 
