@@ -24,6 +24,8 @@ This full release of version 0.4.8 brings the additional features needed for mak
   
 ## Changes
 
+- Forests in the scan list are now labeled in terms of density, which updates on each check so that you can skip checking out depleted or sparse forests.
+
 - Revised and extended train menus to include new features.
 
 - Every mod audio menu now has a GUI icon appearing alongside it for clarity. The same icon appearing over your character for others in game to see.
