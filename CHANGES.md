@@ -2,9 +2,11 @@
 
 Released on December 19th, 2023.
 
-This full release of version 0.4.8 brings the additional features needed for making complex train systems, such as systems with multiple automatic trains and setting unique waiting conditions for each station for each train. 
+This full release of version 0.4.8 brings the additional features needed for making complex train systems, such as systems with multiple automatic trains, and setting unique waiting conditions for each station for each train.
 
 This update also improves other features like the scanner, vanilla mode, mining tools, and mod menu visuals. The pre-release of this updated had also added sandbox maps and launcher improvements.
+
+Note that this update uses new Factorio API features and so you need to be running Factorio 1.1.95 or later. The current latest version is Factorio 1.1.100.
 
 ## New features
 
@@ -24,9 +26,9 @@ This update also improves other features like the scanner, vanilla mode, mining 
   * Player category lists player characters by name. It also lists character corpses and highlights every player's own character corpse to them exclusively.
   * Enemy category lists mobile and fixed enemy units and structures.
   
-- Added the Stop On Red mod by DaveMcW to the release by default. 
-  * This mod makes manually controlled trains stop at closed rail signals.
-  * If you keep holding down the acceleration, or if you reverse into the signal with a train that has no backward facing locomotives, then this protection will fail.
+- Added the Stop On Red mod by DaveMcW to releases by default. 
+  * This train driving safety mod makes manually controlled trains stop at closed rail signals.
+  * If you keep holding down the acceleration, or if you reverse into the signal with a train that has no backward facing locomotives, then you can overpower the safety feature.
   
 - New train driving safety features: honking
   * If you are manually driving a moving train near a closed rail signal, the train will make two short honks to notify you to stop at the signal. You can press J to monitor the signal.
