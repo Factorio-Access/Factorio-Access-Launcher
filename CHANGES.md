@@ -2,9 +2,9 @@
 
 Released on December 19th, 2023.
 
-This full release of version 0.4.8 brings the additional features needed for making complex train systems, such as systems with multiple automatic trains, and setting unique waiting conditions for each station for each train.
+This full release of version 0.4.8 brings the additional features needed for making complex train systems. Now you can build systems with multiple automatic trains using forks and bypasses, and you can set different waiting conditions for each train stop for each train. You can manually drive with increased safety or you can skip manual driving entirely by selecting a reachable station from a menu and traveling to it once using subautomatic travel.
 
-This update also improves other features like the scanner, vanilla mode, mining tools, and mod menu visuals. The pre-release of this updated had also added sandbox maps and launcher improvements.
+This update also improves other features like the scanner, vanilla mode, mining tools, and mod menu visuals. The pre-release of this update had also added sandbox maps and launcher improvements.
 
 Note that this update uses new Factorio API features and so you need to be running Factorio 1.1.95 or later. The current latest version is Factorio 1.1.100.
 
@@ -38,11 +38,11 @@ Note that this update uses new Factorio API features and so you need to be runni
 
 ## Changes
 
-- Forests in the scan list are now labeled in terms of density, which updates on each check, so that you can skip going to a depleted or sparse forest.
+- Forests in the scan list are now labeled in terms of density, and empty forests are now removed from the list.
 
 - Revised and extended train menus to include the new features in a streamlined way.
 
-- Every mod audio menu now has a GUI icon appearing alongside it for clarity. The same icon appearing over your character for others in game to see.
+- Every mod audio menu now has a GUI icon appearing alongside it for clarity. The same icon appearing over your character's head.
 
 - Reading coordinates of the cursor (K key by default) now prints this information silently to the console and also draws a marker at the cursor point.
 
@@ -64,6 +64,8 @@ Note that this update uses new Factorio API features and so you need to be runni
 - Intersections including curved rails are now checked as well when querying the nearest intersection.
 
 - Fixed a crash related to missing recipe descriptions, but there may be more crashes remaining about this.
+
+- Fixed lack of updates to forests in the scanner list. Rescanning will refresh the lists.
 
 ## Known bugs
 
