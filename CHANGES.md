@@ -54,6 +54,8 @@ This update also improves other features like the scanner, vanilla mode, mining 
 - Group mining of rails now includes curved rails and covers a 7 tile radius instead of 5.
 
 - Restored being able to go up and down the scanner list while in cursor mode, but only with the PAGE UP and PAGE DOWN keys. The arrow keys in cursor mode are still used to move the cursor.
+
+- Rail alerts for trains within the same block are now less dramatic if the train is more than 200 tiles away.
   
 ## Bug fixes
 
