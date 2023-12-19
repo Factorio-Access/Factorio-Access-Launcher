@@ -28,13 +28,21 @@ This update also improves other features like the scanner, vanilla mode, mining 
   * This mod makes manually controlled trains stop at closed rail signals.
   * If you keep holding down the acceleration, or if you reverse into the signal with a train that has no backward facing locomotives, then this protection will fail.
   
+- New train driving safety features: honking
+  * If you are manually driving a moving train near a closed rail signal, the train will make two short honks to notify you to stop at the signal. You can press J to monitor the signal.
+  * If you are on a moving train and there is another train within the same rail signal block, the train will make a long honk to notify a possible collision. If you are driving, you should stop accelerating. If you are hearing this often, it means that you need to add more rail signals or remove trains from the system or reconnect disconnected trains.
+  
+- In case of buggy rendering of visuals, you can now press CONTROL + ALT + R to clear all rendered objects.
+
 ## Changes
 
-- Forests in the scan list are now labeled in terms of density, which updates on each check so that you can skip checking out depleted or sparse forests.
+- Forests in the scan list are now labeled in terms of density, which updates on each check, so that you can skip going to a depleted or sparse forest.
 
-- Revised and extended train menus to include new features.
+- Revised and extended train menus to include the new features in a streamlined way.
 
 - Every mod audio menu now has a GUI icon appearing alongside it for clarity. The same icon appearing over your character for others in game to see.
+
+- Reading coordinates of the cursor (K key by default) now prints this information silently to the console and also draws a marker at the cursor point.
 
 - Improved vanilla mode
   * Mod related menus will no longer open and lock you in when you press the relevant keys.
@@ -55,7 +63,7 @@ This update also improves other features like the scanner, vanilla mode, mining 
 
 ## Known bugs
 
-- New bug found: if you load game with a menu open, the icons for it will not disappear. We will add a special command for this later.
+- New bug found: if you load game with a menu open, the icons for it will not disappear. In case of buggy rendering of visuals, you can now press CONTROL + ALT + R to clear all rendered objects.
 
 - We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
 
