@@ -98,9 +98,11 @@ Open building's menu: LEFT BRACKET
 
 Mine or pick up: X
 
-Mine or pick up a group: SHIFT + X. Applies only to some groups such as trees or rails.
+Clear obstacles around within 5 tiles: SHIFT + X on an empty tile. Obstacles include trees, rocks, items on the ground, tree stumps, scorch marks. Items are added to your inventory.
 
 Grab in hand instant mining tool: CONTROL + X. Also known as the cut and paste tool, this will instantly mine almost anything touched by the cursor. Does not work for ores.
+
+Pick up all objects within 5 tiles: SHIFT + X with the instant mining tool in hand.
   
 Put away instant mining tool: SHIFT + Q
 
@@ -111,6 +113,8 @@ Rotate: R.
 Rotation Note 1: If you have something in your hand, you will rotate that.  Otherwise you will rotate the building your cursor is over.
 
 Rotation Note 2: The first time you press the rotate key, it will simply say the direction a building is facing. Subsequent presses will actually rotate the building.
+
+Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
 
 Picker tool: For a detected entity, SHIFT + Q. This brings to hand more of the selected entity's item form, if you have it in your inventory.
 
@@ -199,6 +203,8 @@ Rotation Note 1: If you have something in your hand, you will rotate that.  Othe
 
 Rotation Note 2: The first time you press the rotate key, it will simply say the direction a building is facing. Subsequent presses will actually rotate the building.
 
+Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
+
 Drop 1 unit: Z. Drops the item onto the ground or onto a belt or inside an applicable building.
 
 Insert 1 stack of the item in hand where applicable: CONTROL + LEFT BRACKET. Works for chests or for smartly feeding machines and vehicles.
@@ -221,9 +227,11 @@ Swap gun in hand: TAB
   
 Fire at the cursor: C. Warning: Friendly fire is allowed.
   
-Fire at enemies with aiming assistance: SPACEBAR. This only when an enemy is within range, and only for pistols / submachine guns / rocket launchers with regular rockets.
+Fire at enemies with aiming assistance: SPACEBAR. Note: This only works when an enemy is within range, and only for pistols or submachine guns or rocket launchers with regular rockets. Other weapons such as shotguns, flamethrowers, and special rockets, will fire at the cursor because they do not have aiming assistance. 
 
-Warning: There is not yet any audio guidance added about enemy presence.  
+Deploy a drone capsule in hand towards the cursor: LEFT BRACKET.
+
+Throw a capsule weapon or grenade in hand towards the cursor: LEFT BRACKET. Warning: It is likely that a grenade or similar weapon will damage you because the cursor is usually automatically nearby.
 
 The rest of the controls in this section require you to have the inventory screen opened (but no buildings).
 
@@ -402,6 +410,8 @@ Note 2: In case of bugs, be sure to save regularly. There is a known bug related
 Shortcut for building rail right turn 45 degrees: CONTROL + RIGHT ARROW on an end rail.
 
 Shortcut for building rail left turn 45 degrees: CONTROL + LEFT ARROW on an end rail.
+
+Shortcut for picking up all rails and signals within 7 tiles: SHIFT + X on a rail.
 
 ## Train Building and Examining
 
