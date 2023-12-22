@@ -48,24 +48,29 @@ Sometimes we might release patches, which are intermediate versions that include
 # Factorio Access Controls
 
 ## General
+Start playing when a new game begins: TAB
 
-Time of day and current research: T
+Close most menus: E
 
 Save game: F1
-
-Recalibrate: CONTROL + END
 
 Pause or unpause the game with the visual pause menu: ESC
   
 Pause or unpause the game with no menu: SHIFT + SPACE
 
-Close most menus: E
+Repeat last spoken phrase: CONTROL + TAB
 
-Start playing when a new game begins: TAB
+Time of day and current research: T
 
 Toggle Vanilla Mode: CONTROL + ALT + V. Note that this will mute the narrator until you toggle back out.
 
 Rotate vanilla cursor: SHIFT + R
+
+Toggle cursor hiding: CONTROL + ALT + C. This is for Vanilla Mode players who do not want to see the mod building previews.
+
+Reset mod renders: CONTROL + ALT + R. This is rarely needed for resolving bugs related to drawn objects that do not disappear.
+
+Recalibrate: CONTROL + END. This is rarely needed for resolving bugs related to zooming.
 
 ## Movement
 
@@ -244,13 +249,15 @@ Scan for nearby entities: END
 
 Repeat scanned entry: HOME
 
-Navigate scanned entity list: PAGE UP and PAGE DOWN
+Navigate scanned entity list: PAGE UP and PAGE DOWN. Alternatively you can use UP ARROW and DOWN ARROW.
 
-Switch between different instances of the same entity: SHIFT + PAGE UP and SHIFT + PAGE DOWN
+Switch between different instances of the same entity: SHIFT + PAGE UP and SHIFT + PAGE DOWN.  Alternatively you can use SHIFT + UP ARROW and SHIFT + DOWN ARROW.
 
-Change scanned category: CONTROL + PAGE UP and CONTROL + PAGE DOWN
+Change scanned category: CONTROL + PAGE UP and CONTROL + PAGE DOWN. Alternatively you can use CONTROL + UP ARROW and CONTROL + DOWN ARROW.
 
-Change Sorting mode for scanned list: N and SHIFT + N 
+Sort scan results by entity counts: N
+
+Sort scan results by distance from current location: SHIFT + N. If you change location, you need to press again.
 
 Move cursor to scanned target in cursor mode: CONTROL + HOME
 
@@ -380,6 +387,8 @@ Rail appending: Press LEFT BRACKET with rails in hand to automatically extend th
 
 Rail structure building menu: Press SHIFT + LEFT BRACKET on any rail, but end rails have the most options. Structures include turns, train stops, etc.
 
+Rail intersection finder: RIGHT BRACKET on a rail to find the nearest intersection.
+
 Rail analyzer UP: Press J with empty hand on any rail to check which rail structure is UP along the selected rail. Note: This cannot detect trains!
 
 Rail analyzer DOWN: Press SHIFT + J with empty hand on any rail to check which rail structure is DOWN along the selected rail. Note: This cannot detect trains!
@@ -417,7 +426,7 @@ Add fuel to a locomotive: With fuel items in hand, CONTROL + LEFT BRACKET on the
 ## Train Menu
 Move up: UP ARROW KEY
 
-Move down: UP ARROW KEY
+Move down: DOWN ARROW KEY
 
 Click or select: LEFT BRACKET
 
