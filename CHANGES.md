@@ -190,7 +190,7 @@ We have also improved the launcher and added a new demo map. We also explored if
 
 ## New features
 
-- Added or confirmed compatibility for some other mods, and started listşng them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
+- Added or confirmed compatibility for some other mods, and started listing them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
   * AAI Containers & Warehouses, by Earendel
   * AAI Loaders, by Earendel (requires a patch made in this update)
   * Void Chest Plus, by Optera
