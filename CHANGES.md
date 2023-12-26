@@ -1,3 +1,59 @@
+# Version 0.4.9 BETA (Pre-Release ?)
+
+Release pending...
+
+Summary pending...
+
+## New features
+
+## Changes
+
+- Changes to default game controls
+  * The item or entity information key used to be "L" by default, the new default is "Y". The "L" key will instead be used in upcoming logistic robotics features.
+  * Increasing the cursor size is now done by default using "SHIFT + I", instead of "CONTROL + I".
+  * Decreasing the cursor size is now done by default using "CONTROL + I", instead of "CONTROL + SHIFT + I".
+
+- Made repair pack consumption more accurate towards the original game behavior.
+  * Repair packs have durability, one pack is consumed after repairing 300 units of health.
+  * A building is only partially repaired if your pack runs out before completing the repair, but you can just continue the repair work with the next pack, which automatically comes in hand.
+
+- Left bracket controls have been fully reviewed
+  * When you press left bracket with an item or on an entity, if there are no expected actions for this, this will be reported.
+  * Pressing left bracket should no longer trigger multiple actions at once and thus they will not block each other.
+
+- Structure travel feature reviewed.
+  * New feature: co-ordinate reading with the K key now works for structures checked during structure travel
+  * Issue identified: Opening this menu causes a lot of lag, as if the game crashed. We worked to decrease this lag time to about 5-10 seconds, which is still a lot. 
+  * Bug identified: Some side-by-side buildings are not identified during the creation of the building network.
+
+- Vanilla mode and cursor hiding tweaks
+  * Enabling it now enables smooth walking and cursor hiding with it.
+  * Disabling it now disables cursor hiding with it.
+  * Walking and cursor hiding still have their own toggle buttons.
+  * The cursor hiding setting now decides on all mod cursor drawings
+
+- Building 3-way rail forks is now cleaner, with the straight part of the fork being longer.
+
+- Train stops on the scan list are now listed with vehicles instead of buildings, for convenience. The names of the stops are also read while in the scan list.
+
+- Menu visuals have been extended to include more menus
+
+- Removed the vanilla tip pop-ups, which are mostly graphics based but can still confuse the screen reader.
+
+- Damage alerts are now muted for the first minute of the game so that you are not constantly alerted about the spaceship burning.
+
+## Bug fixes
+
+- Fixed a bug that prevents using capsule items such as cliff explosives.
+
+- Fixed the long-persisting rail appending bug! Rail appending after train stops or forks should function as intended in all cases now.
+
+- Applied further fixes for the bug where opening a menu makes the character walk around by itself.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.8 BETA (Full Release)
 
 Released on December 19th, 2023.
