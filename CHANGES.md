@@ -1,10 +1,34 @@
-# Version 0.4.9 BETA (Pre-Release ?)
+# Version 0.4.9 BETA
 
 Release pending...
 
-Summary pending...
+This update is mainly about tweaks and bugfixes, but there are some new additions, especially regarding combat. An important change is that the info key is remapped from "L" to "Y" and the cursor size changing has new key combinations. 
+
+For additions, six new sound effects have been added from the Gamemaster Audio - Pro Sound Collection, courtesy of @WilfSplodNokit. The expanded sound library brings new possibilities and reduces the need to re-use the game's own sounds. The new sounds are mainly for improving the combat experience. We have also added automatic aiming for all guns and the ability to repair all structures within reach in one command. 
+
+For bug fixes, I am happy to note that the long-known bug that sometimes prevented appending rails has now been fixed.
 
 ## New features
+
+- New sound effects have been added.
+  * Teleporting has a new sound to make it sound more zappy. 
+  * Locking the aim of a gun has its own beep sound.
+  * A player energy shield taking damage has its own sound, like a beep with the sound of an impact being deflected from the shield.
+  * A player character with no shield taking damage has its own sound, like a life support system alert beep.
+  * The entity damaged alert has its own alert sound so that the entity destroyed alert sound is not re-used.
+  * The enemy proximity alert system has a new alert tier with its own sound for when more than 5 enemies are nearby.
+  
+- Area repairing added.
+  * With multiple repair packs in hand if you press CONTROL + SHIFT + LEFT BRACKET, every structure within about 12 tiles of the character will be repaired until done or until you run low on repair packs.
+  
+- Automatic aiming has been added for guns that do not support it by default, and an aiming locked sound cue has been added for all guns.
+  * The pistol and submachine gun and rocket launcher with regular rockets all have smart aiming by themselves and this is not touched. 
+  * For other guns, this works during combat, by locking the cursor on the nearest enemy within 40 tiles.
+  * The automatic aiming does not activate if you are in cursor mode so that you can manually select targets.
+
+- Added the ability to open the item in hand from the inventory menu by pressing CONTROL + Q. 
+  * This is like a reverse of the quickbar feature.
+  * It will be quite useful in future updates because some item-related features will be available only from the inventory menu.
 
 ## Changes
 
@@ -20,6 +44,7 @@ Summary pending...
 - Left bracket controls have been fully reviewed
   * When you press left bracket with an item or on an entity, if there are no expected actions for this, this will be reported.
   * Pressing left bracket should no longer trigger multiple actions at once and thus they will not block each other.
+  * When throwing a capsule, if the target is out of range, you will now be informed.
 
 - Structure travel feature reviewed.
   * New feature: co-ordinate reading with the K key now works for structures checked during structure travel
@@ -36,7 +61,7 @@ Summary pending...
 
 - Train stops on the scan list are now listed with vehicles instead of buildings, for convenience. The names of the stops are also read while in the scan list.
 
-- Menu visuals have been extended to include more menus
+- Menu visuals have been extended to include more menus.
 
 - Removed the vanilla tip pop-ups, which are mostly graphics based but can still confuse the screen reader.
 
@@ -49,6 +74,8 @@ Summary pending...
 - Fixed the long-persisting rail appending bug! Rail appending after train stops or forks should function as intended in all cases now.
 
 - Applied further fixes for the bug where opening a menu makes the character walk around by itself.
+
+- Fixed a localization error that occurs when nudging buildings.
 
 ## Known bugs
 
