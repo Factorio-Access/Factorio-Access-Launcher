@@ -2,11 +2,17 @@
 
 Released on 31 December, 2023. Happy new year!
 
-This update is about tweaks and bugfixes and small additions across the board, but mainly regarding combat-related features. An important change is that some keys such as the item info key have been remapped (see the Changes part).
+1. This update is about tweaks and bugfixes and small additions across the board, but mainly regarding combat-related features. An important change is that some keys such as the item info key have been remapped (check the first bullet of the Changes section below). Other changes include revisiting several new and old parts of the code, from the new enemy proximity alert system back to the old structure travel feature.
 
-Among the additions, new sound effects have been added from the Gamemaster Audio - Pro Sound Collection, courtesy of @WilfSplodNokit. The expanded sound library brings new possibilities and reduces the need to re-use the game's own sounds. The new sounds are mainly for improving the combat experience. We have also added automatic aiming for all guns and proper information support about picking up items.
+2. Among the additions, new sound effects have been added from the Gamemaster Audio - Pro Sound Collection, courtesy of @WilfSplodNokit. The expanded sound library brings new possibilities and reduces the need to re-use the game's own sounds. The new sounds are mainly for improving the combat experience. We have also added automatic aiming for all guns and proper information support about picking up items.
 
-For bug fixes, I am happy to note that the long-known bug that sometimes prevented appending rails has now been fixed. Apart from that it is nice to note the good number of fixes and revisions in total. Wiki updates to reflect the changes will be coming later.
+3. For bug fixes, I am happy to note that the long-known bug that sometimes prevented appending rails has now been fixed. Apart from that it is nice to note the good number of fixes and revisions in total. 
+
+4. I strongly recommend you to play on Factorio 1.1.100 or later to run this version correctly. If you had updated the game for any of the 0.4.8 releases, that should be enough. 
+
+5. Many thanks to our several community members coming forward this month with feedback and bug reports! 
+
+6. Please note that Wiki updates to reflect these recent changes will be coming later.
 
 ## New features
 
@@ -64,6 +70,7 @@ For bug fixes, I am happy to note that the long-known bug that sometimes prevent
   * When throwing a capsule, if the target is out of range, you will now be informed.
 
 - Structure travel feature reviewed.
+  * Press CONTROL + S on a building to map the area around it. Press arrow keys to jump between neighboring structures. The new comments will make it clearer about where the cursor is right now.
   * New feature: co-ordinate reading with the K key now works for structures checked during structure travel
   * Issue identified: Opening this menu causes a lot of lag, as if the game crashed. We worked to decrease this lag time to about 5-10 seconds, which is still a lot. 
   * Bug identified: Some side-by-side buildings are not identified during the creation of the building network.
@@ -140,6 +147,8 @@ For bug fixes, I am happy to note that the long-known bug that sometimes prevent
 ## Known bugs
 
 - New issue: If too many entities are destroyed in a short time, like from a nuclear explosion, the game will lag for a few minutes but it should keep loading in alert sounds until it finishes processing them all.
+
+- New bug: Structure travel sometimes misses buildings that are directly next to each other.
 
 - We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
 
