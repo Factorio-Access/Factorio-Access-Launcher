@@ -14,6 +14,8 @@ Released on 31 December, 2023. Happy new year!
 
 6. Please note that Wiki updates to reflect these recent changes will be coming later.
 
+7. There were very many changes and fixes this time. Despite all the testing, there may be a need to release a patch so please stay tuned regarding that.
+
 ## New features
 
 - New sound effects have been added so that new combat-related situations can be described quickly.
