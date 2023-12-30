@@ -1,12 +1,12 @@
 # Version 0.4.9 BETA
 
-Release pending...
+Released on 31 December, 2023. Happy new year!
 
-This update is mainly about tweaks and bugfixes, but there are some new additions, especially regarding combat. An important change is that the info key is remapped from "L" to "Y" and the cursor size changing has new key combinations. 
+This update is about tweaks and bugfixes and small additions across the board, but mainly regarding combat-related features. An important change is that some keys such as the item info key have been remapped (see the Changes part).
 
-For additions, six new sound effects have been added from the Gamemaster Audio - Pro Sound Collection, courtesy of @WilfSplodNokit. The expanded sound library brings new possibilities and reduces the need to re-use the game's own sounds. The new sounds are mainly for improving the combat experience. We have also added automatic aiming for all guns and the ability to repair all structures within reach in one command. 
+Among the additions, new sound effects have been added from the Gamemaster Audio - Pro Sound Collection, courtesy of @WilfSplodNokit. The expanded sound library brings new possibilities and reduces the need to re-use the game's own sounds. The new sounds are mainly for improving the combat experience. We have also added automatic aiming for all guns and proper information support about picking up items.
 
-For bug fixes, I am happy to note that the long-known bug that sometimes prevented appending rails has now been fixed.
+For bug fixes, I am happy to note that the long-known bug that sometimes prevented appending rails has now been fixed. Apart from that it is nice to note the good number of fixes and revisions in total. Wiki updates to reflect the changes will be coming later.
 
 ## New features
 
@@ -21,27 +21,44 @@ For bug fixes, I am happy to note that the long-known bug that sometimes prevent
 - Area repairing added.
   * With multiple repair packs in hand if you press CONTROL + SHIFT + LEFT BRACKET, every structure within about 12 tiles of the character will be repaired until done or until you run low on repair packs.
   
-- Automatic aiming has been added for guns that do not support it by default, and an aiming locked sound cue has been added for all guns.
-  * The pistol and submachine gun and rocket launcher with regular rockets all have smart aiming by themselves and this is not touched. 
-  * For other guns, this works during combat, by locking the cursor on the nearest enemy within 40 tiles.
-  * The automatic aiming does not activate if you are in cursor mode so that you can manually select targets.
+- Automatic aiming has been added or improved for all guns, and a sound cue has been added for when a gun locks onto an enemy within range.
+  * The pistol and submachine gun and rocket launcher with regular rockets are smartly used weapons that only fire when locked and without wasting ammo. Bringing the cursor near the target enemy is enough to make the character lock on, and then you can fire by pressing "SPACE". You can also target any entity you want by placing the cursor on it directly and pressing "C".
+  * For guns with area damage, such as the shotgun or the flamethrower, the character always shoots at the cursor without caring about ammo. You can shoot with "SPACE" or with "C". Automatic aiming assists here by moving the cursor to the nearest enemy.
+  * The automatic aiming does not activate if you are in cursor mode so that you can manually select targets if you want to.
 
-- Added the ability to open the item in hand from the inventory menu by pressing CONTROL + Q. 
+- When the inventory is open and an item is in hand, you can press CONTROL + Q to put the item back and open its slot in the inventory. 
   * This is like a reverse of the quickbar feature.
   * It will be quite useful in future updates because some item-related features will be available only from the inventory menu.
-
+  * If possible, hope to make this feature work also when no menus are open, but for now you have to open the player inventory menu first.
+  
+- You can now press SHIFT + Y to check the entity description of the last checked scanner entry.
+  * This does not work for resources.
+  * We are planning to revise and improve descriptions so that this feature enables things like learning about the characteristics of a distant scanned enemy.
+  
+- Added detailed information about picking up items.
+  * Pressing and holding F will now only be used for picking up items.
+  * You will be informed about whether you are successfully picking up items and what these items (probably) are.
+  * The item pickup range is about 1 tile or sometimes less, so when you are standing next to a transport belt in telestep mode you only pickup from the lane closer to you, and in smooth walking mode you might be picking up from one or both lanes, which is not easy to determine unless you are standing directly on top of the belt and thus picking up from both lanes.
+    
+- More information has been added for finding and collecting character corpses.
+  * The area mining tool is now more powerful and can clear scorch marks and other obstacles.
+  * Checking a character corpse will notify whether it matches your character.
+  * Hold down X to collect a character corpse, you will receive info about it.
+  * If you have difficulty with locking onto the character corpse, try area mining first, and then try telestep mode and cursor mode and tile cycling with CONTROL + F.
+  
 ## Changes
 
 - Changes to default game controls
   * The item or entity information key used to be "L" by default, the new default is "Y". The "L" key will instead be used in upcoming logistic robotics features.
   * Increasing the cursor size is now done by default using "SHIFT + I", instead of "CONTROL + I".
   * Decreasing the cursor size is now done by default using "CONTROL + I", instead of "CONTROL + SHIFT + I".
+  * Tile cycling, which is a rarely used feature for reading additional entities on the same tile, if any, is mow activated with "SHIFT + F", instead of just "F".
 
 - Made repair pack consumption more accurate towards the original game behavior.
   * Repair packs have durability, one pack is consumed after repairing 300 units of health.
   * A building is only partially repaired if your pack runs out before completing the repair, but you can just continue the repair work with the next pack, which automatically comes in hand.
-
-- Left bracket controls have been fully reviewed
+  
+- Left bracket controls have been fully reviewed.
   * When you press left bracket with an item or on an entity, if there are no expected actions for this, this will be reported.
   * Pressing left bracket should no longer trigger multiple actions at once and thus they will not block each other.
   * When throwing a capsule, if the target is out of range, you will now be informed.
@@ -57,27 +74,65 @@ For bug fixes, I am happy to note that the long-known bug that sometimes prevent
   * Walking and cursor hiding still have their own toggle buttons.
   * The cursor hiding setting now decides on all mod cursor drawings
 
-- Building 3-way rail forks is now cleaner, with the straight part of the fork being longer.
+- Enemy spawners are now listed on the scanner list in terms of how polluted they are.
+  * "normal" means they are not polluted at all.
+  * "almost polluted" means that there is pollution near the spawner but not on it yet.
+  * "polluted lightly" means that the spawner is now absorbing pollution and is preparing small enemy attack groups that will target your factory.
+  * "polluted heavily" means that the spawner is now absorbing a lot of pollution and is preparing large enemy attack groups that will target your factory.
 
 - Train stops on the scan list are now listed with vehicles instead of buildings, for convenience. The names of the stops are also read while in the scan list.
+
+- All rail vehicles on the scan list now include their train name but none of them are sorted by it.
+
+- Building 3-way rail forks is now cleaner, with the straight part of the fork being longer.
+
+- Clarified several error messages for actions like inserting items, opening menus, checking item info, reloading weapons, and more.
 
 - Menu visuals have been extended to include more menus.
 
 - Removed the vanilla tip pop-ups, which are mostly graphics based but can still confuse the screen reader.
 
 - Damage alerts are now muted for the first minute of the game so that you are not constantly alerted about the spaceship burning.
+ 
+- Thrown items such as grenades and cliff explosives now have their valid throwing ranges checked with high accuracy.
+
+- When you open a crafting building that has no recipe set, it will now open the recipe selection sector of the building first. This matches the vanilla behavior.
+
+- In the inventory menu, you can now directly equip an item by pressing SHIFT + LEFT BRACKET, without needing to take it in hand.
+
+- When no menus are open, you can now directly equip an item in hand by pressing SHIFT + LEFT BRACKET, without needing to open the inventory.
 
 ## Bug fixes
 
-- Fixed a bug that prevents using capsule items such as cliff explosives.
-
 - Fixed the long-persisting rail appending bug! Rail appending after train stops or forks should function as intended in all cases now.
 
-- Applied further fixes for the bug where opening a menu makes the character walk around by itself.
+- Fixed a bug that prevents using capsule items such as cliff explosives.
+
+- Very likely fixed the bug where opening a menu makes the character walk around by itself.
 
 - Fixed a localization error that occurs when nudging buildings.
 
+- Fixed a bug that made modules in hand get placed into module slots as whole stacks instead of single modules.
+
+- Fixed a recent crash that was happening while placing rail vehicles.
+
+- Restored the scanner category for buildings.
+
+- Fixed a crash that occured when checking item descriptions in the filter inserter menu. Unfortunately no descriptions can be checked in this menu.
+
+- Fixed area mining having infinite range. Sorry people, it is supposed to be used only near the player.
+
+- Fixed a bug that prevented anouncements of player characters dying.
+
+- Fixed a crash that was due to building info not being reset when you close a building menu.
+
+- Fixed a visual bug where you could open a building menu in the mod but the corresponding GUI would not appear.
+
+- Fixed all bugs related incorrect or missing information when you switch guns by pressing TAB or SHIFT + TAB.
+
 ## Known bugs
+
+- New issue: If too many entities are destroyed in a short time, like from a nuclear explosion, the game will lag for a few minutes but it should keep loading in alert sounds until it finishes processing them all.
 
 - We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
 
