@@ -10,7 +10,7 @@ For bug fixes, I am happy to note that the long-known bug that sometimes prevent
 
 ## New features
 
-- New sound effects have been added.
+- New sound effects have been added so that new combat-related situations can be described quickly.
   * Teleporting has a new sound to make it sound more zappy. 
   * Locking the aim of a gun has its own beep sound.
   * A player energy shield taking damage has its own sound, like a beep with the sound of an impact being deflected from the shield.
@@ -73,6 +73,13 @@ For bug fixes, I am happy to note that the long-known bug that sometimes prevent
   * Disabling it now disables cursor hiding with it.
   * Walking and cursor hiding still have their own toggle buttons.
   * The cursor hiding setting now decides on all mod cursor drawings
+  
+- Enemy proximity alerts have new levels. The total situaion is this:
+  * Slow marching: Nearest enemy is within 50 to 100 tiles.
+  * Moderate marching: Nearest enemy is within 25 to 50 tiles.
+  * Fast marching: 1 to 5 enemies are within 25 tiles.
+  * Fast marching and slow klaxon: 6 to 10 enemies are within 25 tiles.
+  * Fast marching and fast klaxon: More than 10 enemies are within 25 tiles. RUN!
 
 - Enemy spawners are now listed on the scanner list in terms of how polluted they are.
   * "normal" means they are not polluted at all.
