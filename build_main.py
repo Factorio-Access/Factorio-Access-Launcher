@@ -30,8 +30,8 @@ if not os.path.isdir('./'+venv):
         hidden_imports+=linux_hidden_modules
         
 
-if os.path.isfile('main.spec'):
-    os.system(venv_python+' -m PyInstaller main.spec')
+if os.path.isfile('launcher.spec'):
+    os.system(venv_python+' -m PyInstaller launcher.spec')
 else:
     hi="".join([' --hidden-import='+imp for imp in hidden_imports])
-    os.system(venv_python+' -m PyInstaller --onefile'+hi+' main.py')
+    os.system(venv_python+' -m PyInstaller --onefile'+hi+' main.py -n launcher')
