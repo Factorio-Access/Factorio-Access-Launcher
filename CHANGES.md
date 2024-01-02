@@ -1,3 +1,292 @@
+# Version 0.4.9 BETA
+
+Released on 31 December, 2023. Happy new year!
+
+1. This update is about tweaks and bugfixes and small additions across the board, but mainly regarding combat-related features. An important change is that some keys such as the item info key have been remapped (check the first bullet of the Changes section below). Other changes include revisiting several new and old parts of the code, from the new enemy proximity alert system back to the old structure travel feature.
+
+2. Among the additions, new sound effects have been added from the Gamemaster Audio - Pro Sound Collection, courtesy of @WilfSplodNokit. The expanded sound library brings new possibilities and reduces the need to re-use the game's own sounds. The new sounds are mainly for improving the combat experience. We have also added automatic aiming for all guns and proper information support about picking up items.
+
+3. For bug fixes, I am happy to note that the long-known bug that sometimes prevented appending rails has now been fixed. Apart from that it is nice to note the good number of fixes and revisions in total. 
+
+4. I strongly recommend you to play on Factorio 1.1.100 or later to run this version correctly. If you had updated the game for any of the 0.4.8 releases, that should be enough. 
+
+5. Many thanks to our several community members coming forward this month with feedback and bug reports! 
+
+6. Please note that Wiki updates to reflect these recent changes will be coming later.
+
+7. There were very many changes and fixes this time. Despite all the testing, there may be a need to release a patch so please stay tuned regarding that.
+
+## New features
+
+- New sound effects have been added so that new combat-related situations can be described quickly.
+  * Teleporting has a new sound to make it sound more zappy. 
+  * Locking the aim of a gun has its own beep sound.
+  * A player energy shield taking damage has its own sound, like a beep with the sound of an impact being deflected from the shield.
+  * A player character with no shield taking damage has its own sound, like a life support system alert beep.
+  * The entity damaged alert has its own alert sound so that the entity destroyed alert sound is not re-used.
+  * The enemy proximity alert system has a new alert tier with its own sound for when more than 5 enemies are nearby.
+  
+- Area repairing added.
+  * With multiple repair packs in hand if you press CONTROL + SHIFT + LEFT BRACKET, every structure within about 12 tiles of the character will be repaired until done or until you run low on repair packs.
+  
+- Automatic aiming has been added or improved for all guns, and a sound cue has been added for when a gun locks onto an enemy within range.
+  * The pistol and submachine gun and rocket launcher with regular rockets are smartly used weapons that only fire when locked and without wasting ammo. Bringing the cursor near the target enemy is enough to make the character lock on, and then you can fire by pressing "SPACE". You can also target any entity you want by placing the cursor on it directly and pressing "C".
+  * For guns with area damage, such as the shotgun or the flamethrower, the character always shoots at the cursor without caring about ammo. You can shoot with "SPACE" or with "C". Automatic aiming assists here by moving the cursor to the nearest enemy.
+  * The automatic aiming does not activate if you are in cursor mode so that you can manually select targets if you want to.
+
+- When the inventory is open and an item is in hand, you can press CONTROL + Q to put the item back and open its slot in the inventory. 
+  * This is like a reverse of the quickbar feature.
+  * It will be quite useful in future updates because some item-related features will be available only from the inventory menu.
+  * If possible, hope to make this feature work also when no menus are open, but for now you have to open the player inventory menu first.
+  
+- You can now press SHIFT + Y to check the entity description of the last checked scanner entry.
+  * This does not work for resources.
+  * We are planning to revise and improve descriptions so that this feature enables things like learning about the characteristics of a distant scanned enemy.
+  
+- Added detailed information about picking up items.
+  * Pressing and holding F will now only be used for picking up items.
+  * You will be informed about whether you are successfully picking up items and what these items (probably) are.
+  * The item pickup range is about 1 tile or sometimes less, so when you are standing next to a transport belt in telestep mode you only pickup from the lane closer to you, and in smooth walking mode you might be picking up from one or both lanes, which is not easy to determine unless you are standing directly on top of the belt and thus picking up from both lanes.
+    
+- More information has been added for finding and collecting character corpses.
+  * The area mining tool is now more powerful and can clear scorch marks and other obstacles.
+  * Checking a character corpse will notify whether it matches your character.
+  * Hold down X to collect a character corpse, you will receive info about it.
+  * If you have difficulty with locking onto the character corpse, try area mining first, and then try telestep mode and cursor mode and tile cycling with CONTROL + F.
+  
+## Changes
+
+- Changes to default game controls
+  * The item or entity information key used to be "L" by default, the new default is "Y". The "L" key will instead be used in upcoming logistic robotics features.
+  * Increasing the cursor size is now done by default using "SHIFT + I", instead of "CONTROL + I".
+  * Decreasing the cursor size is now done by default using "CONTROL + I", instead of "CONTROL + SHIFT + I".
+  * Tile cycling, which is a rarely used feature for reading additional entities on the same tile, if any, is mow activated with "SHIFT + F", instead of just "F".
+
+- Made repair pack consumption more accurate towards the original game behavior.
+  * Repair packs have durability, one pack is consumed after repairing 300 units of health.
+  * A building is only partially repaired if your pack runs out before completing the repair, but you can just continue the repair work with the next pack, which automatically comes in hand.
+  
+- Left bracket controls have been fully reviewed.
+  * When you press left bracket with an item or on an entity, if there are no expected actions for this, this will be reported.
+  * Pressing left bracket should no longer trigger multiple actions at once and thus they will not block each other.
+  * When throwing a capsule, if the target is out of range, you will now be informed.
+
+- Structure travel feature reviewed.
+  * Press CONTROL + S on a building to map the area around it. Press arrow keys to jump between neighboring structures. The new comments will make it clearer about where the cursor is right now.
+  * New feature: co-ordinate reading with the K key now works for structures checked during structure travel
+  * Issue identified: Opening this menu causes a lot of lag, as if the game crashed. We worked to decrease this lag time to about 5-10 seconds, which is still a lot. 
+  * Bug identified: Some side-by-side buildings are not identified during the creation of the building network.
+
+- Vanilla mode and cursor hiding tweaks
+  * Enabling it now enables smooth walking and cursor hiding with it.
+  * Disabling it now disables cursor hiding with it.
+  * Walking and cursor hiding still have their own toggle buttons.
+  * The cursor hiding setting now decides on all mod cursor drawings
+  
+- Enemy proximity alerts have new levels. The total situaion is this:
+  * Slow marching: Nearest enemy is within 50 to 100 tiles.
+  * Moderate marching: Nearest enemy is within 25 to 50 tiles.
+  * Fast marching: 1 to 5 enemies are within 25 tiles.
+  * Fast marching and slow klaxon: 6 to 10 enemies are within 25 tiles.
+  * Fast marching and fast klaxon: More than 10 enemies are within 25 tiles. RUN!
+
+- Enemy spawners are now listed on the scanner list in terms of how polluted they are.
+  * "normal" means they are not polluted at all.
+  * "almost polluted" means that there is pollution near the spawner but not on it yet.
+  * "polluted lightly" means that the spawner is now absorbing pollution and is preparing small enemy attack groups that will target your factory.
+  * "polluted heavily" means that the spawner is now absorbing a lot of pollution and is preparing large enemy attack groups that will target your factory.
+
+- Train stops on the scan list are now listed with vehicles instead of buildings, for convenience. The names of the stops are also read while in the scan list.
+
+- All rail vehicles on the scan list now include their train name but none of them are sorted by it.
+
+- Building 3-way rail forks is now cleaner, with the straight part of the fork being longer.
+
+- Clarified several error messages for actions like inserting items, opening menus, checking item info, reloading weapons, and more.
+
+- Menu visuals have been extended to include more menus.
+
+- Removed the vanilla tip pop-ups, which are mostly graphics based but can still confuse the screen reader.
+
+- Damage alerts are now muted for the first minute of the game so that you are not constantly alerted about the spaceship burning.
+ 
+- Thrown items such as grenades and cliff explosives now have their valid throwing ranges checked with high accuracy.
+
+- When you open a crafting building that has no recipe set, it will now open the recipe selection sector of the building first. This matches the vanilla behavior.
+
+- In the inventory menu, you can now directly equip an item by pressing SHIFT + LEFT BRACKET, without needing to take it in hand.
+
+- When no menus are open, you can now directly equip an item in hand by pressing SHIFT + LEFT BRACKET, without needing to open the inventory.
+
+## Bug fixes
+
+- Fixed the long-persisting rail appending bug! Rail appending after train stops or forks should function as intended in all cases now.
+
+- Fixed a bug that prevents using capsule items such as cliff explosives.
+
+- Very likely fixed the bug where opening a menu makes the character walk around by itself.
+
+- Fixed a localization error that occurs when nudging buildings.
+
+- Fixed a bug that made modules in hand get placed into module slots as whole stacks instead of single modules.
+
+- Fixed a recent crash that was happening while placing rail vehicles.
+
+- Restored the scanner category for buildings.
+
+- Fixed a crash that occured when checking item descriptions in the filter inserter menu. Unfortunately no descriptions can be checked in this menu.
+
+- Fixed area mining having infinite range. Sorry people, it is supposed to be used only near the player.
+
+- Fixed a bug that prevented anouncements of player characters dying.
+
+- Fixed a crash that was due to building info not being reset when you close a building menu.
+
+- Fixed a visual bug where you could open a building menu in the mod but the corresponding GUI would not appear.
+
+- Fixed all bugs related incorrect or missing information when you switch guns by pressing TAB or SHIFT + TAB.
+
+## Known bugs
+
+- New issue: If too many entities are destroyed in a short time, like from a nuclear explosion, the game will lag for a few minutes but it should keep loading in alert sounds until it finishes processing them all.
+
+- New bug: Structure travel sometimes misses buildings that are directly next to each other.
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
+# Version 0.4.8 BETA (Full Release)
+
+Released on December 19th, 2023.
+
+This full release of version 0.4.8 brings the additional features needed for making complex train systems. Now you can build systems with multiple automatic trains using forks and bypasses, and you can set different waiting conditions for each train stop for each train. You can manually drive with increased safety or you can skip manual driving entirely by selecting a reachable station from a menu and traveling to it once using subautomatic travel.
+
+This update also improves other features like the scanner, vanilla mode, mining tools, and mod menu visuals. The pre-release of this update had also added sandbox maps and launcher improvements.
+
+Note that this update uses new Factorio API features and so you need to be running Factorio 1.1.95 or later. The current latest version is Factorio 1.1.100.
+
+## New features
+
+- New subautomatic rail travel system where you can pick the destination.
+  * Opening the subautomatic travel option will create a list of every train stop the train can reach from its current position.
+  * Selecting a stop from this list adds it to the top of the train schedule as a temporary station and sends the train to it.
+  * After reaching the temporary stop, the train will wait for all players to disembark and it will then resume its normal schedule.
+  * This addition will make it safer and easier to build a complex train schedule by making it easier to reach a train stop so that it can be added to the permanent schedule.  
+
+- Added rail bypass junction building option for vertical and horizontal end rails.
+  * Rail bypass areas are meant for reducing traffic in rail systems with multiple trains on them because trains can wait or pass by each other while inside them.
+  * At the bypass junction a regular two-way rail splits into a pair of parallel one-way rails. These rails need to be extended to be longer than the longest train in the system so that two trains can pass by each other in the bypass area without blocking each other's tracks. The two rails need to be joined again at another bypass junction, thus completing the full bypass structure.
+  * The one-way exit rail at the bypass junction is the only place in the mod (for now) that allows regular rail signals because the bypass system is a reliable way to use their advantages without causing deadlocks. 
+
+- New scanner categories added.
+  * Vehicles category includes cars and locomotives and wagons. Locomotives are grouped per train.
+  * Player category lists player characters by name. It also lists character corpses and highlights every player's own character corpse to them exclusively.
+  * Enemy category lists mobile and fixed enemy units and structures.
+  
+- Added the Stop On Red mod by DaveMcW to releases by default. 
+  * This train driving safety mod makes manually controlled trains stop at closed rail signals.
+  * If you keep holding down the acceleration, or if you reverse into the signal with a train that has no backward facing locomotives, then you can overpower the safety feature.
+  
+- New train driving safety features: honking
+  * If you are manually driving a moving train near a closed rail signal, the train will make two short honks to notify you to stop at the signal. You can press J to monitor the signal.
+  * If you are on a moving train and there is another train within the same rail signal block, the train will make a long honk to notify a possible collision. If you are driving, you should stop accelerating. If you are hearing this often, it means that you need to add more rail signals or remove trains from the system or reconnect disconnected trains.
+  
+- In case of buggy rendering of visuals, you can now press CONTROL + ALT + R to clear all rendered objects.
+
+## Changes
+
+- Forests in the scan list are now labeled in terms of density, and empty forests are now removed from the list.
+
+- Revised and extended train menus to include the new features in a streamlined way.
+
+- Every mod audio menu now has a GUI icon appearing alongside it for clarity. The same icon appearing over your character's head.
+
+- Reading coordinates of the cursor (K key by default) now prints this information silently to the console and also draws a marker at the cursor point.
+
+- Improved vanilla mode
+  * Mod related menus will no longer open and lock you in when you press the relevant keys.
+  * Pressing CONTROL + ALT + C will now toggle hiding the cursor entirely including build previews.
+  * T in vanilla mode key opens technology menu like the default.
+  
+- Area mining now also clears tree stumps and scorch marks.
+
+- Group mining of rails now includes curved rails and covers a 7 tile radius instead of 5.
+
+- Restored being able to go up and down the scanner list while in cursor mode, but only with the PAGE UP and PAGE DOWN keys. The arrow keys in cursor mode are still used to move the cursor.
+
+- Rail alerts for trains within the same block are now less dramatic if the train is more than 200 tiles away.
+  
+## Bug fixes
+
+- Intersections including curved rails are now checked as well when querying the nearest intersection.
+
+- Fixed a crash related to missing recipe descriptions, but there may be more crashes remaining about this.
+
+- Fixed lack of updates to forests in the scanner list. Rescanning will refresh the lists.
+
+## Known bugs
+
+- New bug found: if you load game with a menu open, the icons for it will not disappear. In case of buggy rendering of visuals, you can now press CONTROL + ALT + R to clear all rendered objects.
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
+# Version 0.4.8 BETA (Currently at Pre-Release 1)
+
+Pre-release 1 on December 10th, 2023.
+
+This update brings new train features, but due to ongoing development it is a pre-release for now. It includes support for rail forks and for a new sophisticated method to build train schedules from the train stop menus instead of the train menus. 
+
+The update also fixes the recent big bug that crashes the game when a fluid slot of a building is empty. If you will not use the new features but you want the bugfixes, you can download the pre-release anyway.
+
+Before the full release, early feedback is needed for improving the features and also some more train-related additions will be made in order to make complex automatic train systems better supported.
+
+## New features
+
+- Added rail fork building.
+  * At vertical and horizontal end rails, you now have the option to build forks. You can either build a two-way fork that splits to the left and right, or a three-way fork that includes also the forward direction.
+  * The rail analyzer will pick up a fork ahead and list the available directions for it. When manually driving through a fork, you need to hold A or D to pick the direction you want to take.
+  * More than one automatic train and more than zero rail forks in the same railway system is an extra dangerous combination that can have train crashes and deadlocks, and so it is recommended to plan carefully.
+
+- Added a new method of building train schedules, from train stop menus.
+  * The new method allows building more complex train schedules that the instant scheduling tool cannot handle, but for now you need to first manually drive to each station so that you can add it to your schedule.
+  * The new method also brings support for new waiting conditions: The train being inactive, the train being completely full or empty, or the train having any or no players on board.
+  
+- The train menu now has the option to toggle manual or automatic dirving modes.
+
+- New launcher improvements.
+  * Fixed localization issues.
+  * Improved the automatic config updater.
+  * Greatly increased pause time after printing tracebacks to allow easier bug reporting.
+  
+- New sandbox map added with cheats enabled.
+  * This is map where you can design your factory areas or play around with minimal restrictions.
+  * On this map you have all technology unlocked and you can craft almost every recipe by hand instantly.
+  * This map has no enemies or cliffs, forests spread far apart, and just one lake in the middle. Ore patches are extra rich.
+  * The starting area has an infinite electric energy interface and some infinity pipes to supply endless amounts of fluids. The infinity chest will delete anything you put in it.
+
+## Planned Features
+
+- Expanding subautomatic travel so that you can pick any train stop from the map and TRY to make the train go to it. This will be easier and safer than having to manually drive across a system with several trains and forks in it.
+
+- New scanner categories for enemies, players, and vehicles.
+
+- Adding train bypass structures, which will allow improved traffic flow in train systems with multiple automatic trains.
+
+- Improved reading of a train's schedule from its own menu, such as by including the waiting conditions.
+
+## Changes
+
+- In some cases, the rail appender is unable to build a rail somewhere even though you can manually place it. Such cases are now identified and stated.
+
+## Bug fixes
+
+- Fixed a group of crashes that happened when examining fluid-containing buildings that are currently empty.
+
+- Fixed the issue of the player character sometimes randomly walking around when a train related menu is opened.
+
+## Known bugs
+
+- We have moved the list of known bugs to a Wiki page so that we can update it without waiting for a new release, [click here](https://github.com/Crimso777/Factorio-Access/wiki/Known-Bugs).
+
 # Version 0.4.7 BETA
 
 Released on December 3rd, 2023.
@@ -57,7 +346,7 @@ We have also improved the launcher and added a new demo map. We also explored if
 
 ## New features
 
-- Added or confirmed compatibility for some other mods, and started listşng them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
+- Added or confirmed compatibility for some other mods, and started listing them on a new wiki page, [click here.](https://github.com/Crimso777/Factorio-Access/wiki/Compatible-Other-Mods).
   * AAI Containers & Warehouses, by Earendel
   * AAI Loaders, by Earendel (requires a patch made in this update)
   * Void Chest Plus, by Optera

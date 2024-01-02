@@ -48,24 +48,29 @@ Sometimes we might release patches, which are intermediate versions that include
 # Factorio Access Controls
 
 ## General
+Start playing when a new game begins: TAB
 
-Time of day and current research: T
+Close most menus: E
 
 Save game: F1
-
-Recalibrate: CONTROL + END
 
 Pause or unpause the game with the visual pause menu: ESC
   
 Pause or unpause the game with no menu: SHIFT + SPACE
 
-Close most menus: E
+Repeat last spoken phrase: CONTROL + TAB
 
-Start playing when a new game begins: TAB
+Time of day and current research: T
 
 Toggle Vanilla Mode: CONTROL + ALT + V. Note that this will mute the narrator until you toggle back out.
 
 Rotate vanilla cursor: SHIFT + R
+
+Toggle cursor hiding: CONTROL + ALT + C. This is for Vanilla Mode players who do not want to see the mod building previews.
+
+Reset mod renders: CONTROL + ALT + R. This is rarely needed for resolving bugs related to drawn objects that do not disappear.
+
+Recalibrate: CONTROL + END. This is rarely needed for resolving bugs related to zooming.
 
 ## Movement
 
@@ -93,9 +98,11 @@ Open building's menu: LEFT BRACKET
 
 Mine or pick up: X
 
-Mine or pick up a group: SHIFT + X. Applies only to some groups such as trees or rails.
+Clear obstacles around within 5 tiles: SHIFT + X on an empty tile. Obstacles include trees, rocks, items on the ground, tree stumps, scorch marks. Items are added to your inventory.
 
 Grab in hand instant mining tool: CONTROL + X. Also known as the cut and paste tool, this will instantly mine almost anything touched by the cursor. Does not work for ores.
+
+Pick up all objects within 5 tiles: SHIFT + X with the instant mining tool in hand.
   
 Put away instant mining tool: SHIFT + Q
 
@@ -106,6 +113,8 @@ Rotate: R.
 Rotation Note 1: If you have something in your hand, you will rotate that.  Otherwise you will rotate the building your cursor is over.
 
 Rotation Note 2: The first time you press the rotate key, it will simply say the direction a building is facing. Subsequent presses will actually rotate the building.
+
+Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
 
 Picker tool: For a detected entity, SHIFT + Q. This brings to hand more of the selected entity's item form, if you have it in your inventory.
 
@@ -194,6 +203,8 @@ Rotation Note 1: If you have something in your hand, you will rotate that.  Othe
 
 Rotation Note 2: The first time you press the rotate key, it will simply say the direction a building is facing. Subsequent presses will actually rotate the building.
 
+Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
+
 Drop 1 unit: Z. Drops the item onto the ground or onto a belt or inside an applicable building.
 
 Insert 1 stack of the item in hand where applicable: CONTROL + LEFT BRACKET. Works for chests or for smartly feeding machines and vehicles.
@@ -216,9 +227,11 @@ Swap gun in hand: TAB
   
 Fire at the cursor: C. Warning: Friendly fire is allowed.
   
-Fire at enemies with aiming assistance: SPACEBAR. This only when an enemy is within range, and only for pistols / submachine guns / rocket launchers with regular rockets.
+Fire at enemies with aiming assistance: SPACEBAR. Note: This only works when an enemy is within range, and only for pistols or submachine guns or rocket launchers with regular rockets. Other weapons such as shotguns, flamethrowers, and special rockets, will fire at the cursor because they do not have aiming assistance. 
 
-Warning: There is not yet any audio guidance added about enemy presence.  
+Deploy a drone capsule in hand towards the cursor: LEFT BRACKET.
+
+Throw a capsule weapon or grenade in hand towards the cursor: LEFT BRACKET. Warning: It is likely that a grenade or similar weapon will damage you because the cursor is usually automatically nearby.
 
 The rest of the controls in this section require you to have the inventory screen opened (but no buildings).
 
@@ -244,13 +257,15 @@ Scan for nearby entities: END
 
 Repeat scanned entry: HOME
 
-Navigate scanned entity list: PAGE UP and PAGE DOWN
+Navigate scanned entity list: PAGE UP and PAGE DOWN. Alternatively you can use UP ARROW and DOWN ARROW.
 
-Switch between different instances of the same entity: SHIFT + PAGE UP and SHIFT + PAGE DOWN
+Switch between different instances of the same entity: SHIFT + PAGE UP and SHIFT + PAGE DOWN.  Alternatively you can use SHIFT + UP ARROW and SHIFT + DOWN ARROW.
 
-Change scanned category: CONTROL + PAGE UP and CONTROL + PAGE DOWN
+Change scanned category: CONTROL + PAGE UP and CONTROL + PAGE DOWN. Alternatively you can use CONTROL + UP ARROW and CONTROL + DOWN ARROW.
 
-Change Sorting mode for scanned list: N and SHIFT + N 
+Sort scan results by entity counts: N
+
+Sort scan results by distance from current location: SHIFT + N. If you change location, you need to press again.
 
 Move cursor to scanned target in cursor mode: CONTROL + HOME
 
@@ -380,6 +395,8 @@ Rail appending: Press LEFT BRACKET with rails in hand to automatically extend th
 
 Rail structure building menu: Press SHIFT + LEFT BRACKET on any rail, but end rails have the most options. Structures include turns, train stops, etc.
 
+Rail intersection finder: RIGHT BRACKET on a rail to find the nearest intersection.
+
 Rail analyzer UP: Press J with empty hand on any rail to check which rail structure is UP along the selected rail. Note: This cannot detect trains!
 
 Rail analyzer DOWN: Press SHIFT + J with empty hand on any rail to check which rail structure is DOWN along the selected rail. Note: This cannot detect trains!
@@ -393,6 +410,8 @@ Note 2: In case of bugs, be sure to save regularly. There is a known bug related
 Shortcut for building rail right turn 45 degrees: CONTROL + RIGHT ARROW on an end rail.
 
 Shortcut for building rail left turn 45 degrees: CONTROL + LEFT ARROW on an end rail.
+
+Shortcut for picking up all rails and signals within 7 tiles: SHIFT + X on a rail.
 
 ## Train Building and Examining
 
@@ -417,7 +436,7 @@ Add fuel to a locomotive: With fuel items in hand, CONTROL + LEFT BRACKET on the
 ## Train Menu
 Move up: UP ARROW KEY
 
-Move down: UP ARROW KEY
+Move down: DOWN ARROW KEY
 
 Click or select: LEFT BRACKET
 
