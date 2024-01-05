@@ -64,6 +64,8 @@ Time of day and current research: T
 
 Toggle Vanilla Mode: CONTROL + ALT + V. Note that this will mute the narrator until you toggle back out.
 
+Toggle Cursor Drawing: CONTROL + ALT + C. Note: This is enabled by Vanilla Mode by default, but it can be toggled separately for those who want it.
+
 Rotate vanilla cursor: SHIFT + R
 
 Toggle cursor hiding: CONTROL + ALT + C. This is for Vanilla Mode players who do not want to see the mod building previews.
@@ -72,9 +74,11 @@ Reset mod renders: CONTROL + ALT + R. This is rarely needed for resolving bugs r
 
 Recalibrate: CONTROL + END. This is rarely needed for resolving bugs related to zooming.
 
+Clear all renders: CONTROL + ALT + R. Note: This is for clearing any mod-drawn objects that fail to disappear on their own.
+
 ## Movement
 
-Movement: W A S D
+Movement: W, A, S, D
 
 Note: When you change direction, for the first key press, your character turns but does not take a step in that direction.
 
@@ -90,9 +94,17 @@ Note the 3 movement types are as follows:
 
 ## Interactions
 
-Get entity description: L, for most entities such as buildings
+Get entity description: Y, for most entities and for items. 
+
+Get entity description for the last scanned entity: SHIFT + Y
+
+Note: The description key used to be L.
 
 Read building status: RIGHT BRACKET, for applicable buildings when your hand is empty
+
+Check cursor coordinates and building part: K
+
+Check relative distance and direction of cursor: SHIFT + K
 
 Open building's menu: LEFT BRACKET
 
@@ -108,6 +120,10 @@ Put away instant mining tool: SHIFT + Q
 
 Open player inventory: E
 
+Collect nearby items, from the ground or from belts: Hold F
+
+Read other entities on the same tile, if any: SHIFT + F
+
 Rotate: R. 
 
 Rotation Note 1: If you have something in your hand, you will rotate that.  Otherwise you will rotate the building your cursor is over.
@@ -118,9 +134,7 @@ Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + 
 
 Picker tool: For a detected entity, SHIFT + Q. This brings to hand more of the selected entity's item form, if you have it in your inventory.
 
-Nudge building by one tile: CONTROL + SHIFT + DIRECTION, where the direction is one of W A S D.
-
-Pick up nearby items on the ground or on top of nearby belts: Hold F 
+Nudge building by one tile: CONTROL + SHIFT + DIRECTION, where the direction is one of W A S D. 
 
 Copy building settings: With empty hand, SHIFT + RIGHT BRACKET on the building
 
@@ -129,6 +143,8 @@ Paste building settings: With empty hand, SHIFT + LEFT BRACKET on the building
 Quickly collect the entire output of a building: With empty hand, CONTROL + LEFT BRACKET on the building
 
 Quickly collect half of the entire output of a building: With empty hand, CONTROL + RIGHT BRACKET on the building
+
+Repair every machine within reach: CONTROL + SHIFT + LEFT BRACKET, while you have at least 2 repair packs in your hand
 
 ## Faster mining
 Clear area: SHIFT + X. This automatically clears trees and rocks and dropped items within a 10 tile radius. If you press this shortcut on rails, it clears rails too.
@@ -153,9 +169,9 @@ Return the cursor to the character: J
 
 Teleport character to cursor: SHIFT + T
 
-Increase cursor size to examine a larger area: CONTROL + I
+Increase cursor size to examine a larger area: SHIFT + I
 
-Decrease cursor size to examine a smaller area: CONTROL + SHIFT + I
+Decrease cursor size to examine a smaller area: CONTROL + I
 
 Note: You must be in cursor mode for the size of the cursor to make any difference in area scans.
 
@@ -169,7 +185,7 @@ Navigate inventory slots: W A S D
 
 Get slot coordinates: K
 
-Get selected item info: L
+Get selected item info: Y
 
 Pick up selected item to hand: LEFT BRACKET
 
@@ -178,6 +194,8 @@ Add selected item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0.
 Switch to other menus: TAB
 
 Close most menus: E
+
+Select the slot for the item in hand: CONTROL + Q
 
 ## Item in Hand
 
@@ -283,7 +301,9 @@ Confirm an option: LEFT BRACKET
 
 Note:  Options include Teleporting to a saved point, renaming a saved point, deleting a saved point, and creating a new point.
 
-## BStride
+Confirm a new name: ENTER
+
+## BStride / Structure Travel
 
 Travel freely from building to building as if they were laid out in a grid pattern.
 
