@@ -1,3 +1,36 @@
+# Version 5.0.0 BETA Pre-release 2
+
+Pre-release published on 10th January, 2024.
+
+While implementation of worker robots continues, we have some handy new features that merited a quick new pre-release. Most importantly, I managed to write search functions for most of the game menus!
+
+## New Features
+
+- Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
+  * For every menu listed, you open the search bar by pressing "ENTER", and then you type the search term and confirm with "ENTER".
+  * For every menu listed, you can iterate through search results by pressing "SHIFT + ENTER".
+  * For the inventory menus, you can also iterate backward by pressing "CONTROL + ENTER". 
+  * For the technology menu, the search menu is unable to switch between locked and unlocked research categories.
+
+- Locate item in hand from inventory feature was revamped to work as intended.
+  * For the item in hand, if you press "CONTROL + Q" from the player inventory menu or with no menu open, this will open the relevant item slot in the player inventory.
+  * For the item in hand, if you press "CONTROL + Q" from a building output inventory, his will open the relevant item slot in the building output inventory.
+
+- Locate item in hand from crafting menu added.
+  * In most menus, for the item in hand, if you press "CONTROL + SHIFT + Q", this will run a crafting menu search using the first word of the item name in hand.
+  * If something else opens, you can continue the search by pressing "SHIFT + ENTER".
+  
+- You can now check the currently open menu by pressing "SHIFT + E".
+
+## Changes
+
+- Tweaked item pickup info to name the picked up items sooner.
+
+- Improved accuracy of aiming assistance.
+
+- Tweaked high enemy presence alert to sound also when there are fewer than 5 enemies but any of them is a strong enemy.
+
+
 # Version 5.0.0 BETA Pre-release 1
 
 Pre-release published on 7th January, 2024.
