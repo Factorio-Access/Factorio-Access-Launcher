@@ -9,14 +9,14 @@ In this update ...
 - Added logistic chest support. Selected items refers to items in hand or items selected within the chest inventory while the chest menu is open.
   * For requester and buffer chests, you can now tune the requested minimum amount for a selected item with "SHIFT + L" and "CONTROL + L".
   * For logistic storage chests, you can set or clear the logistic filter with the selected item or a blank slot by pressing either "SHIFT + L" or "CONTROL + L".
-  * You can press "L" for a selected item to review its request status.
+  * You can press "L" for a selected chest to review its request status.
   * You can toggle a requester chest's feature to request from buffers by pressing "CONTROL + SHIFT + L".
-  * Added "no action" messages to clarify cases where nothing happens.
-  * Note: unlocking chest requests requires some advanced research in game using utility science packs.
+  * Added "no action" messages to clarify several cases where nothing happens.
+  * Note: Unlocking chest requests requires some advanced research in game using utility science packs.
 
 - Added supporting information for roboports.
   * During build preview in telestep mode or cursor mode, roboports note which roboports they connect to, which need to be within about 50 tiles.
-  * Selecting roboports gives basic information about the robot counts within their networks.
+  * Selecting roboports gives basic information about a roboport and its network.
   * Roboport output slots are identified as reserved for worker robots. They also have hidden slots for holding repair packs.
 
 - Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
@@ -43,6 +43,16 @@ In this update ...
 - Improved accuracy of aiming assistance.
 
 - Tweaked high enemy presence alert to sound also when there are fewer than 5 enemies but any of them is a strong enemy.
+
+## Bug fixes
+
+- Fixed missing teleporter sound effects. Fun fact: It was a design choice related to the fog of war effect.
+
+- Fixed bugs that jumped the cursor incorrectly after teleporting or failing to teleport.
+
+- Fixed entity area reporting when cursor scanning areas.
+
+- Fixed crashes from the earlier additions related to roboports.
 
 
 # Version 5.0.0 BETA Pre-release 1
