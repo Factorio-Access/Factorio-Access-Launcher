@@ -14,8 +14,13 @@ In this update ...
   * Added "no action" messages to clarify cases where nothing happens.
   * Note: unlocking chest requests requires some advanced research in game using utility science packs.
 
+- Added supporting information for roboports.
+  * During build preview in telestep mode or cursor mode, roboports note which roboports they connect to, which need to be within about 50 tiles.
+  * Selecting roboports gives basic information about the robot counts within their networks.
+  * Roboport output slots are identified as reserved for worker robots. They also have hidden slots for holding repair packs.
+
 - Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
-  * This only works in English for now but we are working on making it support localisation.
+  * This only works for finding English names for now, but we are working on making it support localisation.
   * For every menu listed, you open the search bar by pressing "ENTER", and then you type the search term and confirm with "ENTER".
   * For every menu listed, you can iterate through search results by pressing "SHIFT + ENTER".
   * For the inventory menus, you can also iterate backward by pressing "CONTROL + ENTER". 
