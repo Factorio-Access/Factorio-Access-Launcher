@@ -1,10 +1,18 @@
-# Version 5.0.0 BETA Pre-release 2
+# Version 5.0.0 BETA Pre-Release 2
 
-Pre-release published on 10th January, 2024.
+Released on 11th January, 2024.
 
-While implementation of worker robots continues, we have some handy new features that merited a quick new pre-release. Most importantly, I managed to write search functions for most of the game menus!
+In this update ...
 
 ## New Features
+
+- Added logistic chest support. Selected items refers to items in hand or items selected within the chest inventory while the chest menu is open.
+  * For requester and buffer chests, you can now tune the requested minimum amount for a selected item with "SHIFT + L" and "CONTROL + L".
+  * For logistic storage chests, you can set or clear the logistic filter with the selected item or a blank slot by pressing either "SHIFT + L" or "CONTROL + L".
+  * You can press "L" for a selected item to review its request status.
+  * You can toggle a requester chest's feature to request from buffers by pressing "CONTROL + SHIFT + L".
+  * Added "no action" messages to clarify cases where nothing happens.
+  * Note: unlocking chest requests requires some advanced research in game using utility science packs.
 
 - Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
   * This only works in English for now but we are working on making it support localisation.
