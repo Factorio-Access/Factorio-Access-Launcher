@@ -1,6 +1,6 @@
 # Version 5.0.0 BETA Pre-Release 2
 
-Released on 11th January, 2024.
+Released on 12th January, 2024.
 
 In this update ...
 
@@ -14,25 +14,36 @@ In this update ...
   * Added "no action" messages to clarify several cases where nothing happens.
   * Note: Unlocking chest requests requires some advanced research in game using utility science packs.
 
-- Added supporting information for roboports.
+- Roboports now have supporting info.
   * During build preview in telestep mode or cursor mode, roboports note which roboports they connect to, which need to be within about 50 tiles.
-  * Selecting roboports gives basic information about a roboport and its network.
-  * Roboport output slots are identified as reserved for worker robots. They also have hidden slots for holding repair packs.
+  * Selecting a roboport now gives information about the robots and repair packs inside.
+  
+- Added roboport menus, which are like train menus but focus on roboports and their logistic networks. Options include the following:
+  * Rename a logistic network
+  * Check roboport neighbors (which are other roboports they are connected with, to enable robot migration)
+  * Check robot counts for this roboport.
+  * Check robot counts for the entire network.
+  * Check chest counts for the entire network.
+  * Check item counts for items stored in accessible chests across the network, which excludes requester chest contents.
+  
+- Added ability to name logistic networks, and roboports on the scanner list are separated according to their networks.
+
+- Greatly improved our tools for localisation support, with massive thanks to @Eph!
 
 - Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
-  * This only works for finding English names for now, but we are working on making it support localisation.
+  * This should work for finding item or recipe names in your localised language, or in English as a fallback option.
   * For every menu listed, you open the search bar by pressing "ENTER", and then you type the search term and confirm with "ENTER".
   * For every menu listed, you can iterate through search results by pressing "SHIFT + ENTER".
   * For the inventory menus, you can also iterate backward by pressing "CONTROL + ENTER". 
   * For the technology menu, the search menu is unable to switch between locked and unlocked research categories.
 
-- Locate item in hand from inventory feature was revamped to work as intended.
-  * For the item in hand, if you press "CONTROL + Q" from the player inventory menu or with no menu open, this will open the relevant item slot in the player inventory.
-  * For the item in hand, if you press "CONTROL + Q" from a building output inventory, his will open the relevant item slot in the building output inventory.
-
 - Locate item in hand from crafting menu added.
   * In most menus, for the item in hand, if you press "CONTROL + SHIFT + Q", this will run a crafting menu search using the first word of the item name in hand.
   * If something else opens, you can continue the search by pressing "SHIFT + ENTER".
+  
+- Locate item in hand from inventory feature was revamped to work as intended.
+  * For the item in hand, if you press "CONTROL + Q" from the player inventory menu or with no menu open, this will open the relevant item slot in the player inventory.
+  * For the item in hand, if you press "CONTROL + Q" from a building output inventory, his will open the relevant item slot in the building output inventory.
   
 - You can now check the currently open menu by pressing "SHIFT + E".
 
