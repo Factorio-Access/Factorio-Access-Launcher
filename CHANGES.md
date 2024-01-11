@@ -1,3 +1,130 @@
+# Version 5.0.0 BETA Pre-Release 2
+
+Released on 11th January, 2024.
+
+In this update ...
+
+## New Features
+
+- Added logistic chest support. Selected items refers to items in hand or items selected within the chest inventory while the chest menu is open.
+  * For requester and buffer chests, you can now tune the requested minimum amount for a selected item with "SHIFT + L" and "CONTROL + L".
+  * For logistic storage chests, you can set or clear the logistic filter with the selected item or a blank slot by pressing either "SHIFT + L" or "CONTROL + L".
+  * You can press "L" for a selected chest to review its request status.
+  * You can toggle a requester chest's feature to request from buffers by pressing "CONTROL + SHIFT + L".
+  * Added "no action" messages to clarify several cases where nothing happens.
+  * Note: Unlocking chest requests requires some advanced research in game using utility science packs.
+
+- Added supporting information for roboports.
+  * During build preview in telestep mode or cursor mode, roboports note which roboports they connect to, which need to be within about 50 tiles.
+  * Selecting roboports gives basic information about a roboport and its network.
+  * Roboport output slots are identified as reserved for worker robots. They also have hidden slots for holding repair packs.
+
+- Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
+  * This only works for finding English names for now, but we are working on making it support localisation.
+  * For every menu listed, you open the search bar by pressing "ENTER", and then you type the search term and confirm with "ENTER".
+  * For every menu listed, you can iterate through search results by pressing "SHIFT + ENTER".
+  * For the inventory menus, you can also iterate backward by pressing "CONTROL + ENTER". 
+  * For the technology menu, the search menu is unable to switch between locked and unlocked research categories.
+
+- Locate item in hand from inventory feature was revamped to work as intended.
+  * For the item in hand, if you press "CONTROL + Q" from the player inventory menu or with no menu open, this will open the relevant item slot in the player inventory.
+  * For the item in hand, if you press "CONTROL + Q" from a building output inventory, his will open the relevant item slot in the building output inventory.
+
+- Locate item in hand from crafting menu added.
+  * In most menus, for the item in hand, if you press "CONTROL + SHIFT + Q", this will run a crafting menu search using the first word of the item name in hand.
+  * If something else opens, you can continue the search by pressing "SHIFT + ENTER".
+  
+- You can now check the currently open menu by pressing "SHIFT + E".
+
+## Changes
+
+- Tweaked item pickup info to name the picked up items sooner.
+
+- Improved accuracy of aiming assistance.
+
+- Tweaked high enemy presence alert to sound also when there are fewer than 5 enemies but any of them is a strong enemy.
+
+## Bug fixes
+
+- Fixed missing teleporter sound effects. Fun fact: It was a design choice related to the fog of war effect.
+
+- Fixed bugs that jumped the cursor incorrectly after teleporting or failing to teleport.
+
+- Fixed entity area reporting when cursor scanning areas.
+
+- Fixed crashes from the earlier additions related to roboports.
+
+
+# Version 5.0.0 BETA Pre-release 1
+
+Pre-release published on 7th January, 2024.
+
+This is a pre-release of the logistics robots update before I need to go on a development break. Personal logistics are now available and we have verified that you can use construction robots for automatic repair and ghost replacement. The update also brings some tweaks and bugfixes for other features.
+
+## New Features
+
+- Added support for personal logistics requests for items. You can read or modify them, but you need to be within about 50 tiles of a roboport for the robots to work. The following controls apply for items in hand when no menus are open, and for selected item slots when the player inventory is open.
+  * Check the currently set logistic request for the selected item by pressing "L".
+  * Increase the minimum requested quantity for the selected item by pressing "SHIFT + L", and decrease it by pressing "CONTROL + L".
+  * Increase the maximum requested quantity for the selected item by pressing "SHIFT + ALT + L", and decrease it by pressing "CONTROL + ALT + L".
+  * Note: If you have less than the requested minimum amount for an item, logistics robots will look at logistics storage chests and try to bring more of the item to you from them.
+  * Note: If you have more than the requested maximum amount for an item, your excess will be held at your logistics trash inventory, and logistics robots will come and empty it into the nearest logistics storage chest.
+  * Note: Combining features lets you automate your inventory management with the help of logistics robots, either in a dedicated storage area or across your whole factory, as far as roboports can reach.
+
+- You can check the overall status of your logistics requests, by pressing "L" with no menus open or with an empty inventory slot selected.
+
+- You can pause or resume your entire set of logistic requests, by pressing "CONTROL + SHIFT + L".
+
+- Added limited assistance when building roboports, which can be placed like other buildings, but must be within 45 tiles or so of each other.
+  
+- You can now teleport to the location of the last damage alert by pressing "CONTROL + SHIFT + P"
+
+## Changes
+
+- Verified that you can use construction robots to repair items and replace ghosts of destroyed entities automatically, using roboport buildings or personal roboports, and also logistic storage chests.
+
+- Teleporting now checks for enemy presence at the target location.
+  * If you try to teleport normally with "SHUFT + T" you will get the warning instead when enemies are present.
+  * You can instead use forced teleporting, by pressing "CONTROL + SHIFT + T"
+
+- Improved information about locked slots for chests
+  * The number of locked slots is read when you open a chest menu.
+  * If a locked slot is selected, this is noted.
+  * Note: A locked slot cannot have items inserted to it unless by hand, but items can be removed from it by all the usual ways.
+
+- Fast travel locations now take the cursor when checked.
+  * You can now read their relative positions by pressing "SHIFT + K".
+  * Note: Creating a new fast travel location takes the current cursor position as the reference.
+
+- Improved area scan information. Now, entity counts are given and charting percentage is given if it is less than 100%.
+  
+- Adjusted the volumes of most new sound effects. More tweaking may be needed.
+
+## Bug fixes
+
+- Fixed crash: If you have no available weapons and try to switch weapons, you get a warning now.
+
+- Fixed crude oil missing from area scans.
+
+- Fixed bug: Checking a scan entry updates the cursor more accurately now.
+
+## Future worker robot features
+
+- Roboport information will be improved concerning details like range, neighbors, and availability.
+
+- Other logistic robot features will be added.
+* Chest logistics access, which is very powerful.
+* Personal trash access
+* Better info about existing logistic requests
+
+- Other construction robot features will be added.
+* Selecting rectangular areas to mark it for automatic deconstruction.
+* Selecting rectangular areas to mark it for automatic upgrading to hier machine tiers.
+* Selecting rectangular areas that you can save as a blueprint item, which lets you copy and paste the area.
+* Placing down a blueprint for contruction robots to build.
+* Giving key information about blueprint items.
+* Possibly, hopefully, support for importing and exporting blueprint items as text strings.
+
 # Version 0.4.9 BETA
 
 Released on 31 December, 2023. Happy new year!
