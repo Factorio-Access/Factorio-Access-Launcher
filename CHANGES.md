@@ -1,8 +1,8 @@
-# Version 5.0.0 BETA Pre-Release 2
+# Version 5.0.0 BETA
 
 Released on 12th January, 2024.
 
-In this update ...
+In this update we have added all the basics and some of the extras for logistic robot and roboport support. Additional extras will be added in future updates. Another big feature for this update is that you can now search most menus, and with localised names!
 
 ## New Features
 
@@ -26,9 +26,12 @@ In this update ...
   * Check chest counts for the entire network.
   * Check item counts for items stored in accessible chests across the network, which excludes requester chest contents.
   
-- Added ability to name logistic networks, and roboports on the scanner list are separated according to their networks.
+- Added ability to name logistic networks, as with trains and train stops.
+  * Roboports on the scanner list are separated according to their networks.
 
 - Greatly improved our tools for localisation support, with massive thanks to @Eph!
+  * Translations will be requested and used in the search feature and other places when you first load the game.
+  * Item and recipe and technology names have been localised in more parts of the mod but a lot of localisation work remains.
 
 - Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
   * This should work for finding item or recipe names in your localised language, or in English as a fallback option.
@@ -53,7 +56,7 @@ In this update ...
 
 - Improved accuracy of aiming assistance.
 
-- Tweaked high enemy presence alert to sound also when there are fewer than 5 enemies but any of them is a strong enemy.
+- Tweaked high enemy presence alert to sound also when there are fewer than 5 enemies but any of them is a strong enemy, such as a big biter.
 
 ## Bug fixes
 
@@ -65,6 +68,11 @@ In this update ...
 
 - Fixed crashes from the earlier additions related to roboports.
 
+- The sandbox map was accidentally saved with multiple mods enabled, which may make it difficult to open, so it has been reset.
+
+- Fixed a multiplayer walking bug for non-hosting players in telestep mode.
+
+- Removed accidentally enabled debug console messages about mining.
 
 # Version 5.0.0 BETA Pre-release 1
 
