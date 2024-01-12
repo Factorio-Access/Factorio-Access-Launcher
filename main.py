@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import sys
+import traceback
+sys.excepthook = lambda *args: (traceback.print_exception(*args), input("Press Enter to Exit"))
 import pyautogui as gui
 import time
 import math
 import os
-import sys
 import subprocess
 import threading
 import json
@@ -448,7 +450,7 @@ def chooseDifficulty():
 def time_to_exit():
     ao_output.output("Goodbye Factorio", False)
     time.sleep(1)
-    sys.exit(0)
+    raise SystemExit
     
 menu = {
     "Launch last played":just_launch,
@@ -469,9 +471,7 @@ menu = {
         "Browse Public":{
             "Freind List":{
                 "Add":multiplayer.add_friend_menu,
-                "Remove/View":{
-                    multiplayer.get_friends_menu: multiplayer.remove_friend
-                },
+                 multiplayer.get_friends_menu: multiplayer.specific_friend_menu
             },
             "List Games With Friends":{
                 multiplayer.games_with_friends_menu: connect_to_address

@@ -1,3 +1,79 @@
+# Version 5.0.0 BETA
+
+Released on 12th January, 2024.
+
+In this update we have added all the basics and some of the extras for logistic robot and roboport support. Additional extras will be added in future updates. Another big feature for this update is that you can now search most menus, and with localised names!
+
+## New Features
+
+- Added logistic chest support. Selected items refers to items in hand or items selected within the chest inventory while the chest menu is open.
+  * For requester and buffer chests, you can now tune the requested minimum amount for a selected item with "SHIFT + L" and "CONTROL + L".
+  * For logistic storage chests, you can set or clear the logistic filter with the selected item or a blank slot by pressing either "SHIFT + L" or "CONTROL + L".
+  * You can press "L" for a selected chest to review its request status.
+  * You can toggle a requester chest's feature to request from buffers by pressing "CONTROL + SHIFT + L".
+  * Added "no action" messages to clarify several cases where nothing happens.
+  * Note: Unlocking chest requests requires some advanced research in game using utility science packs.
+
+- Roboports now have supporting info.
+  * During build preview in telestep mode or cursor mode, roboports note which roboports they connect to, which need to be within about 50 tiles.
+  * Selecting a roboport now gives information about the robots and repair packs inside.
+  
+- Added roboport menus, which are like train menus but focus on roboports and their logistic networks. Options include the following:
+  * Rename a logistic network
+  * Check roboport neighbors (which are other roboports they are connected with, to enable robot migration)
+  * Check robot counts for this roboport.
+  * Check robot counts for the entire network.
+  * Check chest counts for the entire network.
+  * Check item counts for items stored in accessible chests across the network, which excludes requester chest contents.
+  
+- Added ability to name logistic networks, as with trains and train stops.
+  * Roboports on the scanner list are separated according to their networks.
+
+- Greatly improved our tools for localisation support, with massive thanks to @Eph!
+  * Translations will be requested and used in the search feature and other places when you first load the game.
+  * Item and recipe and technology names have been localised in more parts of the mod but a lot of localisation work remains.
+
+- Added menu searching for the player inventory, crafting menu, technology menu, building output inventory, and building recipe selection menu.
+  * This should work for finding item or recipe names in your localised language, or in English as a fallback option.
+  * For every menu listed, you open the search bar by pressing "ENTER", and then you type the search term and confirm with "ENTER".
+  * For every menu listed, you can iterate through search results by pressing "SHIFT + ENTER".
+  * For the inventory menus, you can also iterate backward by pressing "CONTROL + ENTER". 
+  * For the technology menu, the search menu is unable to switch between locked and unlocked research categories.
+
+- Locate item in hand from crafting menu added.
+  * In most menus, for the item in hand, if you press "CONTROL + SHIFT + Q", this will run a crafting menu search using the first word of the item name in hand.
+  * If something else opens, you can continue the search by pressing "SHIFT + ENTER".
+  
+- Locate item in hand from inventory feature was revamped to work as intended.
+  * For the item in hand, if you press "CONTROL + Q" from the player inventory menu or with no menu open, this will open the relevant item slot in the player inventory.
+  * For the item in hand, if you press "CONTROL + Q" from a building output inventory, his will open the relevant item slot in the building output inventory.
+  
+- You can now check the currently open menu by pressing "SHIFT + E".
+
+## Changes
+
+- Tweaked item pickup info to name the picked up items sooner.
+
+- Improved accuracy of aiming assistance.
+
+- Tweaked high enemy presence alert to sound also when there are fewer than 5 enemies but any of them is a strong enemy, such as a big biter.
+
+## Bug fixes
+
+- Fixed missing teleporter sound effects. Fun fact: It was a design choice related to the fog of war effect.
+
+- Fixed bugs that jumped the cursor incorrectly after teleporting or failing to teleport.
+
+- Fixed entity area reporting when cursor scanning areas.
+
+- Fixed crashes from the earlier additions related to roboports.
+
+- The sandbox map was accidentally saved with multiple mods enabled, which may make it difficult to open, so it has been reset.
+
+- Fixed a multiplayer walking bug for non-hosting players in telestep mode.
+
+- Removed accidentally enabled debug console messages about mining.
+
 # Version 5.0.0 BETA Pre-release 1
 
 Pre-release published on 7th January, 2024.

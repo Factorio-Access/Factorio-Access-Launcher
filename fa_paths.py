@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import subprocess
+import shutil
 
 import fa_menu
 from __main__ import __file__ as main_file
@@ -32,8 +33,8 @@ else:
     exe_map = {
         WIN:[
             "./bin/x64/factorio.exe",
-            r"C:\Program Files\Factorio\bin\x64\factorio.exe",
-            r'C:\Program Files (x86)\Steam\steamapps\common\Factorio\bin\x64\factorio.exe'
+            r"%ProgramFiles%\Factorio\bin\x64\factorio.exe",
+            r'%ProgramFiles(x86)%\Steam\steamapps\common\Factorio\bin\x64\factorio.exe'
             ],
         MAC:[
             "/Applications/factorio.app/Contents/MacOS/factorio",
@@ -45,16 +46,18 @@ else:
             ]
         }
     for path in exe_map[sys.platform]:
+        path=os.path.expanduser(os.path.expandvars(path))
         if os.path.isfile(path):
             BIN = os.path.abspath(path)
             break
     if BIN.find('steam') >= 0:
         print("Looks like you have a steam installed version of factorio. Please launch through steam after updating it's command line parameters to the following:")
         print('"' + os.path.abspath(MY_BIN) + '" %command%')
-        exit(1)
+        input("press enter to exit")
+        raise SystemExit
 if not BIN:
-    print("Could not find factorio. If you've installed facorio in a standard way please contact the mod developers with your system details. If you're using the protable version please either place this launcher in the folder with the data and bin folders or launch with the factorio execuable path as an argument.")
-    exit(1)
+    input("Could not find factorio. If you've installed facorio in a standard way please contact the mod developers with your system details. If you're using the protable version please either place this launcher in the folder with the data and bin folders or launch with the factorio execuable path as an argument.")
+    raise SystemExit
 
 factorio_replacements={
     '__PATH__system-write-data__':os.path.expanduser(os.path.expandvars(WRITE_DATA_MAP[sys.platform])),
@@ -80,7 +83,7 @@ configs.append("./"+config_path)
 try:
     fp=open(proccess('__PATH__executable__/../../config-path.cfg'),encoding='utf8')
 except FileNotFoundError:
-    pass
+    configs.append(proccess(os.path.join('__PATH__system-write-data__',config_path)))
 else:
     with fp:
         for line in fp:
@@ -88,8 +91,7 @@ else:
             if match:
                 configs.append(os.path.join(proccess(match.group(1)),'config.ini'))
                 break
-#last ditch config path
-configs.append(proccess(os.path.join('__PATH__system-write-data__',config_path)))
+
 
 CONFIG=''
 WRITE_DIR=''
@@ -141,3 +143,14 @@ MODS=os.path.join(WRITE_DIR,'mods') #todo customize according to args
 SAVES=os.path.join(WRITE_DIR,'saves')
 PLAYER_DATA = os.path.join(WRITE_DIR, "player-data.json")
 TEMP = os.path.join(WRITE_DIR,  'temp')
+
+MOD_NAME = "FactorioAccess"
+__my_mod_folder = os.path.join(MY_BIN,'..','mods')
+if os.path.isdir(__my_mod_folder) and not os.path.samefile(__my_mod_folder,MODS):
+    __my_mod = os.path.join(__my_mod_folder,MOD_NAME)
+    if os.path.exists(__my_mod):
+        try:
+            shutil.rmtree(os.path.join(MODS,MOD_NAME))
+        except FileNotFoundError:
+            pass
+        shutil.move(__my_mod,MODS)
