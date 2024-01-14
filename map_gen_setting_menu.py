@@ -1,5 +1,7 @@
 import json
 from typing import Any, Callable
+import weakref
+
 import fa_paths
 import os
 import fa_menu
@@ -105,14 +107,20 @@ class autoplace_enable_disable_menu(fa_menu.menu_item):
 class autoplace_enable_disable_submenu(fa_menu.setting_menu_bool):
     def input_to_val(self, inp: str):
         super().input_to_val(inp)
-        parent=self.parent.ref()
+        parent=self.parent()
         if not self.val:
             for sub in parent.submenu:
                 if sub==self:
                     continue
                 sub.val=0
         parent.remake_submenu()
-    
+
+class menu_setting_inverse_float(fa_menu.setting_menu_float):
+    def val_to_string(self):
+        return str(1.0/self.val)
+    def input_to_val(self, inp: str):
+        self.val = 1.0/float(inp)
+
 #terrain based controls:
 # frequency = 1/scale
 # size      = coverage
@@ -154,13 +162,15 @@ for name,control in data['autoplace-control'].items():
         name=('entity-name.'+control.name,)
     elif control['category'] == 'terrain':
         parent=menu[("gui-map-generator.terrain-tab-title",)]
-        submenu['frequency']=fa_menu.setting_menu_float(("gui-map-generator.scale",),("gui-map-generator.terrain-scale-description",),1,1)
+        submenu['frequency']=menu_setting_inverse_float(("gui-map-generator.scale",),("gui-map-generator.terrain-scale-description",),1,1)
         submenu['size']=fa_menu.setting_menu_float(("gui-map-generator.coverage",),("gui-map-generator.terrain-coverage-description",),1,1)
     else:
         parent=menu[("gui-map-generator.enemy-tab-title",)]
         submenu['frequency']=fa_menu.setting_menu_float(("gui-map-generator.frequency",),("gui-map-generator.enemy-frequency-description",),1,1)
         submenu['size']=fa_menu.setting_menu_float(("gui-map-generator.size",),("gui-map-generator.enemy-size-description",),1,1)
-    my_menu = autoplace_enable_disable_menu(name,None,)
+    my_menu = autoplace_enable_disable_menu(name,submenu)
+    if 'en/disable' in submenu:
+        submenu['en/disable'].parent=weakref.ref(my_menu)
     print(name,preset_group)
     print()
 
