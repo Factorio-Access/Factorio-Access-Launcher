@@ -54,7 +54,7 @@ if steam:
 
 BIN=''
 if args.bin:
-    check_end='Facotrio.exe' if sys.platform == WIN else 'factorio'
+    check_end='Factorio.exe' if sys.platform == WIN else 'factorio'
     for arg in launch_args:
         if arg.endswith(check_end):
             if os.path.isfile(arg):
