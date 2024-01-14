@@ -7,7 +7,7 @@ import config
 import update_factorio
 import fa_paths
 from fa_menu import do_menu
-import __main__ as main
+import launch_and_monitor
 
 __ACCESS_LIST_PATH : Final[str] = os.path.join(fa_paths.WRITE_DIR,"server-whitelist.json")
 
@@ -17,8 +17,16 @@ def get_game_list():
     with update_factorio.opener.open(url) as fp:
         games = json.load(fp)
     with open("all_games",'w') as fp:
-        json.dump(games,fp)
+        json.dump(games,fp, indent=2)
     return games
+
+def get_game(game_id):
+    url=f"https://multiplayer.factorio.com/get-game-details/{game_id}"
+    with update_factorio.opener.open(url) as fp:
+        game = json.load(fp)
+    with open(f"game_{game_id}",'w') as fp:
+        json.dump(game,fp, indent=2)
+    return game
 
 def get_filtered_game_list():
     games = get_game_list()
@@ -52,9 +60,14 @@ def remove_friend(friend:str):
         fp.truncate()
         json.dump(list(friends),fp, indent=2)
     return 0
+def multiplayer_join(game_id):
+    game=get_game(game_id)
+    if fa_paths.BIN.count('steam') and 'steam_id' in game:
+        launch_and_monitor.launch_with_params(['--join-game-by-steam-id',game['steam_id']])
+    else:
+        launch_and_monitor.connect_to_address(game['host_address'])
 
-
-def multiplayer_launch(game):
+def multiplayer_host(game):
     with config.current_conf:
         if config.multiplayer_lobby.name == "":
             config.multiplayer_lobby.name="FactorioAccessDefault"
@@ -83,7 +96,7 @@ def multiplayer_launch(game):
             "save-name": game[:-4]
         }
     update_factorio.set_player_data(player)
-    return main.launch_with_params([],announce_press_e=True)
+    return launch_and_monitor.launch_with_params([],announce_press_e=True,tweak_modified=os.path.join(fa_paths.SAVES,game))
 
 def add_toggle_setting(menu,setting,header):
     name = header+": "
@@ -146,7 +159,7 @@ def username_menu():
 
 def games_with_friends_menu():
     games=get_filtered_game_list()
-    return {game['name']: game['host_address'] for game in games}
+    return {game['name']: game['game_id'] for game in games}
 
 
 if __name__ == "__main__":

@@ -3,9 +3,10 @@ import sys
 import re
 import subprocess
 import shutil
+import pathlib
 
-import fa_menu
 from __main__ import __file__ as main_file
+from fa_arg_parse import args, dprint, launch_args
 
 
 if getattr(sys, 'frozen', False):
@@ -13,8 +14,7 @@ if getattr(sys, 'frozen', False):
 else:
     MY_BIN = main_file
 
-MY_CONFIG_DIR = os.path.dirname(MY_BIN)
-    
+MY_CONFIG_DIR = os.path.dirname(MY_BIN)    
 
 MAC="Darwin"
 WIN="win32"
@@ -26,9 +26,44 @@ WRITE_DATA_MAP={
     LIN:'~/.factorio'
 }
 
+steam = 'SteamClientLaunch' in os.environ
+dprint(f"steam={steam}")
+
+if steam:
+    _user=os.environ['SteamAppUser']
+    _game=os.environ['SteamAppId']
+    steam_game_path=pathlib.Path(os.getcwd())
+    _steam_path=steam_game_path.joinpath('..','..','..')
+    _steam_config=_steam_path.joinpath('config','config.vdf')
+    with open(_steam_config,encoding='utf8') as fp:
+        for _line in fp:
+            if _user in _line:
+                break
+        _pat=re.compile(r'\s*"?SteamID"?\s+"?(\d+)')
+        for _line in fp:
+            if m:=_pat.match(_line):
+                _steam_id = m[1]
+                break
+        else:
+            raise ValueError("Unable to find SteamID. Please report this error to Factorio Access Launcher mantainer via discord issues channel.")
+    _account_id=str(((1<<32)-1)&int(_steam_id))
+    steam_write_folder=_steam_path.joinpath('userdata',_account_id,_game,'remote')
+    steam_write_folder=os.path.abspath(steam_write_folder)
+    dprint(steam_write_folder)
+
+
 BIN=''
-if len(sys.argv) > 1 and os.path.isfile(sys.argv[1]):
-    BIN=sys.argv[1]
+if args.bin:
+    check_end='facotrio.exe' if sys.platform == WIN else 'factorio'
+    for arg in launch_args:
+        if arg.endswith(check_end):
+            if os.path.isfile(arg):
+                BIN=arg
+                break
+    if not BIN:
+        print('It looks like a command line option was given to launch factorio, but we couldn\'t figure out where factorio is located. PLease add the --executable-path option with the location of the facotrio binary to be launched')
+        input("press enter to exit...")
+        raise SystemExit
 else:
     exe_map = {
         WIN:[
@@ -42,7 +77,8 @@ else:
             ],
         LIN:[
             "./bin/x64/factorio",
-            r'~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio'
+            r'~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio',
+            r'~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio'
             ]
         }
     for path in exe_map[sys.platform]:
@@ -50,8 +86,9 @@ else:
         if os.path.isfile(path):
             BIN = os.path.abspath(path)
             break
-    if BIN.find('steam') >= 0:
-        print("Looks like you have a steam installed version of factorio. Please launch through steam after updating it's command line parameters to the following:")
+        dprint(f"checked:{path}")
+    if BIN.find('steam') >= 0 and not steam:
+        print("Looks like you have a steam installed version of factorio, but didn't launch this launcher through steam. Please launch through steam after updating it's command line parameters to the following:")
         print('"' + os.path.abspath(MY_BIN) + '" %command%')
         input("press enter to exit")
         raise SystemExit
@@ -71,78 +108,102 @@ def proccess(path):
     path = os.path.abspath(path)
     return path
 
-config_path='config/config.ini'
 
-configs=[]
-if len(sys.argv) > 2 and os.path.isfile(sys.argv[2]):
-    configs.append(sys.argv[2])
-    
-configs.append("./"+config_path)
-
-#try to append another config path from config-path.cfg
-try:
-    fp=open(proccess('__PATH__executable__/../../config-path.cfg'),encoding='utf8')
-except FileNotFoundError:
-    configs.append(proccess(os.path.join('__PATH__system-write-data__',config_path)))
+if args.config:
+    try:
+        fp=open(args.config)
+    except FileNotFoundError:
+        print(f"could not find config file:{args.config}")
+        input("press enter to exit...")
+        raise SystemExit
+    CONFIG=args.config        
 else:
-    with fp:
-        for line in fp:
-            match = re.match(r'config-path=(.*)',line)
-            if match:
-                configs.append(os.path.join(proccess(match.group(1)),'config.ini'))
-                break
 
-
-CONFIG=''
-WRITE_DIR=''
-READ_DIR=''
-
-
-def find_config():
-    global CONFIG
-    global WRITE_DIR
-    global READ_DIR
-    for path in configs:
-        try:
-            fp=open(path,encoding='utf8')
-        except FileNotFoundError:
-            continue
-        CONFIG=path
+    config_path='config/config.ini'
+    configs=[os.path.join(MY_CONFIG_DIR,config_path)]
+    #try to append another config path from config-path.cfg
+    try:
+        fp=open(proccess('__PATH__executable__/../../config-path.cfg'),encoding='utf8')
+    except FileNotFoundError:
+        configs.append(proccess(os.path.join('__PATH__system-write-data__',config_path)))
+    else:
         with fp:
             for line in fp:
-                if match:=re.match(r'write-data=(.*)',line):
-                    WRITE_DIR = proccess(match[1])
-                if match:=re.match(r'read-data=(.*)',line):
-                    READ_DIR = proccess(match[1])
-                if WRITE_DIR and READ_DIR:
+                match = re.match(r'config-path=(.*)',line)
+                if match:
+                    configs.append(os.path.join(proccess(match.group(1)),'config.ini'))
                     break
-        break
-find_config()
-if not CONFIG:
-    print('Unable to find the factorio config. Would you like to create a configuration in the default location?')
-    if fa_menu.getAffirmation():
+
+    CONFIG=None
+    def get_config():
+        for path in configs:
+            if os.path.isfile(path):
+                return path
+    CONFIG=get_config()
+    if not CONFIG:
+        import fa_menu
+        print('Unable to find the factorio config. Would you like to create a configuration in the default location?')
+        if not fa_menu.getAffirmation():
+            raise SystemExit
         print("Creating Config, this will take while.")
         facotrio_process=subprocess.Popen([BIN,'--disable-audio'],stdout=subprocess.PIPE)
         for bline in facotrio_process.stdout:
             line=bline.decode().strip()
             if line.endswith("Factorio initialised"):
                 facotrio_process.terminate()
-        find_config()
+        CONFIG=get_config()
         if not CONFIG:
             input("Configuration creation failed. Please report to Factorio Access Maintainers\nPress Enter to exit.")
             raise SystemExit
-    else:
-        raise SystemExit
-
+    launch_args.append('-c')
+    launch_args.append(CONFIG)
+dprint(f"CONFIG={CONFIG}")
+WRITE_DIR=''
+READ_DIR=''
+with open(CONFIG,encoding='utf8') as fp:
+    for line in fp:
+        if match:=re.match(r'write-data=(.*)',line):
+            WRITE_DIR = proccess(match[1])
+        if match:=re.match(r'read-data=(.*)',line):
+            READ_DIR = proccess(match[1])
+        if WRITE_DIR and READ_DIR:
+            break
 if not os.path.isdir(WRITE_DIR):
+    dprint(f"bad write dir:[{WRITE_DIR}]")
     raise Exception("Unable to find factorio write directory")
+dprint(f"WRITE_DIR={WRITE_DIR}")
 if not os.path.isdir(READ_DIR):
+    dprint(f"bad read dir:[{READ_DIR}]")
     raise Exception("Unable to find factorio data directory")
+dprint(f"READ_DIR={READ_DIR}")
 
-MODS=os.path.join(WRITE_DIR,'mods') #todo customize according to args
+
+if args.mod_directory:
+    MODS=args.mod_directory
+else:
+    MODS=os.path.join(WRITE_DIR,'mods')
+if not os.path.isdir(MODS):
+    if os.path.isfile(MODS):
+        print("Mod Directory cannot be a file.")
+        input("Press Enter to exit...")
+        raise SystemExit
+    print(f"The mod folder {MODS}, would you like to create it?")
+    if not fa_menu.getAffirmation():
+        raise SystemExit
+    os.mkdir(MODS)
+dprint(f"MODS={MODS}")
+
 SAVES=os.path.join(WRITE_DIR,'saves')
-PLAYER_DATA = os.path.join(WRITE_DIR, "player-data.json")
+dprint(f"SAVES={SAVES}")
+
+
+PLAYER_DATA = os.path.join(steam_write_folder if steam else WRITE_DIR,"player-data.json")
+PLAYER_DATA = os.path.abspath(PLAYER_DATA)
+dprint(f"PLAYER_DATA={PLAYER_DATA}")
+
+
 TEMP = os.path.join(WRITE_DIR,  'temp')
+dprint(f"TEMP={TEMP}")
 
 MOD_NAME = "FactorioAccess"
 __my_mod_folder = os.path.join(MY_BIN,'..','mods')
