@@ -92,6 +92,7 @@ else:
         print('"' + os.path.abspath(MY_BIN) + '" %command%')
         input("press enter to exit")
         raise SystemExit
+    launch_args.insert(0,BIN)
 if not BIN:
     input("Could not find factorio. If you've installed facorio in a standard way please contact the mod developers with your system details. If you're using the protable version please either place this launcher in the folder with the data and bin folders or launch with the factorio execuable path as an argument.")
     raise SystemExit
