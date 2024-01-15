@@ -1,5 +1,6 @@
 from typing import Any,Callable
 import re
+import weakref
 
 from translations import translate,localised_str
 import fa_paths
@@ -101,12 +102,17 @@ def do_menu(branch, name, zero_item=("Back",0)):
 back_menu_item=None
 
 class menu_item(object):
-    __slots__=["name","submenu","add_back"]
-    def __init__(self, name:localised_str|Callable|dict,submenu,add_back=True) -> None:
+    __slots__=["name","submenu","desc","add_back"]
+    def __init__(self,
+                 name:localised_str|Callable|dict,
+                 submenu:Callable|dict,
+                 desc:localised_str|None = None,
+                 add_back=True) -> None:
         self.add_back=add_back
         self.name=name
+        self.desc=desc
         if isinstance(submenu,dict):
-            self.submenu=[subsubmenu if isinstance(subsubmenu,menu_item) else menu_item(sub_name,subsubmenu) for sub_name,subsubmenu in submenu.items()]
+            submenu=[subsubmenu if isinstance(subsubmenu,menu_item) else menu_item(sub_name,subsubmenu) for sub_name,subsubmenu in submenu.items()]
         self.submenu=submenu
         if not callable(self.submenu) and add_back:
             self.submenu=[back_menu_item]+self.submenu
@@ -116,9 +122,9 @@ class menu_item(object):
         return self.name
     def get_menu_name(self,*args):
         if callable(self.name):
-            return args[-1]
+            return self.name(*args)
         return self.name
-    def do(self,*args):
+    def __call__(self,*args):
         if callable(self.submenu):
             ret = self.submenu(*args)
             try:
@@ -129,36 +135,37 @@ class menu_item(object):
             return ret
         while True:
             this_name=self.get_menu_name(*args)
-            working_menu=self.add_back.copy()
-            working_menu+=self.submenu
+            if self.desc:
+                this_name=('',this_name,'\n',self.desc)
             options={}
-            for submenu in working_menu:
+            for submenu in self.submenu:
                 sub_options=submenu.get_names()
                 if isinstance(sub_options,dict):
                     for sub_name, sub_arg in sub_options:
-                        options[sub_name]=(submenu,[sub_arg])
+                        options[sub_name]=(submenu,(sub_arg,))
                 else:
-                    options[sub_options]=(submenu,[])
+                    options[sub_options]=(submenu,())
             keys=list(options)
-            selected_menu,arg = options[keys[select_option(keys, prompt=translate(this_name), one_indexed= not self.add_back)]]
-            ret = selected_menu.do(*(args+arg))
+            opts=[translate(key) for key in keys]
+            selected_menu,arg = options[keys[select_option(opts, prompt=translate(this_name), one_indexed= not self.add_back)]]
+            ret = selected_menu(*(args+arg))
             if ret > 0:
                 return ret-1
 back_menu_item=menu_item("Back",back_func,False)
 
-class setting_menu(object):
+class setting_menu(menu_item):
     __slots__=["myname","desc","default","val","submenu"]
     def __init__(
             self,
             name:localised_str,
-            desc:localised_str|None,
-            default:Any,
-            val:Any)-> None:
+            desc:localised_str|None = None,
+            default:Any = '',
+            val:Any = '')-> None:
         self.myname = name
         self.desc = desc
         self.default = default
         self.val = val
-        self.submenu = self.edit
+        #self.submenu = self.edit
     def name(self,*args):
         return ("",self.myname,":",self.val_to_string())
     def get_options(self):
@@ -167,9 +174,9 @@ class setting_menu(object):
         pass
     def val_to_string(self):
         return str(self.val)
-    def edit(self):
+    def __call__(self):
         while True:
-            print(translate(self.name))
+            print(translate(self.name()))
             if self.desc is not None:
                 print(translate(self.desc))
             print(f"Current value:{self.val_to_string()}")
@@ -180,9 +187,7 @@ class setting_menu(object):
                 except:
                     print("Invalid value")
                     continue
-                else:
-                    break
-            break
+            return 0
 
 class setting_menu_str(setting_menu):
     def __init__(self, name: localised_str, desc: localised_str | None, default: str, val: str) -> None:
@@ -191,26 +196,52 @@ class setting_menu_str(setting_menu):
         self.val=inp
 
 class setting_menu_int(setting_menu):
-    def __init__(self, name: localised_str, desc: localised_str | None, default: int, val: int) -> None:
+    def __init__(self, name: localised_str, desc: localised_str | None =None, default: int =0, val: int =0) -> None:
         super().__init__(name, desc, default, val)
     def input_to_val(self, inp: str):
         self.val=int(inp)
 
 class setting_menu_float(setting_menu):
-    def __init__(self, name: localised_str, desc: localised_str | None, default: float, val: float) -> None:
+    def __init__(self, name: localised_str, desc: localised_str | None =None, default: float =1, val: float =1) -> None:
         super().__init__(name, desc, default, val)
     def input_to_val(self, inp: str):
         self.val=float(inp)
 
 class setting_menu_bool(setting_menu):
-    def __init__(self, name: localised_str, desc: localised_str | None, default=True, val=True) -> None:
+    def __init__(self, name: localised_str , desc: localised_str | None =None, default=True, val=True) -> None:
         super().__init__(name, desc, default, val)
-    def input_to_val(self, inp: str):
-        if re.fullmatch(r"y|yes|true|checke?d?|enabled?",inp,re.IGNORECASE):
-            self.val=True
-        elif re.fullmatch(r"n|no|false|unchecke?d?|disabled?",inp,re.IGNORECASE):
-            self.val=False
-        else:
-            raise ValueError("Could not figure out if it was yes or no, Acceptable values are y, n, yes, no, true, false, check, uncheck, enable, disable")
     def val_to_string(self):
-        return ("gui-map-generator.enabled",) if self.val else ("gui-mod-info.status-disabled",)
+        return translate(("gui-map-generator.enabled",) if self.val else ("gui-mod-info.status-disabled",))
+    def name(self,*args):
+        ret=("",self.myname,":",self.val_to_string())
+        if self.desc:
+            ret=ret+(" ",self.desc)
+        return ret
+    def __call__(self):
+        self.val = not self.val
+        return 0
+
+class setting_menu_option(menu_item):
+    def __init__(self, name: localised_str, val) -> None:
+        self.name=name
+        self.val=val
+    def __call__(self, *args):
+        self.parent().val = self.val
+        return 1
+
+
+class setting_menu_options(setting_menu):
+    def __init__(self, name: localised_str, submenu:dict,desc: localised_str | None =None, default: Any = '', val: Any = '') -> None:
+        super().__init__(name, desc, default, val)
+        self.submenu = [setting_menu_option(subname,subval) for subname,subval in submenu.items()]
+        for sub in self.submenu:
+            sub.parent=weakref.ref(self)
+        self.add_back=True
+        self.submenu = [back_menu_item]+self.submenu
+    def val_to_string(self):
+        maybe=[sub.name for sub in self.submenu[1:] if sub.val==self.val]
+        if len(maybe):
+            return translate(maybe[0])
+        return self.val
+    def __call__(self):
+        return menu_item.__call__(self)

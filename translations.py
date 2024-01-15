@@ -271,7 +271,7 @@ def read_cfg(fp :Iterable[str],conf=False,ret=defaultdict(dict)):
                     continue
                 if key[0]==';':
                     continue
-                current_cat[key]=part[1].rstrip()
+                current_cat[key]=part[1].rstrip().replace(r'\n','\n')
         else:
             return ret
 
