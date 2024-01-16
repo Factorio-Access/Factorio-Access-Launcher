@@ -1,10 +1,88 @@
-# Version 5.0.0 BETA
+# Version 0.5.1 BETA
+
+Not released yet.
+
+Summary not written yet. Changelog is still being written.
+
+## New features
+
+- New launcher features ***
+new features:
+  1. You can use command line arguments meant for Factorio and they will be passed along, with the exception of -h/--help which prints our help instead.
+  2. Command line switch for launcher debugger: --fa-debug, you can include this in a shortcut, so you never forget to turn on debugging and then have to restart factorio to turn it on. (You can still turn it on after launching by typing debug at any menu.)
+  3. "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified
+  4. "host save" now compensates for steam using a different player-data.json file.
+  5. Better steam/vs not detection.
+  6. When joining a multiplayer game it will prefer steam networking if available.
+
+- New radar type: Access Radar
+  * This is a custom version of the regular radar that was designed for this mod. It has the same dimensions and appearance except for a slightly darker color.
+  * As advantages, this radar type has more than twice the charting range and more than six times the charting speed as the regular radar.
+  * As disadvantages, this radar type consumes twice as much power as the regular radar and costs twice as many ingredients to craft. Also, for sighted players, the nearby chunk visibility provided by this radar type has a smaller range and a lower refresh rate (exactly sufficient when at full power).
+  * For both radar types, it takes about 6 hours to completely chart all chunks within range, although building more radars can cut down this time significantly.
+  
+- Examining a radar will now read out its charting progress and range.
+  * Chunks that have been already charted are also counted towards this progress.
+  * Radars are programmed to always focus on charting chunks that have not yet been charted by other radars or any other means. Therefore a radar will continuously work to reach 100% charting progress before it begins to re-scan charted areas. 
+  * Building more radars in the same area will linearly increase the charting speed for all of them, but note that the Access Radar is six times faster than the regular radar.
+  * A radar that has charted 100% can be removed without losing any functionality for the entity scanner tool.
+
+- New mod sounds have been added, and some sounds have been replaced with more suitible ones. ***
+  * When you wrap around the edge of an inventory, a new scrolling sound plays.
+  * The scanner pulse sound has been changed to sound more like a scanner device.
+  * The player shield taking damage sound has been changed to sound more likr an energy shield.
+*  The high level train alert sound has been changed to sound more like a train whistle, but also the old sound will be repurposed because it is a useful part of the vanilla library.
+*  New alert sounds have been added fo the new smooth walking bump and stuck alerts.
+
+- Added smooth walking bump alert.
+  * If your character is running in a straight line in a cardinal direction, and they get shifted laterally because of bumping into an object or running into a cliff edge, then you will hear the bump alert beep. 
+  * Bumping shifts you at most by one tile at a time. No action is required.
+  * If at a cliff edge, you can also hear a the sound of sliding rocks or gravel.
+  
+- Added smooth walking stuck alert.
+ * If your character is running but is not changing position due to being stuck, the stuck alert beep will begin to play continously after about 1 second of being stuck.
+ * You can almost always get unstuck by moving into a new direction.
+
+- Added directional entity scanning. Press "SHIFT + END" to make the entity scanner check only the direction that you are currently facing. 
+  * You can use this feature fpr cases like identifying the obstacles ahead when building a railway.
+  * You can face and scan a diagonal direction when in smooth walking mode.
+  * The scan angle is slightly wider for objects within 20 tiles so that they are not missed, but this feature is still not perfect at capturing all the.
+
+- Other additions
+  * When you open the crafting queue, it now reads how many recipe instances in total are in the queue. test***
+  * When you unpause the game, the game reads it out. It would do this for pausing too but this also pauses the narrator.
+  
+
+## Changes
+
+- The menu search function is now activated ny pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to run search, and it also is a more intuitive keybind that matches most other computer programs.
+
+- From now on, the scanner sorting by distance always takes the player position as a reference point because the cursor changes position when navigating the list and can often cause confusion. todo test***
+
+- In multiplayer mode, everyone's cursor boxes are now drawn for everyone, with each cursor given its own character's color.
+
+
+## Bug fixes 
+
+- Fixed: Nudging a building now correctly applies a check for whether the new location is clear. This should prevent ending up with incorrectly overlapping buildings.
+
+- Fixed: Splitter settings can now be applied to all splitter types.
+
+- Fixed: Walking in telestep mode now sets the character walking speed to zero, which prevents characters from moving unintentionally in multiplayer mode.
+
+- Fixed: An entity damaged alert will no longer be sounded if the entity loses no health despite being attacked.
+
+- Fixed a crash in the rail analyzer when it is unable to find a reference rail.
+
+- Fixed a crash for placing your first roboport, which was due to not being able to find other roboports nearby. 
+
+# Version 0.5.0 BETA
 
 Released on 12th January, 2024.
 
 In this update we have added all the basics and some of the extras for logistic robot and roboport support. Additional extras will be added in future updates. Another big feature for this update is that you can now search most menus, and with localised names!
 
-## New Features
+## New features
 
 - Added logistic chest support. Selected items refers to items in hand or items selected within the chest inventory while the chest menu is open.
   * For requester and buffer chests, you can now tune the requested minimum amount for a selected item with "SHIFT + L" and "CONTROL + L".
@@ -80,7 +158,7 @@ Pre-release published on 7th January, 2024.
 
 This is a pre-release of the logistics robots update before I need to go on a development break. Personal logistics are now available and we have verified that you can use construction robots for automatic repair and ghost replacement. The update also brings some tweaks and bugfixes for other features.
 
-## New Features
+## New features
 
 - Added support for personal logistics requests for items. You can read or modify them, but you need to be within about 50 tiles of a roboport for the robots to work. The following controls apply for items in hand when no menus are open, and for selected item slots when the player inventory is open.
   * Check the currently set logistic request for the selected item by pressing "L".
@@ -467,7 +545,7 @@ In this update we have transport belts report more information about items movin
 
 - None.
 
-## Bugfixes
+## Bug fixes
 
 - Fixed a new crash that occurs when you control-click with an empty hand.
 
@@ -526,7 +604,7 @@ We have also improved the launcher and added a new demo map. We also explored if
 
 - Tweaked rail crossing alarm system to extend its range and improve its visuals.
   
-## Bugfixes
+## Bug fixes
 
 - Reduced the reading of flying text after removing objects. This should minimize lag and crashes due to too much flying text.
 
@@ -556,7 +634,7 @@ Released November 3rd, 2023.
 
 This is a fairly small update about fixing recent major bugs and requested features. 
 
-## New Features
+## New features
 
 - You can now change how long a train waits at its stations.
   * This is done on the train menu. To apply the changed number, you need to recreate the instant schedule.
@@ -581,7 +659,7 @@ This is a fairly small update about fixing recent major bugs and requested featu
 
 - Many changes under the hood for code cleanup. More is on the way so that we can allow better user settings such as choosing your own keybinds.
 
-## Bugfixes
+## Bug fixes
 
 - Hopefully actually fixed the multiplayer bug of only the host player being able to scan for most resources (the aggregated ones).
 
@@ -619,7 +697,7 @@ This is a fairly small update about fixing recent major bugs and requested featu
 
 Released on October 29th, 2023.
 
-## New Features
+## New features
 
 - Added vanilla mode to make the mod more similar to vanilla Factorio for sighted players playing multiplayer.
   * Toggle this mode with CONTROL + ALT + V
@@ -664,7 +742,7 @@ Released on October 29th, 2023.
 
 - Flying text in connection to mining entities is no longer read unless you are moving.
 
-## Bug Fixes
+## Bug fixes
 
 - The cursor now more effectively centers on entities so that they can be read during smooth walking.
 
@@ -711,7 +789,7 @@ Released on October 29th, 2023.
 
 Released on October 26th, 2023.
 
-## New Features
+## New features
 
 - The scanner and teleporter now have sound effects and visual effects.
 
@@ -736,7 +814,7 @@ Released on October 26th, 2023.
 
 - Smooth walking mode now detects every entity including ores on the ground.
 
-## Bug Fixes
+## Bug fixes
 
 - Fixed some crashes related to fast travel.
 
@@ -764,7 +842,7 @@ Released on October 26th, 2023.
 
 Released on October 21st, 2023.
 
-## New Features
+## New features
 
 - Added a config file editor where you can edit game settings that appear in the config file. This includes settings such as autosave intervals and keyboard controls.
 
@@ -819,7 +897,7 @@ Released on October 21st, 2023.
 
 - Your hand is now cleared when you enter or exit a vehicle.
 
-## Bug Fixes
+## Bug fixes
 
 - Fixed issues with some entities such as transport belts not being detected during smooth walking.
 
@@ -851,7 +929,7 @@ Released on October 21st, 2023.
 
 Released on October 9th, 2023.
 
-## New Features
+## New features
 
 - New Launcher (so you need to use the new release). The launcher supports a wider range of vocalizers including built-in ones.
 
@@ -863,7 +941,7 @@ Released on October 9th, 2023.
 
 - The currently selected scanner entity is visually marked with a white circle.
 
-## Bug Fixes
+## Bug fixes
 
 - Fixed a fatal crash that occured when a ore tile is depleted.
 
@@ -893,7 +971,7 @@ Released on October 6th, 2023.
 
 Note, as a beta release, there may be more bugs and compatibility issues than usual. While we try to minimize these, it is important to protect your save files by saving under a new name as soon as you open a version 0.3 save file in version 0.4.
 
-## New Features
+## New features
 
 - General vehicle support
   * Entering and exiting a vehicle will notify you about the vehicle name.
@@ -1021,7 +1099,7 @@ Note, as a beta release, there may be more bugs and compatibility issues than us
 
 - Extending a rail after building a train stop sometimes causes problems. For now, you should remove the train stop anyway because they need to be near the ends of rail tracks.  
 
-## Bugfixes
+## Bug fixes
 
 - Fixed a bug where the inventory is opened directly when a Factorio Access menu is closed.
 
@@ -1059,7 +1137,7 @@ Note, as a beta release, there may be more bugs and compatibility issues than us
 
 Updated 10/26/2022
 
-## New Features
+## New features
 
 -Build lock. When enabled, the game will continuously try to build behind the player as they walk, or under the cursor in cursor mode. Useful for tasks like building long transport belts. Press CONTROL + B to enable or disable. It also automatically gets disabled when you switch into or out of cursor mode or empty your hand and take a step.
 
@@ -1085,7 +1163,7 @@ Updated 10/26/2022
 
 Updated 9/30/2022
 
-## New Features
+## New features
 
 -New scanner categorization format.  Scanned entities will now be categorized by what they produce.  You can now tell the difference between a mining drill producing iron, and one producing copper, all from the scan list.
 
