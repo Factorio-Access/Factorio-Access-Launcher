@@ -8,9 +8,9 @@ import fa_menu
 from translations import localised_str
 
 
-class autoplace_enable_disable_menu(fa_menu.menu_item):
+class enable_disable_menu(fa_menu.menu_item):
     def __init__(self, name: localised_str | Callable[..., Any] | dict, submenu: dict, desc: localised_str | None = None) -> None:
-        enabler=autoplace_enable_disable_submenu(("gui-map-generator.enabled",))
+        enabler=enable_disable_submenu(("gui-map-generator.enabled",))
         enabler.parent=weakref.ref(self)
         my_submenu={'enabled':enabler}
         my_submenu.update(submenu)
@@ -28,15 +28,24 @@ class autoplace_enable_disable_menu(fa_menu.menu_item):
         else:
             self.submenu=self.submenu[:2]
 
-class autoplace_enable_disable_submenu(fa_menu.setting_menu_bool):
+class enable_disable_submenu(fa_menu.setting_menu_bool):
     def __call__(self):
         super().__call__()
         parent=self.parent()
-        if not self.val:
-            for sub in parent.submenu[2:]:
-                sub.val=0
+        if 'set_others' in self.__dict__:
+            if not self.val:
+                for sub in parent.submenu[2:]:
+                    sub.val=0
+            else:
+                for sub in parent.submenu[2:]:
+                    sub.val=sub.default
         parent.remake_submenu()
         return 0
+
+class autoplace_enable_disable_menu(enable_disable_menu):
+    def __init__(self, name: localised_str | Callable[..., Any] | dict, submenu: dict, desc: localised_str | None = None) -> None:
+        super().__init__(name, submenu, desc)
+        self.submenu[1].set_others = True
 
 class menu_setting_inverse_float(fa_menu.setting_menu_float):
     def val_to_string(self):
@@ -201,7 +210,7 @@ menu={
             "Difficulty":msj["difficulty_settings"]["technology_difficulty"],
             "Price multiplier":msj["difficulty_settings"]["technology_price_multiplier"],
         },
-        ('gui-map-generator.pollution',):autoplace_enable_disable_menu(('gui-map-generator.pollution',),{
+        ('gui-map-generator.pollution',):enable_disable_menu(('gui-map-generator.pollution',),{
             "Absorption modifier":msj["pollution"]["ageing"],
             "Attack cost modifier":msj["pollution"]["enemy_attack_pollution_consumption_modifier"],
             "Minimum to damage trees":msj["pollution"]["min_pollution_to_damage_trees"],
@@ -242,7 +251,7 @@ for name,control in data['autoplace-control'].items():
     mgsj["autoplace_controls"][control['name']]=submenu
 
 menu[("gui-map-generator.terrain-tab-title",)].update({
-    "Cliffs":autoplace_enable_disable_menu(("gui-map-generator.cliffs",),{
+    "Cliffs":enable_disable_menu(("gui-map-generator.cliffs",),{
         "Frequency":mgsj["cliff_settings"]["cliff_elevation_interval"],
         "Conitnuity":mgsj["cliff_settings"]["richness"]
     }),
@@ -259,14 +268,14 @@ menu[("gui-map-generator.terrain-tab-title",)].update({
 menu[("gui-map-generator.enemy-tab-title",)].update({
     "Peaceful mode":mgsj["peaceful_mode"],
     "Starting area size":mgsj["starting_area"],
-    "Enemy Expansion":autoplace_enable_disable_menu(("gui-map-generator.enemy-expansion-group-tile",),{
+    "Enemy Expansion":enable_disable_menu(("gui-map-generator.enemy-expansion-group-tile",),{
         "Maximum expanstion distance":msj["enemy_expansion"]["max_expansion_distance"],
         "Minimum group size":msj["enemy_expansion"]["settler_group_min_size"],
         "Maximum group size":msj["enemy_expansion"]["settler_group_max_size"],
         "Minimum cooldown":msj["enemy_expansion"]["min_expansion_cooldown"],
         "Maximum cooldown":msj["enemy_expansion"]["max_expansion_cooldown"],
     }),
-    "Evolution":autoplace_enable_disable_menu(("gui-map-generator.evolution",),{
+    "Evolution":enable_disable_menu(("gui-map-generator.evolution",),{
         "Time factor":msj["enemy_evolution"]["time_factor"],
         "Destroy factor":msj["enemy_evolution"]["destroy_factor"],
         "Pollution factor":msj["enemy_evolution"]["pollution_factor"]
@@ -287,3 +296,27 @@ class SettingEncoder(json.JSONEncoder):
 
 main_menu=fa_menu.menu_item('Main Menu',menu,None,False)
 main_menu()
+
+def set_defaults(defs,obj):
+    for name, subobj in obj.items():
+        if name not in defs:
+            continue
+        if isinstance(subobj,dict):
+            set_defaults(defs[name],subobj)
+            continue
+        if not isinstance(subobj,fa_menu.setting_menu):
+            raise TypeError("oops")
+        obj.default=defs[name]
+
+def set_vals(preset,obj):
+    for name, subobj in obj.items():
+        have_preset=preset and name in preset
+        if isinstance(subobj,dict):
+            set_defaults(preset[name] if have_preset else None ,subobj)
+            continue
+        if not isinstance(subobj,fa_menu.setting_menu):
+            raise TypeError("oops")
+        if have_preset:
+            obj.val=preset[name]
+        else:
+            obj.val=obj.default
