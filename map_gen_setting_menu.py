@@ -285,6 +285,32 @@ mgsj["cliff_settings"]["enabled"]=menu[("gui-map-generator.terrain-tab-title",)]
 msj["enemy_expansion"]["enabled"]=menu[("gui-map-generator.enemy-tab-title",)]["Enemy Expansion"].submenu[1]
 msj["enemy_evolution"]["enabled"]=menu[("gui-map-generator.enemy-tab-title",)]["Evolution"].submenu[1]
 
+
+{
+    "order":"Order",
+    "basic_settings":{
+        "terrain_segmentation":mgsj["terrain_segmentation"],
+        "water":mgsj["water"],
+        "autoplace_controls":mgsj["autoplace_controls"],
+        "property_expression_names":mgsj["property_expression_names"],
+        "starting_points":None,#in mgsj
+        "seed": mgsj["seed"],
+        "width": mgsj["width"],
+        "height": mgsj["height"],
+        "starting_area": mgsj["starting_area"],
+        "peaceful_mode": mgsj["peaceful_mode"],
+        "cliff_settings":mgsj["cliff_settings"],
+        "autoplace_settings":None #missing?
+    },
+    "advanced_settings":{
+        "pollution":msj["pollution"],
+        "enemy_evolution":msj["enemy_evolution"],
+        "enemy_expansion":msj["enemy_expansion"],
+        "difficulty_settings":msj["difficulty_settings"]
+    } 
+}
+
+
 class SettingEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, fa_menu.menu_item):
@@ -293,9 +319,13 @@ class SettingEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-
-main_menu=fa_menu.menu_item('Main Menu',menu,None,False)
+main_menu=fa_menu.menu_item('Main Menu',menu,None,True)
 main_menu()
+
+se=SettingEncoder(ensure_ascii=False,check_circular=False,indent=2)
+
+print(se.encode(mgsj))
+print(se.encode(msj))
 
 def set_defaults(defs,obj):
     for name, subobj in obj.items():
