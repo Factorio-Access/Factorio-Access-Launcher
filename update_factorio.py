@@ -240,7 +240,7 @@ def install():
 
 def set_player_data(player):
     with open(PLAYER_DATA,'w',encoding='utf8') as player_file:
-        json.dump(player,player_file,ensure_ascii=False)
+        json.dump(player,player_file,ensure_ascii=False,indent=2)
 
 def get_player_data(quiet=False):
     try:
