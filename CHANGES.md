@@ -4,13 +4,14 @@ Not released yet.
 
 Summary not written yet. Changelog is still being written.
 
+This update brings several smaller new features and changes to increase overall accessibility. Additions and changes include launcher improvements, 
+
 ## New features
 
-- New launcher features ***
-new features:
+- New launcher features
   1. You can use command line arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead. (at which point?***)
   2. Command line switch for the launcher's debugger mode: "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. (You can still turn it on after launching by typing "debug" at any launcher menu.)
-  3. When joining a multiplayer game it will prefer steam networking if available.
+  3. When joining a multiplayer game, the launcher will prefer Steam networking if available.
   4. Fix: "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified.
   5. Fix: "host save" now compensates for steam using a different player-data.json file.
   6. Fix: Better steam/vs not detection.
@@ -82,6 +83,7 @@ new features:
 - Fixed a crash for placing your first roboport, which was due to not being able to find other roboports nearby.
 
 - Fixed a bug that prevented the search box more than once because the old one was not deleted.
+
 
 # Version 0.5.0 BETA
 
