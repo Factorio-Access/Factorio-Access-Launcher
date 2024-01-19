@@ -8,12 +8,19 @@ Summary not written yet. Changelog is still being written.
 
 - New launcher features ***
 new features:
-  1. You can use command line arguments meant for Factorio and they will be passed along, with the exception of -h/--help which prints our help instead.
-  2. Command line switch for launcher debugger: --fa-debug, you can include this in a shortcut, so you never forget to turn on debugging and then have to restart factorio to turn it on. (You can still turn it on after launching by typing debug at any menu.)
-  3. "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified
-  4. "host save" now compensates for steam using a different player-data.json file.
-  5. Better steam/vs not detection.
-  6. When joining a multiplayer game it will prefer steam networking if available.
+  1. You can use command line arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead. (at which point?***)
+  2. Command line switch for the launcher's debugger mode: "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. (You can still turn it on after launching by typing "debug" at any launcher menu.)
+  3. When joining a multiplayer game it will prefer steam networking if available.
+  4. Fix: "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified.
+  5. Fix: "host save" now compensates for steam using a different player-data.json file.
+  6. Fix: Better steam/vs not detection.
+
+- New mod sounds have been added and most mod sounds were changed.
+  * When you wrap around the edge of an inventory, a new scrolling type of sound plays.
+  * The scanner has a pulsing sound when it runs.
+  * Sounds have been added for the new smooth walking bump alert and stuck alert.
+  * Other sounds, including enemy alerts, train alerts, and damage alerts, have all been changed to support a new sound library.
+  * We will revisit using the old sound library after we clear up some uncertainties regarding licensing.
 
 - New radar type: Access Radar
   * This is a custom version of the regular radar that was designed for this mod. It has the same dimensions and appearance except for a slightly darker color.
@@ -26,13 +33,6 @@ new features:
   * Radars are programmed to always focus on charting chunks that have not yet been charted by other radars or any other means. Therefore a radar will continuously work to reach 100% charting progress before it begins to re-scan charted areas. 
   * Building more radars in the same area will linearly increase the charting speed for all of them, but note that the Access Radar is six times faster than the regular radar.
   * A radar that has charted 100% can be removed without losing any functionality for the entity scanner tool.
-
-- New mod sounds have been added, and some sounds have been replaced with more suitible ones. ***
-  * When you wrap around the edge of an inventory, a new scrolling sound plays.
-  * The scanner pulse sound has been changed to sound more like a scanner device.
-  * The player shield taking damage sound has been changed to sound more likr an energy shield.
-*  The high level train alert sound has been changed to sound more like a train whistle, but also the old sound will be repurposed because it is a useful part of the vanilla library.
-*  New alert sounds have been added fo the new smooth walking bump and stuck alerts.
 
 - Added smooth walking bump alert.
   * If your character is running in a straight line in a cardinal direction, and they get shifted laterally because of bumping into an object or running into a cliff edge, then you will hear the bump alert beep. 
@@ -47,6 +47,11 @@ new features:
   * You can use this feature fpr cases like identifying the obstacles ahead when building a railway.
   * You can face and scan a diagonal direction when in smooth walking mode.
   * The scan angle is slightly wider for objects within 20 tiles so that they are not missed, but this feature is still not perfect at capturing all the.
+
+- Quickbar support has been expanded, including support for switching to different quickbar pages.
+  * The game allows you to have up to 10 different quickbar pages. You switch to a different one by pressing "SHIFT + NUMBER" for the number you choose from "1" to "9" or "0". While this already worked quietly before, we have now added information read outs for it. Usually it is nice to have a dedicated quickbar page for different tasks, like one for train stuff, one for combat stuff, and so on.
+  * Quickbar actions will now give some more information like what item has been selected or removed, or which item is at slot number one for the selected new quickbar page.
+  * You can now put the item in hand into a quickbar slot without needing to open your inventory. This uses the same keys as before, "CONTROL + NUMBER" for the number you choose from "1" to "9" or "0".
 
 - Other additions
   * When you open the crafting queue, it now reads how many recipe instances in total are in the queue. test***
@@ -74,7 +79,9 @@ new features:
 
 - Fixed a crash in the rail analyzer when it is unable to find a reference rail.
 
-- Fixed a crash for placing your first roboport, which was due to not being able to find other roboports nearby. 
+- Fixed a crash for placing your first roboport, which was due to not being able to find other roboports nearby.
+
+- Fixed a bug that prevented the search box more than once because the old one was not deleted.
 
 # Version 0.5.0 BETA
 
