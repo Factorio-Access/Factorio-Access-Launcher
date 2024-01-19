@@ -2,14 +2,12 @@
 
 Not released yet.
 
-Summary not written yet. Changelog is still being written.
-
-This update brings several smaller new features and changes to increase overall accessibility. Additions and changes include launcher improvements, redesigned and extended mod sound effects, new or changed game configuration settings, new or changed keybinds, and some features to improve the scanner tool.
+This update brings several new features and changes to increase overall accessibility. Additions and changes include launcher improvements, redesigned and extended mod sound effects, new or changed game configuration settings, new or changed keybinds, and some features to improve the scanner tool.
 
 ## New features
 
-- New launcher features
-  1. You can use command line arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead. (at which point?***)
+- New launcher features ***get file
+  1. In launcher menus, you can use command line arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead.
   2. Command line switch for the launcher's debugger mode: "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. (You can still turn it on after launching by typing "debug" at any launcher menu.)
   3. When joining a multiplayer game, the launcher will prefer Steam networking if available.
   4. Fix: "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified.
@@ -30,14 +28,14 @@ This update brings several smaller new features and changes to increase overall 
 
 - New radar type: Access Radar
   * This is a custom version of the regular radar that was designed for this mod. It has the same dimensions and appearance except for a slightly darker color.
-  * As advantages, this radar type has more than twice the charting range and more than six times the charting speed as the regular radar.
+  * As advantages, this radar type has more than twice the charting range and about six times the charting speed as the regular radar.
   * As disadvantages, this radar type consumes twice as much power as the regular radar and costs twice as many ingredients to craft. Also, for sighted players, the nearby chunk visibility provided by this radar type has a smaller range and a lower refresh rate (exactly sufficient when at full power).
   * For both radar types, it takes about 6 hours to completely chart all chunks within range, although building more radars can cut down this time significantly.
   
 - Examining a radar will now read out its charting progress and range.
   * Chunks that have been already charted are also counted towards this progress.
   * Radars are programmed to always focus on charting chunks that have not yet been charted by other radars or any other means. Therefore a radar will continuously work to reach 100% charting progress before it begins to re-scan charted areas. 
-  * Building more radars in the same area will linearly increase the charting speed for all of them, but note that the Access Radar is six times faster than the regular radar.
+  * Building more radars in the same area will linearly increase the charting speed for all of them, but note that the Access Radar is about six times faster than the regular radar.
   * A radar that has charted 100% can be removed without losing any functionality for the entity scanner tool.
 
 - Added smooth walking bump alert.
@@ -60,19 +58,20 @@ This update brings several smaller new features and changes to increase overall 
   * You can now put the item in hand into a quickbar slot without needing to open your inventory. This uses the same keys as before, "CONTROL + NUMBER" for the number you choose from "1" to "9" or "0".
 
 - Other additions
-  * When you open the crafting queue, it now reads how many recipe instances in total are in the queue. test***
+  * When you open the crafting queue, it now reads how many recipe instances in total are in the queue.
+  * Information feedback is given when you cancel items from the crafting queue.
   * When you unpause the game, the game reads it out. It would do this for pausing too but this also pauses the narrator.
   
 
 ## Changes
 
 - Some mod controls have been changed. Please note:
-  * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu while "E" does the actions of opening and closing menus. todo apply this***
+  * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu while "E" does the actions of opening and closing menus.
   * The menu search function is now activated by pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to open the search, and it is also a more intuitive keybind that matches most other computer programs.
 
 - Some existing configuration option default were changed. The launcher prompt for new options should cover these.
 
-- From now on, the scanner list sorting by distance always takes the player position as a reference point rather than cursor position, because the cursor changes position when navigating the list and can often cause confusion. todo test***
+- From now on, the scanner list sorting by distance always takes the player position as a reference point rather than cursor position, because the cursor changes position when navigating the list and can often cause confusion.
 
 - In multiplayer mode, everyone's cursor boxes are now drawn for everyone, with each cursor given its own character's color.
 
