@@ -17,7 +17,7 @@ This update brings several new features and changes to increase overall accessib
 - New game configuration defaults have been prepared.
   * New graphics options defaults are proposed. They set the graphics to minimum settings to save on performance and battery. Streamers may 
   * Some vanilla keybinds to open graphical menus such as "M", "O", and "B", are removed so that we can use them for mod features instead. All of these graphical menus can be opened using graphical buttons at the top right corner of the screen.
-  * Some optional settings like loading mods or startup time optimisation are now presented as well. For these we recommend selecting the option you prefer or keeping what is suggested.
+  * Some optional settings like loading mods automatically, or startup time optimisation, are now presented as well. For these we recommend selecting the option you prefer or keeping what is suggested.
 
 - New mod sound effects have been added and most mod sound effects were changed.
   * When you wrap around the edge of an inventory, a new scrolling type of sound plays.
