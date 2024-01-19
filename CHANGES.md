@@ -1,6 +1,6 @@
 # Version 0.5.1 BETA
 
-Not released yet.
+Not released yet. ***todo test all
 
 This update brings several new features and changes to increase overall accessibility. Additions and changes include launcher improvements, redesigned and extended mod sound effects, new or changed game configuration settings, new or changed keybinds, and some features to improve the scanner tool.
 
@@ -75,6 +75,7 @@ This update brings several new features and changes to increase overall accessib
 
 - In multiplayer mode, everyone's cursor boxes are now drawn for everyone, with each cursor given its own character's color.
 
+- The maximum limit value for a personal logistic request can now be set to zero as well, which will trash an item as soon as you put it in your inventory. If you want to edit the request after that, you must pick the item into your hand from a chest and set the request from your hand.
 
 ## Bug fixes 
 
