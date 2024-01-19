@@ -4,7 +4,7 @@ Not released yet.
 
 Summary not written yet. Changelog is still being written.
 
-This update brings several smaller new features and changes to increase overall accessibility. Additions and changes include launcher improvements, 
+This update brings several smaller new features and changes to increase overall accessibility. Additions and changes include launcher improvements, redesigned and extended mod sound effects, new or changed game configuration settings, new or changed keybinds, and some features to improve the scanner tool.
 
 ## New features
 
@@ -15,8 +15,13 @@ This update brings several smaller new features and changes to increase overall 
   4. Fix: "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified.
   5. Fix: "host save" now compensates for steam using a different player-data.json file.
   6. Fix: Better steam/vs not detection.
+  
+- New game configuration defaults have been prepared.
+  * New graphics options defaults are proposed. They set the graphics to minimum settings to save on performance and battery. Streamers may 
+  * Some vanilla keybinds to open graphical menus such as "M", "O", and "B", are removed so that we can use them for mod features instead. All of these graphical menus can be opened using graphical buttons at the top right corner of the screen.
+  * Some optional settings like loading mods or startup time optimisation are now presented as well. For these we recommend selecting the option you prefer or keeping what is suggested.
 
-- New mod sounds have been added and most mod sounds were changed.
+- New mod sound effects have been added and most mod sound effects were changed.
   * When you wrap around the edge of an inventory, a new scrolling type of sound plays.
   * The scanner has a pulsing sound when it runs.
   * Sounds have been added for the new smooth walking bump alert and stuck alert.
@@ -61,9 +66,13 @@ This update brings several smaller new features and changes to increase overall 
 
 ## Changes
 
-- The menu search function is now activated ny pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to run search, and it also is a more intuitive keybind that matches most other computer programs.
+- Some mod controls have been changed. Please note:
+  * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu while "E" does the actions of opening and closing menus. todo apply this***
+  * The menu search function is now activated by pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to open the search, and it is also a more intuitive keybind that matches most other computer programs.
 
-- From now on, the scanner sorting by distance always takes the player position as a reference point because the cursor changes position when navigating the list and can often cause confusion. todo test***
+- Some existing configuration option default were changed. The launcher prompt for new options should cover these.
+
+- From now on, the scanner list sorting by distance always takes the player position as a reference point rather than cursor position, because the cursor changes position when navigating the list and can often cause confusion. todo test***
 
 - In multiplayer mode, everyone's cursor boxes are now drawn for everyone, with each cursor given its own character's color.
 
