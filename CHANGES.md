@@ -6,13 +6,13 @@ This update brings several new features and changes to increase overall accessib
 
 ## New features
 
-- New launcher features ***get file
-  1. In launcher menus, you can use command line arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead.
-  2. Command line switch for the launcher's debugger mode: "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. (You can still turn it on after launching by typing "debug" at any launcher menu.)
+- New launcher features
+  1. When starting the launcher from the command line, you can now enter arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead.
+  2. Command line switch for the launcher's debugger mode: "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. You can also still turn on debugging after launching by typing "debug" at any launcher menu.
   3. When joining a multiplayer game, the launcher will prefer Steam networking if available.
   4. Fix: "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified.
   5. Fix: "host save" now compensates for steam using a different player-data.json file.
-  6. Fix: Better steam/vs not detection.
+  6. Fix: Better Steam (or not Steam) detection.
   
 - New game configuration defaults have been prepared.
   * New graphics options defaults are proposed. They set the graphics to minimum settings to save on performance and battery. Streamers may 
@@ -43,7 +43,7 @@ This update brings several new features and changes to increase overall accessib
   * Bumping shifts you at most by one tile at a time. No action is required.
   * If at a cliff edge, you can also hear a the sound of sliding rocks or gravel.
   
-- Added smooth walking stuck alert.
+- Added smooth walking stuck alert. **bookmark**
  * If your character is running but is not changing position due to being stuck, the stuck alert beep will begin to play continously after about 1 second of being stuck.
  * You can almost always get unstuck by moving into a new direction.
 
