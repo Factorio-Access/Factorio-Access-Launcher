@@ -2,66 +2,22 @@
 import sys
 import traceback
 sys.excepthook = lambda *args: (traceback.print_exception(*args), input("Press Enter to Exit"))
-import pyautogui as gui
-import time
-import math
+
 import os
-import subprocess
-import threading
 import json
 import shutil
-import re
 
-import accessible_output2.outputs.auto
 
 import fa_paths
-import update_factorio
 import multiplayer
-import fa_menu
 from fa_menu import *
 import modify_config
-
-ao_output = accessible_output2.outputs.auto.Auto()
-
-gui.FAILSAFE = False
-
-if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
-    os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
-    fa_paths.BIN=sys.argv[1]
+import launch_and_monitor
+import save_management
+from fa_arg_parse import args
 
 
-ao_output.output("Hello Factorio!", False)
-
-
-
-def get_elapsed_time(t1):
-    t2 = time.time()
-    days = (t2-t1)/60/60/24
-    if days >= 1:
-        return str(math.floor(days)) + " days"
-    hours = (t2-t1)/60/60
-    if hours >= 1:
-        return str(math.floor(hours)) + " hours"
-    minutes = (t2-t1)/60
-    if minutes >= 1:
-        return str(math.floor(minutes)) + " minutes"
-    return str(math.ceil(t2-t1)) + " seconds"
-
-
-def save_time(file):
-    return os.path.getmtime(os.path.join(fa_paths.SAVES,file))
-
-def get_sorted_saves():
-    try:
-        l = os.listdir(fa_paths.SAVES)
-        l.sort(reverse=True, key=save_time)
-        return l
-    except:
-        return []
-
-def get_menu_saved_games():
-    games = get_sorted_saves()
-    return {save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago" : save for save in games}
+os.chdir(fa_paths.MY_CONFIG_DIR)
 
 
 
@@ -288,26 +244,7 @@ def customMapList():
                 name = l[k]
                 break
     path = os.path.join("Map Settings/Custom Settings/", name)
-    create_new_save(os.path.join(path,"mapSettings.json"),os.path.join(path,"mapGenSettings.json"))
-
-def speak_interuptible_text(text):
-    ao_output.output(text,True)
-def setCursor(coordstring):
-    coords = [int(coord) for coord in coordstring.split(",")]
-    gui.moveTo(coords[0], coords[1], _pause=False)
-
-player_list={}
-def set_player_list(jsons):
-    global player_list
-    player_list = {key[1:]:val for key,val in json.loads(jsons).items()}
-
-player_specific_commands = {
-    "out":speak_interuptible_text,
-    "setCursor":setCursor,
-    }
-global_commands = {
-    "playerList":set_player_list,
-    }
+    launch_and_monitor.create_new_save(os.path.join(path,"mapSettings.json"),os.path.join(path,"mapGenSettings.json"))
 
 def get_updated_presets():
     print("Getting Available Settings")
@@ -320,109 +257,7 @@ def get_updated_presets():
             print(preset_name,len(preset))
     pass
 
-def process_game_stdout(stdout,announce_press_e):
-    player_index=""
-    restarting=False
-    for bline in iter(stdout.readline, b''):
-        if fa_menu.debug:
-            print(bline)
-        line:str = bline.decode('utf-8').rstrip('\r\n')
-        parts = line.split(' ',1)
-        if len(parts)==2:
-            if parts[0] in player_specific_commands:
-                more_parts = parts[1].split(" ",1)
-                if not player_index or more_parts[0] == player_index:
-                    player_specific_commands[parts[0]](more_parts[1])
-                    continue
-            elif parts[0] in global_commands:
-                global_commands[parts[0]](parts[1])
-                continue
-               
-        if line.endswith("Saving finished"):
-            ao_output.output("Saving Complete", True)
-        elif line.endswith("time start"):
-            debug_time = time.time
-        elif line.endswith("time end"):
-            print(time.time - debug_time)
-        elif line.endswith("Restarting Factorio"):
-            restarting=True
-        elif line.endswith("Goodbye"):
-            if not restarting:
-                pass#return
-            restarting=False
-        elif m:=re.search(r'PlayerJoinGame .*?playerIndex\((\d+)\)',line):
-            if not player_index:
-                player_index=str(int(m[1])+1)
-                print(f'Player index now {player_index}')
-        elif re.search(r'Quitting multiplayer connection.',line):
-            player_index=""
-            print(f'Player index cleared')
-        elif announce_press_e and line.endswith("Factorio initialised"):
-            announce_press_e = False
-            ao_output.output("Press e to continue", True)
 
-def save_game_rename(if_after=None):
-    l = get_sorted_saves()
-    if len(l) > 0:
-        save=l[0]
-        save_t=save_time(save)
-        if if_after and save_t > if_after:
-            print("Would you like to name your last save?  You saved " +
-                get_elapsed_time(save_t) + " ago")
-            if not getAffirmation():
-                return
-            print("Enter a name for your save file:")
-            check = False
-            while check == False:
-                newName = input()
-                try:
-                    dst = os.path.join(fa_paths.SAVES, newName + ".zip")
-                    testFile = open(dst, "w")
-                    testFile.close()
-                    os.remove(dst)
-                    check = True
-                except:
-                    print("Invalid file name, please try again.")
-            src = os.path.join(fa_paths.SAVES,save)
-            os.replace(src, dst)
-            print("Renamed.")
-            return
-    print("Looks like you didn't save!")
-
-
-def just_launch():
-    launch_with_params([],announce_press_e=True)
-    return 5
-
-def connect_to_address_menu():
-    address = input("Enter the address to connect to:\n")
-    return connect_to_address(address)
-def connect_to_address(address):
-    return launch_with_params(["--mp-connect",address])
-
-def create_new_save(map_setting,map_gen_setting):
-    launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'],save_rename=False)
-
-def launch(path):
-    return launch_with_params(["--load-game", path])
-def launch_with_params(params,announce_press_e=False,save_rename=True):
-    start_time=time.time()
-    params = [
-        fa_paths.BIN, 
-        "--config", fa_paths.CONFIG,
-        "--mod-directory", fa_paths.MODS,
-        "--fullscreen", "TRUE"] + params
-    try:
-        print("Launching")
-        proc = subprocess.Popen(params , stdout=subprocess.PIPE)
-        threading.Thread(target=process_game_stdout, args=(proc.stdout,announce_press_e), daemon=True).start()
-        proc.wait()
-    except Exception as e:
-        print("error running game")
-        raise e
-    if save_rename:
-        save_game_rename(start_time)
-    return 5
     
 
 
@@ -442,22 +277,19 @@ def chooseDifficulty():
         return 0
     key = opts[opt]
     if types[key]:
-        create_new_save("Map Settings/"+types[key],f"Map Settings/gen/{key.replace(' ','')}Map.json")
+        launch_and_monitor.create_new_save("Map Settings/"+types[key],f"Map Settings/gen/{key.replace(' ','')}Map.json")
     else:
         customMapList()
-    return launch("saves/_autosave-manual.zip")
+    return launch_and_monitor.launch("saves/_autosave-manual.zip")
     
-def time_to_exit():
-    ao_output.output("Goodbye Factorio", False)
-    time.sleep(1)
-    raise SystemExit
+
     
 menu = {
-    "Launch last played":just_launch,
+    "Launch last played":launch_and_monitor.just_launch,
     "Single Player":{
         "New Game" : chooseDifficulty,
         "Load Game" : {
-            get_menu_saved_games:launch,
+            save_management.get_menu_saved_games:launch_and_monitor.launch,
             },
         },
     "Multiplayer":{
@@ -466,7 +298,7 @@ menu = {
             multiplayer.get_host_settings_menu:multiplayer.run_func
         },
         "Host Saved Game": {
-            get_menu_saved_games: multiplayer.multiplayer_launch,
+            save_management.get_menu_saved_games: multiplayer.multiplayer_host,
             },
         "Browse Public":{
             "Freind List":{
@@ -474,13 +306,17 @@ menu = {
                  multiplayer.get_friends_menu: multiplayer.specific_friend_menu
             },
             "List Games With Friends":{
-                multiplayer.games_with_friends_menu: connect_to_address
+                multiplayer.games_with_friends_menu: multiplayer.multiplayer_join
             }
         },
-        "Connect to Address": connect_to_address_menu,
+        "Connect to Address": launch_and_monitor.connect_to_address_menu,
         },
-    "Quit": time_to_exit,
+    "Quit": launch_and_monitor.time_to_exit,
     }
 
 modify_config.do_config_check()
-do_menu(menu,"Main Menu",False)
+
+if args.launch:
+    launch_and_monitor.launch_with_params([])
+else:
+    do_menu(menu,"Main Menu",False)
