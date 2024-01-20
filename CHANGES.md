@@ -1,4 +1,4 @@
-# Version 0.5.1 BETA
+# Version 0.6.0 BETA
 
 Released on January 20th, 2024.
 
