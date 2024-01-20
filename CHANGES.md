@@ -1,56 +1,57 @@
 # Version 0.5.1 BETA
 
-Not released yet. ***todo test all
+Released on January 20th, 2024.
 
-This update brings several new features and changes to increase overall accessibility. Additions and changes include launcher improvements, redesigned and extended mod sound effects, new or changed game configuration settings, new or changed keybinds, and some features to improve the scanner tool.
+This update brings several new features and changes to increase overall accessibility. Additions and changes include launcher improvements, redesigned and extended mod sound effects, new or changed game configuration settings, new or changed keybinds and controls, and some features to improve the scanner tool.
 
 ## New features
 
-- New launcher features
-  1. When starting the launcher from the command line, you can now enter arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead.
-  2. Command line switch for the launcher's debugger mode: "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. You can also still turn on debugging after launching by typing "debug" at any launcher menu.
-  3. When joining a multiplayer game, the launcher will prefer Steam networking if available.
+- New launcher features, mostly internal changes while we work on improving multiplayer setup support.
+  1. When joining a multiplayer game, the launcher will prefer Steam networking if available. This has not been tested for every case but you are now more likely overall to connect to an internet multiplayer game without issues.
+  2. When starting the launcher from the command line, you can now enter arguments meant for Factorio and they will be passed along, with the exception of "-h"/"--help" which prints our help info instead.
+  3. The command line switch for the launcher's debugger mode is "--fa-debug". You can include this in a shortcut, so you never forget to turn on debugging and then have to restart Factorio to turn it on. You can also still turn on debugging after launching by typing "debug" at any launcher menu. 
   4. Fix: "host save" now compensates for Factorio trying to just use the last modified save instead of the one specified.
   5. Fix: "host save" now compensates for steam using a different player-data.json file.
   6. Fix: Better Steam (or not Steam) detection.
   
 - New game configuration defaults have been prepared.
-  * New graphics options defaults are proposed. They set the graphics to minimum settings to save on performance and battery. Streamers may 
+  * New graphics options defaults are proposed. They set the graphics to minimum settings to save on performance and battery.
   * Some vanilla keybinds to open graphical menus such as "M", "O", and "B", are removed so that we can use them for mod features instead. All of these graphical menus can be opened using graphical buttons at the top right corner of the screen.
   * Some optional settings like loading mods automatically, or startup time optimisation, are now presented as well. For these we recommend selecting the option you prefer or keeping what is suggested.
 
 - New mod sound effects have been added and most mod sound effects were changed.
   * When you wrap around the edge of an inventory, a new scrolling type of sound plays.
   * The scanner has a pulsing sound when it runs.
-  * Sounds have been added for the new smooth walking bump alert and stuck alert.
+  * New sounds have been added for the new smooth walking bump alert and stuck alert.
   * Other sounds, including enemy alerts, train alerts, and damage alerts, have all been changed to support a new sound library.
-  * We will revisit using the old sound library after we clear up some uncertainties regarding licensing.
+  * We might revisit using the old sound library after we clear up some uncertainties regarding licensing.
 
-- New radar type: Access Radar
+- New radar building type: Access Radar
   * This is a custom version of the regular radar that was designed for this mod. It has the same dimensions and appearance except for a slightly darker color.
   * As advantages, this radar type has more than twice the charting range and about six times the charting speed as the regular radar.
-  * As disadvantages, this radar type consumes twice as much power as the regular radar and costs twice as many ingredients to craft. Also, for sighted players, the nearby chunk visibility provided by this radar type has a smaller range and a lower refresh rate (exactly sufficient when at full power).
+  * As disadvantages, this radar type consumes twice as much power as the regular radar and costs twice as many ingredients to craft. Also, the nearby chunk visibility effect provided by this radar type has a smaller range and a lower refresh rate (exactly sufficient when at full power).
   * For both radar types, it takes about 6 hours to completely chart all chunks within range, although building more radars can cut down this time significantly.
   
-- Examining a radar will now read out its charting progress and range.
+- Examining a radar with the cursor will now read out its charting progress and range.
   * Chunks that have been already charted are also counted towards this progress.
   * Radars are programmed to always focus on charting chunks that have not yet been charted by other radars or any other means. Therefore a radar will continuously work to reach 100% charting progress before it begins to re-scan charted areas. 
   * Building more radars in the same area will linearly increase the charting speed for all of them, but note that the Access Radar is about six times faster than the regular radar.
-  * A radar that has charted 100% can be removed without losing any functionality for the entity scanner tool.
+  * Charted chunks are usable by the scanner tool, which otherwise cannot detect entities there.
+  * You only need to chart every chunk once. A radar being removed will not take away functionality from the entity scanner tool.
 
 - Added smooth walking bump alert.
   * If your character is running in a straight line in a cardinal direction, and they get shifted laterally because of bumping into an object or running into a cliff edge, then you will hear the bump alert beep. 
-  * Bumping shifts you at most by one tile at a time. No action is required.
   * If at a cliff edge, you can also hear a the sound of sliding rocks or gravel.
+  * Note: Bumping shifts you at most by one tile at a time and it causes no damage.
   
-- Added smooth walking stuck alert. **bookmark**
+- Added smooth walking stuck alert. 
  * If your character is running but is not changing position due to being stuck, the stuck alert beep will begin to play continously after about 1 second of being stuck.
- * You can almost always get unstuck by moving into a new direction.
+ * You can almost always get unstuck by moving into a new direction, and verify that it worked via the absence of the alert.
 
 - Added directional entity scanning. Press "SHIFT + END" to make the entity scanner check only the direction that you are currently facing. 
-  * You can use this feature fpr cases like identifying the obstacles ahead when building a railway.
+  * You can use this feature for cases like identifying the obstacles ahead when building a railway.
   * You can face and scan a diagonal direction when in smooth walking mode.
-  * The scan angle is slightly wider for objects within 20 tiles so that they are not missed, but this feature is still not perfect at capturing all the.
+  * The scan angle is slightly wider for objects within 10 tiles so that they are not missed, but some large objects that are only partially covered by this direction might still be missed.
 
 - Quickbar support has been expanded, including support for switching to different quickbar pages.
   * The game allows you to have up to 10 different quickbar pages. You switch to a different one by pressing "SHIFT + NUMBER" for the number you choose from "1" to "9" or "0". While this already worked quietly before, we have now added information read outs for it. Usually it is nice to have a dedicated quickbar page for different tasks, like one for train stuff, one for combat stuff, and so on.
@@ -59,14 +60,12 @@ This update brings several new features and changes to increase overall accessib
 
 - Other additions
   * When you open the crafting queue, it now reads how many recipe instances in total are in the queue.
-  * Information feedback is given when you cancel items from the crafting queue.
-  * When you unpause the game, the game reads it out. It would do this for pausing too but this also pauses the narrator.
-  
+  * Information feedback is given when you cancel items from the crafting queue.  
 
 ## Changes
 
 - Some mod controls have been changed. Please note:
-  * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu while "E" does the actions of opening and closing menus.
+  * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now done with "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu and with "E" opening and closing menus.
   * The menu search function is now activated by pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to open the search, and it is also a more intuitive keybind that matches most other computer programs.
   * Scan result list sorting now uses "N" to sort by distance to your current position because it is used more often than sorting by total count, which now uses "SHIFT + N".
 
