@@ -53,11 +53,11 @@ Start playing when a new game begins: TAB
 
 Close most menus: E
 
+Read the current menu name: SHIFT + E
+
 Save game: F1
 
 Pause or unpause the game with the visual pause menu: ESC
-  
-Pause or unpause the game with no menu: SHIFT + SPACE
 
 Repeat last spoken phrase: CONTROL + TAB
 
@@ -81,7 +81,7 @@ Clear all renders: CONTROL + ALT + R. Note: This is for clearing any mod-drawn o
 
 Movement: W, A, S, D
 
-Note: When you change direction, for the first key press, your character turns but does not take a step in that direction.
+Note: When you change direction in the default (telestep) walking mode, for the first key press, your character turns but does not take a step in that direction.
 
 Change movement mode: CONTROL + W
 
@@ -117,7 +117,7 @@ Grab in hand instant mining tool: CONTROL + X. Also known as the cut and paste t
 
 Pick up all objects within 5 tiles: SHIFT + X with the instant mining tool in hand.
   
-Put away instant mining tool: SHIFT + Q
+Put away instant mining tool: Q
 
 Open player inventory: E
 
@@ -133,7 +133,7 @@ Rotation Note 2: The first time you press the rotate key, it will simply say the
 
 Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
 
-Picker tool: For a detected entity, SHIFT + Q. This brings to hand more of the selected entity's item form, if you have it in your inventory.
+Smart pippette/picker tool: For a selected entity, Q, with an empty hand. This brings to hand more of the selected entity's item form, if you have it in your inventory.
 
 Nudge building by one tile: CONTROL + SHIFT + DIRECTION, where the direction is one of W A S D. 
 
@@ -152,7 +152,7 @@ Clear area: SHIFT + X. This automatically clears trees and rocks and dropped ite
 
 Start instant mining tool: CONTROL + X. When you are holding this tool, everything the cursor touches is mined instantly.
 
-Stop instant mining tool: SHIFT + Q
+Stop instant mining tool: Q
 
 ## Cursor
 
@@ -169,6 +169,8 @@ Move cursor freely in cursor mode, by always one tile distance: ARROW KEYS
 Return the cursor to the character: J
 
 Teleport character to cursor: SHIFT + T
+
+Force teleport character to cursor: CONTROL + SHIFT + T
 
 Increase cursor size to examine a larger area: SHIFT + I
 
@@ -190,27 +192,39 @@ Get selected item info: Y
 
 Pick up selected item to hand: LEFT BRACKET
 
-Add selected item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0.
+Pick from quickbar: NUMBER KEY, for keys 1 to 9 and 0.
+
+Switch to a new quickbar page: SHIFT + NUMBER KEY, for keys 1 to 9 and 0.
+
+Add selected item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0. Note: hand items have priority.
 
 Switch to other menus: TAB
 
 Close most menus: E
 
-Select the slot for the item in hand: CONTROL + Q
+Select the inventory slot for the item in hand: CONTROL + Q
+
+Select the crafting menu recipe for the item in hand: CONTROL + SHIFT + Q
 
 ## Item in Hand
 
-Read item in hand: Q
+Read item in hand: SHIFT + Q
 
 Get info on item in hand: L
 
-Empty the hand to your inventory: SHIFT + Q
+Empty the hand to your inventory: Q
 
-Picker tool: With an empty hand, SHIFT + Q. Grabs from the inventory to the hand, more of the item related to the entity in front of you.
+Smart pippette/picker tool: For a selected entity, Q, with an empty hand. This brings to hand more of the selected entity's item form, if you have it in your inventory.
 
-Pick from quickbar: NUMBER KEY
+Select the player inventory slot for the item in hand: CONTROL + Q
 
-Assign hand item to a quickbar number: CONTROL + NUMBER KEY
+Select the crafting menu recipe for the item in hand: CONTROL + SHIFT + Q
+
+Pick from quickbar: NUMBER KEY, for keys 1 to 9 and 0.
+
+Switch to a new quickbar page: SHIFT + NUMBER KEY, for keys 1 to 9 and 0.
+
+Add hand item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0.
 
 Place building: LEFT BRACKET, for items that support it
 
@@ -274,6 +288,8 @@ Return all equipment and armor to inventory: CONTROL + SHIFT + G
 
 Scan for nearby entities: END
 
+Scan for entities in the direction you are facing: SHIFT + END
+
 Repeat scanned entry: HOME
 
 Navigate scanned entity list: PAGE UP and PAGE DOWN. Alternatively you can use UP ARROW and DOWN ARROW.
@@ -282,13 +298,11 @@ Switch between different instances of the same entity: SHIFT + PAGE UP and SHIFT
 
 Change scanned category: CONTROL + PAGE UP and CONTROL + PAGE DOWN. Alternatively you can use CONTROL + UP ARROW and CONTROL + DOWN ARROW.
 
-Sort scan results by entity counts: N
+Sort scan results by total counts: SHIFT + N
 
-Sort scan results by distance from current location: SHIFT + N. If you change location, you need to press again.
+Sort scan results by distance from current character location: N. If you change location, you need to press again.
 
 Move cursor to scanned target in cursor mode: CONTROL + HOME
-
-Teleport to the scanned target outside of cursor mode: CONTROL + HOME
 
 ## Fast Travel
 
@@ -330,9 +344,15 @@ Teleport cursor to Building with warning: LEFT BRACKET
 
 Close Warnings menu: E
 
+Teleport to the location of the last damage alert: CONTROL + SHIFT + P
+
 ## While in a menu
 
-Change tabs within a menu: TAB and SHIFT + TAB
+Read menu name: SHIFT + E
+
+Close menu: E
+
+Change tabs within a menu: TAB, or SHIFT + TAB
 
 Navigate inventory slots: W A S D
 
@@ -340,7 +360,7 @@ Coordinates of current inventory slot: K
 
 Check ingredients and products of a recipe: K
 
-Selected item information: L
+Selected item information: Y
 
 Grab item in hand: LEFT BRACKET
 
@@ -357,6 +377,12 @@ Note 2: When you have a building inventory open and select an empty slot, pressi
 Modify chest inventory slot limits: PAGE UP or PAGE DOWN. 
 
 Note: You can hold SHIFT to modify limits by increments of 5 instead of 1 and you can hold CONTROL to set the limit to maximum or zero.
+
+Open menu search: CONTROL + F. This works for player inventories, building output inventories, building recipe selection, the crafting menu, and the technology menu.
+
+Run menu search forward: SHIFT + ENTER
+
+Run menu search backward: CONTROL + ENTER, only for inventories.
 
 ## Crafting Menu
 
@@ -446,7 +472,7 @@ Flip direction of a rail vehicle: SHIFT + R on the vehicle, but it must be fully
 
 Open train menu: LEFT BRACKET on the train's locomotives
 
-Train vehicle quick info: L
+Train vehicle quick info: Y
 
 Examine locomotive fuel tank contents: RIGHT BRACKET. 
 
@@ -500,6 +526,26 @@ For trains, analyze the first rail structure behind: SHIFT + J
 For trains, read precise distance to a nearby train stop for manual alignment: J
   
 For trains, open the train menu: LEFT BRACKET. Navigate with ARROW KEYS.
+
+## Logistics requests
+
+Read the logistic requests summary for a player or chest: L
+
+For the selected item, read the logistic request status: L
+
+For the selected item, increase minimum request value: SHIFT + L
+
+For the selected item, decrease minimum request value: CONTROL + L
+
+For the selected item, increase maximum request value: ALT + SHIFT + L, available for personal requests only
+
+For the selected item, decrease maximum request value: ALT + CONTROL + L, available for personal requests only
+
+For personal logistics, pause or unpause all requests: CONTROL + SHIFT + L
+
+For a logistic storage chest, set or unset the filter to the selected item: SHIFT + L
+
+For a logistic requester chest, toggle requesting from buffer chests: CONTROL + SHIFT + L
 
 ## Using the Screen Reader
 
