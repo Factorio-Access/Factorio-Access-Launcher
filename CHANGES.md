@@ -68,6 +68,7 @@ This update brings several new features and changes to increase overall accessib
 - Some mod controls have been changed. Please note:
   * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu while "E" does the actions of opening and closing menus.
   * The menu search function is now activated by pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to open the search, and it is also a more intuitive keybind that matches most other computer programs.
+  * Scan result list sorting now uses "N" to sort by distance to your current position because it is used more often than sorting by total count, which now uses "SHIFT + N".
 
 - Some existing configuration option default were changed. The launcher prompt for new options should cover these.
 
