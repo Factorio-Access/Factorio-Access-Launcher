@@ -93,9 +93,6 @@ def connect_to_address_menu():
 def connect_to_address(address):
     return launch_with_params(["--mp-connect",address])
 
-def create_new_save(map_setting,map_gen_setting):
-    launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'],save_rename=False)
-
 def launch(path):
     return launch_with_params(["--load-game", path])
 def launch_with_params(params,announce_press_e=False,save_rename=True,tweak_modified=None):

@@ -32,23 +32,23 @@ dprint(f"steam={steam}")
 if steam:
     _user=os.environ['SteamAppUser']
     _game=os.environ['SteamAppId']
-    steam_game_path=pathlib.Path(os.getcwd())
-    _steam_path=steam_game_path.joinpath('..','..','..')
-    _steam_config=_steam_path.joinpath('config','config.vdf')
+    steam_game_path = pathlib.Path(os.getcwd())
+    _steam_path = steam_game_path.joinpath('..','..','..')
+    _steam_config = _steam_path.joinpath('config','config.vdf')
     with open(_steam_config,encoding='utf8') as fp:
         for _line in fp:
             if _user in _line:
                 break
-        _pat=re.compile(r'\s*"?SteamID"?\s+"?(\d+)')
+        _pat = re.compile(r'\s*"?SteamID"?\s+"?(\d+)')
         for _line in fp:
             if m:=_pat.match(_line):
                 _steam_id = m[1]
                 break
         else:
             raise ValueError("Unable to find SteamID. Please report this error to Factorio Access Launcher mantainer via discord issues channel.")
-    _account_id=str(((1<<32)-1)&int(_steam_id))
-    steam_write_folder=_steam_path.joinpath('userdata',_account_id,_game,'remote')
-    steam_write_folder=os.path.abspath(steam_write_folder)
+    _account_id = str(((1<<32)-1)&int(_steam_id))
+    steam_write_folder = _steam_path.joinpath('userdata',_account_id,_game,'remote')
+    steam_write_folder = steam_write_folder.absolute()
     dprint(steam_write_folder)
 
 
@@ -159,52 +159,54 @@ else:
     launch_args.append('-c')
     launch_args.append(CONFIG)
 dprint(f"CONFIG={CONFIG}")
-WRITE_DIR=''
-READ_DIR=''
+WRITE_DIR:pathlib.Path|None = None
+READ_DIR:pathlib.Path|None = None
 with open(CONFIG,encoding='utf8') as fp:
     for line in fp:
         if match:=re.match(r'write-data=(.*)',line):
-            WRITE_DIR = proccess(match[1])
+            WRITE_DIR = pathlib.Path(proccess(match[1]))
         if match:=re.match(r'read-data=(.*)',line):
-            READ_DIR = proccess(match[1])
+            READ_DIR = pathlib.Path(proccess(match[1]))
         if WRITE_DIR and READ_DIR:
             break
-if not os.path.isdir(WRITE_DIR):
+if not WRITE_DIR or not WRITE_DIR.is_dir():
     dprint(f"bad write dir:[{WRITE_DIR}]")
     raise Exception("Unable to find factorio write directory")
 dprint(f"WRITE_DIR={WRITE_DIR}")
-if not os.path.isdir(READ_DIR):
+if not READ_DIR or not READ_DIR.is_dir():
     dprint(f"bad read dir:[{READ_DIR}]")
     raise Exception("Unable to find factorio data directory")
 dprint(f"READ_DIR={READ_DIR}")
 
 
 if args.mod_directory:
-    MODS=args.mod_directory
+    MODS=pathlib.path(args.mod_directory)
 else:
-    MODS=os.path.join(WRITE_DIR,'mods')
-if not os.path.isdir(MODS):
-    if os.path.isfile(MODS):
+    MODS=WRITE_DIR.joinpath('mods')
+if not MODS.is_dir():
+    if MODS.is_file():
         print("Mod Directory cannot be a file.")
         input("Press Enter to exit...")
         raise SystemExit
-    print(f"The mod folder {MODS}, would you like to create it?")
+    print(f"The mod folder {MODS} does not exist. Would you like to create it?")
     if not fa_menu.getAffirmation():
         raise SystemExit
     os.mkdir(MODS)
 dprint(f"MODS={MODS}")
 
-SAVES=os.path.join(WRITE_DIR,'saves')
+SAVES=WRITE_DIR.joinpath('saves')
 dprint(f"SAVES={SAVES}")
 
 
-PLAYER_DATA = os.path.join(steam_write_folder if steam else WRITE_DIR,"player-data.json")
-PLAYER_DATA = os.path.abspath(PLAYER_DATA)
+PLAYER_DATA = (steam_write_folder if steam else WRITE_DIR).joinpath("player-data.json")
 dprint(f"PLAYER_DATA={PLAYER_DATA}")
 
 
-TEMP = os.path.join(WRITE_DIR,  'temp')
+TEMP = WRITE_DIR.joinpath('temp')
 dprint(f"TEMP={TEMP}")
+
+SCRIPT_OUTPUT = WRITE_DIR.joinpath('script-output')
+dprint(f"SCRIPT_OUTPUT={SCRIPT_OUTPUT}")
 
 MOD_NAME = "FactorioAccess"
 __my_mod_folder = os.path.join(MY_BIN,'..','mods')

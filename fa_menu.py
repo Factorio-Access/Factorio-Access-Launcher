@@ -139,9 +139,9 @@ class menu_item(object):
                 this_name=('',this_name,'\n',self.desc)
             options={}
             for submenu in self.submenu:
-                sub_options=submenu.get_names()
+                sub_options=submenu.get_names(*args)
                 if isinstance(sub_options,dict):
-                    for sub_name, sub_arg in sub_options:
+                    for sub_name, sub_arg in sub_options.items():
                         options[sub_name]=(submenu,(sub_arg,))
                 else:
                     options[sub_options]=(submenu,())
@@ -149,7 +149,7 @@ class menu_item(object):
             opts=[translate(key) for key in keys]
             selected_menu,arg = options[keys[select_option(opts, prompt=translate(this_name), one_indexed= not self.add_back)]]
             ret = selected_menu(*(args+arg))
-            if ret > 0:
+            if ret > 0 and self.add_back:
                 return ret-1
 back_menu_item=menu_item("Back",back_func,False)
 
@@ -174,13 +174,13 @@ class setting_menu(menu_item):
         pass
     def val_to_string(self):
         return str(self.val)
-    def __call__(self):
+    def __call__(self,*args):
         while True:
-            print(translate(self.name()))
+            print(translate(self.name(*args)))
             if self.desc is not None:
                 print(translate(self.desc))
-            print(f"Current value:{self.val_to_string()}")
-            potential_val=input("Enter new value below or leave blank to keep current value:")
+            print(translate(("fa-l.current-setting",self.val_to_string())))
+            potential_val=input(translate(('fa-l.new-setting-prompt',)))
             if potential_val:
                 try:
                     self.input_to_val(potential_val.strip())
@@ -217,14 +217,19 @@ class setting_menu_bool(setting_menu):
         if self.desc:
             ret=ret+(" ",self.desc)
         return ret
-    def __call__(self):
+    def __call__(self,*args):
         self.val = not self.val
         return 0
 
 class setting_menu_option(menu_item):
-    def __init__(self, name: localised_str, val) -> None:
+    def __init__(self, name: localised_str, val, desc=None) -> None:
         self.name=name
         self.val=val
+        self.desc=desc
+    def get_names(self, *args):
+        if self.desc:
+            return ("",self.name,":",self.desc)
+        return self.name
     def __call__(self, *args):
         self.parent().val = self.val
         return 1
@@ -233,7 +238,7 @@ class setting_menu_option(menu_item):
 class setting_menu_options(setting_menu):
     def __init__(self, name: localised_str, submenu:dict,desc: localised_str | None =None, default: Any = '', val: Any = '') -> None:
         super().__init__(name, desc, default, val)
-        self.submenu = [setting_menu_option(subname,subval) for subname,subval in submenu.items()]
+        self.submenu = [subval if isinstance(subval,setting_menu_option) else setting_menu_option(subname,subval) for subname,subval in submenu.items()]
         for sub in self.submenu:
             sub.parent=weakref.ref(self)
         self.add_back=True
@@ -243,5 +248,5 @@ class setting_menu_options(setting_menu):
         if len(maybe):
             return translate(maybe[0])
         return self.val
-    def __call__(self):
-        return menu_item.__call__(self)
+    def __call__(self,*args):
+        return menu_item.__call__(self,*args)

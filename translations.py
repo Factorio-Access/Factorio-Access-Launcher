@@ -123,7 +123,10 @@ def do_special(special,n=0):
 def translate(l_str:localised_str,n=0,error=False):
     if type(l_str) == str:
         return l_str
-    key, *args = l_str
+    try:
+        key, *args = l_str
+    except:
+        return str(l_str)
     if key=='':
         return ''.join((translate(arg) for arg in args))
     if key=='?':
@@ -146,14 +149,16 @@ def translate(l_str:localised_str,n=0,error=False):
     
 
 translation_table=defaultdict(dict)
-
-
-class translated_args(UserDict):
+'''
+,args:list[localised_str]):
+        self.args=args'''
+class translated_args(dict):
     def __init__(self,args:list[localised_str]):
         self.args=args
+        super().__init__()
     def __missing__(self,key):
-        self.dict[key]=translate(self.args[int(key)])
-        return self.dict[key]
+        self[key]=translate(self.args[int(key)-1])
+        return self[key]
 
 def expand(template:str,args:list[localised_str] = []):
     parts=template.split('__')
@@ -175,7 +180,7 @@ def expand_r(parts:list[str],targs:translated_args,in_plural=False):
             assert remaining[0]=='{',"Unexpected start of plural. Expected {"
             remaining=remaining[1:]
             matched=False
-            while remaining!='}':
+            while remaining:
                 condition, remaining = remaining.split('=',1)
                 parts.insert(0,remaining)
                 temp_res, remaining = expand_r(parts,targs,True)
@@ -188,14 +193,14 @@ def expand_r(parts:list[str],targs:translated_args,in_plural=False):
                             break
                         if 'ends in ' in cond:
                             check=cond[8:]
-                            if check in my_num and check==my_num[-len(check):]:
+                            if my_num.endswith(check):
                                 break
                     else:
                         matched=False
                     if matched:
                         ret+=temp_res
         elif p.isdigit():
-            ret+=translated_args[p]
+            ret+=targs[p]
         else:
             if '|' in p or '}' in p and in_plural:
                 p,add_back = re.split(r'}|\|',p,1)
