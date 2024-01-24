@@ -2,7 +2,7 @@ from typing import Any,Callable
 import re
 import weakref
 
-from translations import translate,localised_str
+from translations import translate,localised_str,tprint
 import fa_paths
 from fa_arg_parse import args
 
@@ -42,10 +42,10 @@ def select_option(options,prompt='Select an option:',one_indexed=True):
     while True:
         print("\033c",end='')
         if pre_prompt:
-            print(pre_prompt)
-        print(prompt)
+            tprint(pre_prompt)
+        tprint(prompt)
         for i, val in enumerate(options):
-            print(i + one_indexed, ": ", val)    
+            tprint(f'{i + one_indexed}:', val)    
         i=input()
         if not i.isdigit():
             if i=='debug':
@@ -173,7 +173,7 @@ class menu_item(object):
             ret = selected_menu(*(args+arg))
             if ret > 0 and self.add_back:
                 return ret-1
-back_menu_item=menu_item("Back",back_func,False)
+back_menu_item=menu_item(("gui.cancel",),back_func,False)
 
 class setting_menu(menu_item):
     __slots__=["myname","desc","default","val","submenu"]
@@ -198,13 +198,8 @@ class setting_menu(menu_item):
         return str(self.val)
     def __call__(self,*args):
         while True:
-            print(translate(self.get_header(*args)))
-            if self.desc is not None:
-                if callable(self.desc):
-                    print(translate(self.desc()))
-                else:
-                    print(translate(self.desc))
-            print(translate(("fa-l.current-setting",self.val_to_string())))
+            tprint(self.get_header(*args))
+            tprint(("fa-l.current-setting",self.val_to_string()))
             potential_val=input(translate(('fa-l.new-setting-prompt',)))
             if potential_val:
                 try:

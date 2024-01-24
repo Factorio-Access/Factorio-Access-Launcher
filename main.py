@@ -4,8 +4,6 @@ import traceback
 sys.excepthook = lambda *args: (traceback.print_exception(*args), input("Press Enter to Exit"))
 
 import os
-import json
-import shutil
 
 
 import fa_paths
@@ -16,6 +14,7 @@ import launch_and_monitor
 import save_management
 from fa_arg_parse import args
 from map_gen_setting_menu import sub_preset
+from translations import check_lang
 
 os.chdir(fa_paths.MY_CONFIG_DIR)
 
@@ -50,6 +49,8 @@ menu = {
         },
     ("gui.exit",): launch_and_monitor.time_to_exit,
     }
+
+check_lang()
 
 modify_config.do_config_check()
 
