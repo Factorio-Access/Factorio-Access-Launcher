@@ -102,10 +102,10 @@ def __remake_section_names():
 current_conf = Conf_Editor()
 
 from config_autogen import *
-with current_conf:
-    conf_ver=int(current_conf.get_setting("","version"))
-if version < conf_ver:
-    print(f"Newer conf.ini version [{conf_ver}] detected. Please inform Factorio-Access maintainers.")
+# with current_conf:
+#     conf_ver=int(current_conf.get_setting("","version"))
+# if version < conf_ver:
+#     print(f"Newer conf.ini version [{conf_ver}] detected. Please inform Factorio-Access maintainers.")
 
 if __name__ == '__main__':
     __remake_section_names()

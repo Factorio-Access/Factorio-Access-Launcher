@@ -7,10 +7,8 @@ import zipfile
 import pathlib
 import json
 
-import fa_paths
-import update_factorio
-import config
 from fa_arg_parse import dprint
+import config
 
 localised_str = Union[str,Iterator['localised_str']]
 
@@ -224,6 +222,7 @@ fancy=re.compile(r'[\.?()\[\]]')
 
 
 def iterate_over_mods(re_filter:re.Pattern[str] =None) -> Iterator[pathlib.Path]:
+    import fa_paths
     if re_filter:
         for mod_path in iterate_over_mods():
             if re_filter.fullmatch(mod_path.name):
@@ -295,6 +294,7 @@ check_cats={
 
 
 def check_config_locale():
+    import fa_paths
     with open(os.path.join(fa_paths.READ_DIR,'core/locale/en/core.cfg')) as fp:
         translations = read_cfg(fp)
     with open(os.path.join(fa_paths.CONFIG)) as fp:
@@ -326,9 +326,9 @@ def check_config_locale():
             print('\t',tcat,count)
 
 
-for locale_file in iterate_over_mod_files('locale/en/.*.cfg'):
-    with locale_file.open(encoding='utf8') as fp:
-        read_cfg(fp,ret=translation_table)
+# for locale_file in iterate_over_mod_files('locale/en/.*.cfg'):
+#     with locale_file.open(encoding='utf8') as fp:
+#         read_cfg(fp,ret=translation_table)
 
 def load_lang(code):
     for locale_file in iterate_over_mod_files(f'locale/{code}/.*.cfg'):
