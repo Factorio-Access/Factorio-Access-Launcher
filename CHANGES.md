@@ -1,3 +1,79 @@
+# Version 0.7.0 BETA
+
+Not released yet.
+
+Summary not written yet.
+
+# New Features
+
+- New launcher features.
+  1. Added launcher localization support including an option to select your language before the main menu.
+  2. The new game settings menu completely revamped to make game setup smoother.
+
+- Map presets have been revised.
+  1. Compass valley remains unchanged as the custom peaceful map with fairly favorable settings and a world seed that is always the same. We recommend it for your first game.
+  2. The "no enemies" preset has default settings except that enemy bases are fully turned off.
+  3. The "peaceful" preset has default settings except that enemies are in peaceful mode, where they do not start any attacks, but still react to being attacked.
+  4. All other presets come directly from the game.
+
+- The tutorial system has been added.
+  * Press "H" to hear the current tutorial step. Press "SHIFT + H" and "CONTROL + H" to go forward and backward along the steps.
+  * To make it easier to review steps, there is a chapter and summary system. You can toggle between hearing step details or their summaries by pressing "CONTROL + SHIFT + H". You can jump between the chapters by using "ALT + SHIFT + H" and "ALT + CONTROL + H".
+  * The system works by giving info in steps. There are around 100 steps including objectives, basic info, tips and so on. They are spread out over 7 chapters.
+  * The logic of the system is to teach the controls, and give the player small objectives up until they complete their first research, and provide condensed wiki information about everything they use.
+  * Reading the wiki will now be needed if you want to learn more advanced info such as transport belt lane management, or if you prefer to have the basics explained in detail.
+  * Feedback is welcome for rebalancing any of the steps.
+  
+- Damaged items are considered by the game as not the same as the same items at full health, so the mod now identifies damaged items, so that you can place and repair them.
+  * If you have multiple damaged units of the same item, the inventory system has a shortcut where it groups all damaged units of the item into the same stack and averages their health levels.
+  
+- The player character now visually turns to face the cursor direction correctly.
+
+- Vehicle inventories can now be accessed, including cars, tanks, cargo wagons, and rocket cargo slots.
+  
+# Changes
+
+- Mod files have been largely cleaned up.
+  * Removed unneeded files from the 0.7.0 release folder.
+  * The mod's MIT license is now included in the mod's own folder.
+
+- Rotation input behavior have been changed. You can now use rotate "R" and reverse rotate "SHIFT + R" universally, including Vanilla Mode. The first rotation no longer simply reads the existing rotation, which is already done when an entity is examined.
+
+- Big revisions for how the mouse pointer is visually handled. This minimizes bugs and makes the cursor logic easier to see for those with partial vision.
+  * The pointer is now strongly bound to the mod's cursor with higher accuracy. This is enforced every time you press a key to move the mod cursor or while you have a build preview in hand. 
+  * If the mod cursor is going off the edge of the screen, the mouse pointer is centered on the player character in the middle.
+  * Entity selection has been fully tied to the mod cursor exclusively, so the mouse pointer clicking on something out of range or on something that is in front of something else will not cause issues.
+  * Vanilla mode bypasses all of these checks and fully unbinds the mouse pointer and re-enables selecting entities with it.
+  * There is also another bypass for those who prefer it: You can middle click the mouse to unbind the mouse and select with it freely until the mod cursor moves again or the menu changes. 
+  
+- The scanner tool has been tuned to report more accurately when it is finished.
+
+- When you enter Cursor Mode during smooth walking, you will now be repositioned to the center of the nearest tile if it is walkable. This displacement is less than 1 tile.
+
+- Smooth walking has been made smoother such that info updates and cursor updates are more accurate.
+
+- Improved how transport belts in hand are rotated to match the player direction during build lock mode.
+
+- Improved pipe connection reported directions so that they point to the relevant pipes of an entity instead of the whole entity, which may be at a diagonal direction.
+
+# Bug fixes
+
+- Launcher bug fixes, such as removing a circular dependency about setting up config files for the first time loading the game.
+
+- Fixed the sync of visual building previews with the mod drawn building preview footprints. This includes rotating objects and using the pipette tool.
+
+- Fixed several cases of missing updates for the cursor highlight box and building preview visuals.
+
+- Cursor reach distance for clicking entities has been made more accurate.
+
+- Mining an access radar now gives you back the access radar instead ofa regular radar.
+
+- Fixed flamethrower turrets causing a crash when you examine their contents.
+
+- Fixed crashes that were happening while reading special tool items in hand.
+
+- Fixed the game crashing when your character dies.
+  
 # Version 0.6.0 BETA
 
 Released on January 20th, 2024.
@@ -65,7 +141,7 @@ This update brings several new features and changes to increase overall accessib
 ## Changes
 
 - Some mod controls have been changed. Please note:
-  * The "Q" key now empties the hand and runs the smart pippette tool, like in vanilla keybinds. Reading the hand is now done with "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pippette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu and with "E" opening and closing menus.
+  * The "Q" key now empties the hand and runs the smart pipette tool, like in vanilla keybinds. Reading the hand is now done with "SHIFT + Q". Therefore, the two keybinds have simply switched places. This is for several reasons: Parity with vanilla gameplay, the hand emptying and pipette being used more frequently overall than hand reading, and symmetry with "SHIFT + E" reading the current menu and with "E" opening and closing menus.
   * The menu search function is now activated by pressing "CONTROL + F", instead of pressing "ENTER". This prevents unintentionally boarding or exiting vehicles when trying to open the search, and it is also a more intuitive keybind that matches most other computer programs.
   * Scan result list sorting now uses "N" to sort by distance to your current position because it is used more often than sorting by total count, which now uses "SHIFT + N".
 
