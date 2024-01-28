@@ -2,7 +2,7 @@
 
 Not released yet.
 
-Summary not written yet.
+This update brings many interface tweaks and additions. Most importantly, we are adding the first version of the tutorial system, which teaches the basic controls and mechanics, and gives the player small objectives up until they complete their first research. In addition, how the mod cursor updates and how it syncs with the visual mouse pointer have been vastly improved. The launcher has also been improved, now supporting localization and improved new game setup including new presets.
 
 # New Features
 
@@ -30,14 +30,14 @@ Summary not written yet.
 - The player character now visually turns to face the cursor direction correctly.
 
 - Vehicle inventories can now be accessed, including cars, tanks, cargo wagons, and rocket cargo slots.
+
+- You can now take half of an inventory stack when your hand is empty by pressing "RIGHT BRACKET", but for now only from the player inventory menu when it is open by itself or alongside a chest.
   
 # Changes
 
-- Mod files have been largely cleaned up.
-  * Removed unneeded files from the 0.7.0 release folder.
-  * The mod's MIT license is now included in the mod's own folder.
-
-- Rotation input behavior have been changed. You can now use rotate "R" and reverse rotate "SHIFT + R" universally, including Vanilla Mode. The first rotation no longer simply reads the existing rotation, which is already done when an entity is examined.
+- Rotation input behavior has been changed. 
+  * You can now use rotate "R" and reverse rotate "SHIFT + R" universally, including Vanilla Mode. 
+  * The first rotation command now rotates the building instead of simply reading the current direction. This provides parity with vanilla behavior and also the info is already available when an entity is examined.
 
 - Big revisions for how the mouse pointer is visually handled. This minimizes bugs and makes the cursor logic easier to see for those with partial vision.
   * The pointer is now strongly bound to the mod's cursor with higher accuracy. This is enforced every time you press a key to move the mod cursor or while you have a build preview in hand. 
@@ -46,19 +46,23 @@ Summary not written yet.
   * Vanilla mode bypasses all of these checks and fully unbinds the mouse pointer and re-enables selecting entities with it.
   * There is also another bypass for those who prefer it: You can middle click the mouse to unbind the mouse and select with it freely until the mod cursor moves again or the menu changes. 
   
+- Mod release files have been largely cleaned up.
+  * Removed unneeded files from the 0.7.0 release folder. These include the "map presets" folder and DLL files.
+  * The mod's MIT license is now included in the mod's own folder.
+  
 - The scanner tool has been tuned to report more accurately when it is finished.
 
-- When you enter Cursor Mode during smooth walking, you will now be repositioned to the center of the nearest tile if it is walkable. This displacement is less than 1 tile.
+- When you enter Cursor Mode during smooth walking, you will now be repositioned to the center of the nearest tile if it is walkable. The displacement is always less than 1 tile.
 
 - Smooth walking has been made smoother such that info updates and cursor updates are more accurate.
 
 - Improved how transport belts in hand are rotated to match the player direction during build lock mode.
 
-- Improved pipe connection reported directions so that they point to the relevant pipes of an entity instead of the whole entity, which may be at a diagonal direction.
+- Improved pipe connection direction reports so that they point to the relevant pipes of a connected entity instead of the whole entity, which may be at a diagonal direction.
 
 # Bug fixes
 
-- Launcher bug fixes, such as removing a circular dependency about setting up config files for the first time loading the game.
+- Launcher bugs fixed, such as removing a circular dependency about setting up config files for the first time loading the game.
 
 - Fixed the sync of visual building previews with the mod drawn building preview footprints. This includes rotating objects and using the pipette tool.
 
@@ -73,6 +77,8 @@ Summary not written yet.
 - Fixed crashes that were happening while reading special tool items in hand.
 
 - Fixed the game crashing when your character dies.
+
+- Fixed the transport belt analyzer crashing due to localization setup errors.
   
 # Version 0.6.0 BETA
 
