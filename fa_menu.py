@@ -2,7 +2,7 @@ from typing import Any,Callable
 import re
 import weakref
 
-from translations import translate,localised_str
+from translations import translate,localised_str,tprint
 import fa_paths
 from fa_arg_parse import args
 
@@ -38,10 +38,14 @@ def getNum():
             print("Invalid input, please enter a number.\n")
 
 def select_option(options,prompt='Select an option:',one_indexed=True):
+    pre_prompt=None
     while True:
-        print(prompt)
+        print("\033c",end='')
+        if pre_prompt:
+            tprint(pre_prompt)
+        tprint(prompt)
         for i, val in enumerate(options):
-            print(i + one_indexed, ": ", val)    
+            tprint(f'{i + one_indexed}:', val)    
         i=input()
         if not i.isdigit():
             if i=='debug':
@@ -51,14 +55,14 @@ def select_option(options,prompt='Select an option:',one_indexed=True):
                     if type(path)==str:
                         print(f'{name:20}:{path}')
 
-            print("Invalid input, please enter a number.")
+            pre_prompt="Invalid input, please enter a number."
             continue
         i=int(i)-one_indexed
         if i >= len(options):
-            print("Option too high, please enter a smaller number.")
+            pre_prompt="Option too high, please enter a smaller number."
             continue
         if i<0:
-            print("Options start at 1. Please enter a larger number.")
+            pre_prompt="Options start at 1. Please enter a larger number."
             continue
         return i
 
@@ -112,7 +116,19 @@ class menu_item(object):
         self.name=name
         self.desc=desc
         if isinstance(submenu,dict):
-            submenu=[subsubmenu if isinstance(subsubmenu,menu_item) else menu_item(sub_name,subsubmenu) for sub_name,subsubmenu in submenu.items()]
+            arr_sub=[]
+            next_desc=None
+            for sub_name, sub in submenu.items():
+    
+                if isinstance(sub,menu_item):
+                    arr_sub.append(sub)
+                    continue
+                if isinstance(sub_name,str) and sub_name.startswith("_desc"):
+                    next_desc=sub
+                    continue
+                arr_sub.append(menu_item(sub_name,sub,next_desc))
+                next_desc=None
+            submenu=arr_sub
         self.submenu=submenu
         if not callable(self.submenu) and add_back:
             self.submenu=[back_menu_item]+self.submenu
@@ -124,6 +140,15 @@ class menu_item(object):
         if callable(self.name):
             return self.name(*args)
         return self.name
+    def get_header(self,*args):
+        ret=self.get_menu_name(*args)
+        if self.desc is not None:
+            if callable(self.desc):
+                add=self.desc(*args)
+            else:
+                add=self.desc
+            ret=("",ret,"\n",add)
+        return ret
     def __call__(self,*args):
         if callable(self.submenu):
             ret = self.submenu(*args)
@@ -134,9 +159,6 @@ class menu_item(object):
                 raise ValueError()
             return ret
         while True:
-            this_name=self.get_menu_name(*args)
-            if self.desc:
-                this_name=('',this_name,'\n',self.desc)
             options={}
             for submenu in self.submenu:
                 sub_options=submenu.get_names(*args)
@@ -147,11 +169,11 @@ class menu_item(object):
                     options[sub_options]=(submenu,())
             keys=list(options)
             opts=[translate(key) for key in keys]
-            selected_menu,arg = options[keys[select_option(opts, prompt=translate(this_name), one_indexed= not self.add_back)]]
+            selected_menu,arg = options[keys[select_option(opts, prompt=translate(self.get_header(*args)), one_indexed= not self.add_back)]]
             ret = selected_menu(*(args+arg))
             if ret > 0 and self.add_back:
                 return ret-1
-back_menu_item=menu_item("Back",back_func,False)
+back_menu_item=menu_item(("gui.cancel",),back_func,False)
 
 class setting_menu(menu_item):
     __slots__=["myname","desc","default","val","submenu"]
@@ -176,10 +198,8 @@ class setting_menu(menu_item):
         return str(self.val)
     def __call__(self,*args):
         while True:
-            print(translate(self.name(*args)))
-            if self.desc is not None:
-                print(translate(self.desc))
-            print(translate(("fa-l.current-setting",self.val_to_string())))
+            tprint(self.get_header(*args))
+            tprint(("fa-l.current-setting",self.val_to_string()))
             potential_val=input(translate(('fa-l.new-setting-prompt',)))
             if potential_val:
                 try:

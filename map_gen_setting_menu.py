@@ -306,6 +306,7 @@ def get_presets(*args):
             tname=('map-gen-preset-name.'+name,)                
             if args and args[-1]==preset:
                 return tname
+            preset['name']=name
             presets.append((
                 preset['order'] if 'order' in preset else '',
                 tname,
@@ -337,6 +338,11 @@ def select_preset_name(preset):
         return ('gui-map-generator.reset-to-preset',diffs)
     return ('gui-map-generator.reset-to-preset-disabled',)
 
+def get_preset_desc(*args):
+    preset=args[-1]
+    return ("map-gen-preset-description."+preset['name'],)
+
+
 class SettingEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, fa_menu.menu_item):
@@ -345,21 +351,18 @@ class SettingEncoder(json.JSONEncoder):
         return super().default(obj)
 
 def launch_new(*args):
-    se=SettingEncoder(ensure_ascii=False, indent=2)
     mgsp=fa_paths.SCRIPT_OUTPUT.joinpath('map_gen.json')
     msp=fa_paths.SCRIPT_OUTPUT.joinpath('map.json')
-    with open(mgsp,'w',encoding='utf-8') as fp:
-        json.dump(json_files['basic_settings'],
-                  fp,
-                  ensure_ascii=False,
-                  indent=2,
-                  cls=SettingEncoder)
-    with open(msp,'w',encoding='utf-8') as fp:
-        json.dump(json_files['advanced_settings'],
-                  fp,
-                  ensure_ascii=False,
-                  indent=2,
-                  cls=SettingEncoder)
+    files={
+        "basic_settings":mgsp,
+        "advanced_settings":msp}
+    for sub,path in files.items():
+        with open(path,'w',encoding='utf-8') as fp:
+            json.dump(json_files[sub],
+                    fp,
+                    ensure_ascii=False,
+                    indent=2,
+                    cls=SettingEncoder)
     save=fa_paths.SAVES.joinpath('_autosave-manual.zip').absolute()
     launch_with_params(["--map-gen-settings", str(mgsp), "--map-settings",str(msp),'--create',str(save)],save_rename=False)
     launch(save)
@@ -470,7 +473,9 @@ msj["enemy_expansion"]["enabled"]=menu[("gui-map-generator.enemy-tab-title",)]["
 msj["enemy_evolution"]["enabled"]=menu[("gui-map-generator.enemy-tab-title",)]["Evolution"].submenu[1]
 
 
-sub_preset={get_presets:{
+sub_preset={
+    "_desc_for_presets":get_preset_desc,
+    get_presets:{
     select_preset_name:select_preset,
     ('gui-map-generator.next',):menu
 }}
