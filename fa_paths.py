@@ -209,12 +209,12 @@ SCRIPT_OUTPUT = WRITE_DIR.joinpath('script-output')
 dprint(f"SCRIPT_OUTPUT={SCRIPT_OUTPUT}")
 
 MOD_NAME = "FactorioAccess"
-__my_mod_folder = os.path.join(MY_BIN,'..','mods')
-if os.path.isdir(__my_mod_folder) and not os.path.samefile(__my_mod_folder,MODS):
-    __my_mod = os.path.join(__my_mod_folder,MOD_NAME)
-    if os.path.exists(__my_mod):
-        try:
-            shutil.rmtree(os.path.join(MODS,MOD_NAME))
-        except FileNotFoundError:
-            pass
-        shutil.move(__my_mod,MODS)
+# __my_mod_folder = os.path.join(MY_BIN,'..','mods')
+# if os.path.isdir(__my_mod_folder) and not os.path.samefile(__my_mod_folder,MODS):
+#     __my_mod = os.path.join(__my_mod_folder,MOD_NAME)
+#     if os.path.exists(__my_mod):
+#         try:
+#             shutil.rmtree(os.path.join(MODS,MOD_NAME))
+#         except FileNotFoundError:
+#             pass
+#         shutil.move(__my_mod,MODS)

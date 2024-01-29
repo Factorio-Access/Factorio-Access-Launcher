@@ -358,8 +358,12 @@ def check_lang():
         if not code or code=='auto':
             import locale
             import fa_menu
-            loc,enc = locale.getlocale()
-            normed=locale.normalize(loc)
+            import sys
+            if  True:# getattr(sys, 'frozen', False) and sys.platform == "WIN":
+                import ctypes
+                loc = locale.windows_locale[ ctypes.windll.kernel32.GetUserDefaultUILanguage() ]
+            else:
+                loc,enc = locale.getlocale()
             langs= get_langs()
             short_list=[]
             if loc is not None and len(loc)>1:
@@ -379,6 +383,8 @@ def check_lang():
                         return
                 else:
                     dprint("We got a short list for langs",short_list)
+            else:
+                load_lang('en')
             lang_op=fa_menu.select_option(langs.values(),('gui-interface-settings.locale',))
             config.general.locale = list(langs.keys())[lang_op]
         load_lang(config.general.locale)
