@@ -2,9 +2,9 @@
 
 Not released yet.
 
-This update brings many interface tweaks and additions. Most importantly, we are adding the first version of the tutorial system, which teaches the basic controls and mechanics, and gives the player small objectives up until they complete their first research. In addition, how the mod cursor updates and how it syncs with the visual mouse pointer have been vastly improved. The launcher has also been improved, now supporting localization and improved new game setup including new presets.
+This update brings many interface tweaks and additions. Most importantly, we are adding the first version of the mod's own tutorial system, which teaches the basic controls and mechanics, and gives the player small objectives up until they complete their first two technology researches. In addition, how the mod cursor updates and how it syncs with the visual mouse pointer have been vastly improved. The launcher has also been improved, now supporting localization and improved new game setup including new presets.
 
-# New Features
+## New Features
 
 - New launcher features.
   1. Added launcher localization support including an option to select your language before the main menu.
@@ -20,34 +20,45 @@ This update brings many interface tweaks and additions. Most importantly, we are
   * Press "H" to hear the current tutorial step. Press "SHIFT + H" and "CONTROL + H" to go forward and backward along the steps.
   * To make it easier to review steps, there is a chapter and summary system. You can toggle between hearing step details or their summaries by pressing "CONTROL + SHIFT + H". 
   * You can jump between the chapters by using "ALT + SHIFT + H" and "ALT + CONTROL + H".
-  * The system works by giving info in steps. There are around 100 steps including objectives, basic info, tips and so on. They are spread out over 7 chapters.
+  * The tutorial system works by giving info in steps. There are over 100 steps spread out over 7 chapters, including objectives, basic info, tips and so on. 
   * The logic of the system is to teach the controls, and give the player small objectives up until they complete their first research, and provide condensed wiki information about everything they use.
-  * Reading the wiki will now be needed if you want to learn more advanced info such as transport belt lane management, or if you prefer to have the basics explained in detail.
+  * Reading the wiki will now be needed if you want to learn more advanced info such as transport belt lane management, or if you prefer to have the basics explained in extra detail.
+  * Running the tutorial also provides a little gift so that steps are explained in a smoother order, and also the early game becomes very slightly faster.
   * Feedback is welcome for rebalancing any of the steps.
   
 - Damaged items are considered by the game as not the same as the same items at full health, so the mod now identifies damaged items, so that you can place and repair them.
   * If you have multiple damaged units of the same item, the inventory system has a shortcut where it groups all damaged units of the item into the same stack and averages their health levels.
   
+- A sound cue can now be heard when you encounter an entity in smooth walking mode. This makes it much easier to detect when you arrive at an ore patch. 
+
 - The player character now visually turns to face the cursor direction correctly.
 
 - Vehicle inventories can now be accessed, including cars, tanks, cargo wagons, and rocket cargo slots.
 
-- You can now take half of an inventory stack when your hand is empty by pressing "RIGHT BRACKET", but for now only from the player inventory menu when it is open by itself or alongside a chest.
+- You can now take half of an inventory stack when your hand is empty by pressing "RIGHT BRACKET", but for now only from the player inventory menu when it is open by itself or alongside a chest. On the other hand, smart-inserting half a stack by pressing "SHIFT + RIGHT BRACKET" already works from the player inventory inside building menus.
+
+- Small additions
+  * The power load level for steam engines is now expressed in a percentage as a summary before giving the exact numbers as usual.
+  * Steam engines now indicate their fluid contents.
+  * GUI icons were added for the offshore pump building menu.
+  * Visual build previews now include the enlarged cursor if holding paving items, since they can be placed outside of cursor mode too.
+  * A furnace's recipe can now be identified from its output slot if it is inactive otherwise.
+  * Left clicking with the mouse is now also associated with the mod's entity click handling function.
   
-# Changes
+## Changes
 
 - Rotation input behavior has been changed. 
   * You can now use rotate "R" and reverse rotate "SHIFT + R" universally, including Vanilla Mode. 
   * The first rotation command now rotates the building instead of simply reading the current direction. This provides parity with vanilla behavior and also the info is already available when an entity is examined.
 
 - Big revisions for how the mouse pointer is visually handled. This minimizes bugs and makes the cursor logic easier to see for those with partial vision.
-  * The pointer is now strongly bound to the mod's cursor with higher accuracy. This is enforced every time you press a key to move the mod cursor or while you have a build preview in hand. 
+  * The pointer is now strongly bound to the mod's cursor with higher accuracy. This is enforced every time you press a key to move the mod cursor or while you have an item in hand. 
   * If the mod cursor is going off the edge of the screen, the mouse pointer is centered on the player character in the middle.
   * Entity selection has been fully tied to the mod cursor exclusively, so the mouse pointer clicking on something out of range or on something that is in front of something else will not cause issues.
   * Vanilla mode bypasses all of these checks and fully unbinds the mouse pointer and re-enables selecting entities with it.
   * There is also another bypass for those who prefer it: You can middle click the mouse to unbind the mouse and select with it freely until the mod cursor moves again or the menu changes. 
   
-- Mod release files have been largely cleaned up.
+- Mod release files have been cleaned up.
   * Removed unneeded files from the 0.7.0 release folder. These include the "map presets" folder and DLL files.
   * The mod's MIT license is now included in the mod's own folder.
   
@@ -61,7 +72,13 @@ This update brings many interface tweaks and additions. Most importantly, we are
 
 - Improved pipe connection direction reports so that they point to the relevant pipes of a connected entity instead of the whole entity, which may be at a diagonal direction.
 
-# Bug fixes
+- The fast travel system now takes the player position as the reference when creating a new point.
+
+- Other changes
+  * Crafting menu info and some other menu info is better phrased now.
+  * Entity part reading has been made more accurate.
+
+## Bug fixes
 
 - Launcher bugs fixed, such as removing a circular dependency about setting up config files for the first time loading the game.
 
@@ -80,6 +97,10 @@ This update brings many interface tweaks and additions. Most importantly, we are
 - Fixed the game crashing when your character dies.
 
 - Fixed the transport belt analyzer crashing due to localization setup errors.
+
+## New known bugs
+
+- There are some cases where the mod cursor and mouse pointer rotation lose sync. You can fix this by using the pipette tool.
   
 # Version 0.6.0 BETA
 
