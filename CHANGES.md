@@ -1,6 +1,6 @@
 # Version 0.7.0 BETA
 
-Not released yet.
+Released on January 30th, 2024.
 
 This update brings many interface tweaks and additions. Most importantly, we are adding the first version of the mod's own tutorial system, which teaches the basic controls and mechanics, and gives the player small objectives up until they complete their first two technology researches. In addition, how the mod cursor updates and how it syncs with the visual mouse pointer have been vastly improved. The launcher has also been improved, now supporting localization and improved new game setup including new presets.
 
@@ -100,7 +100,7 @@ This update brings many interface tweaks and additions. Most importantly, we are
 
 ## New known bugs
 
-- There are some cases where the mod cursor and mouse pointer rotation lose sync. You can fix this by using the pipette tool.
+- There are some cases where the mod cursor and mouse pointer rotation lose sync. You can fix this by using the pipette tool to resync them.
   
 # Version 0.6.0 BETA
 
