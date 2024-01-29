@@ -16,8 +16,9 @@ gui.FAILSAFE = False
 ao_output = accessible_output2.outputs.auto.Auto()
 ao_output.output("Hello Factorio!", False)
 
-
+rich_text=re.compile(r'\[[^\]]*\]')
 def speak_interuptible_text(text):
+    text=rich_text.sub('',text)
     ao_output.output(text,True)
 def setCursor(coordstring):
     coords = [int(coord) for coord in coordstring.split(",")]
