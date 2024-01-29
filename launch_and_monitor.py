@@ -16,8 +16,9 @@ gui.FAILSAFE = False
 ao_output = accessible_output2.outputs.auto.Auto()
 ao_output.output("Hello Factorio!", False)
 
-
+rich_text=re.compile(r'\[[^\]]*\]')
 def speak_interuptible_text(text):
+    text=rich_text.sub('',text)
     ao_output.output(text,True)
 def setCursor(coordstring):
     coords = [int(coord) for coord in coordstring.split(",")]
@@ -92,9 +93,6 @@ def connect_to_address_menu():
     return connect_to_address(address)
 def connect_to_address(address):
     return launch_with_params(["--mp-connect",address])
-
-def create_new_save(map_setting,map_gen_setting):
-    launch_with_params(["--map-gen-settings", map_gen_setting, "--map-settings",map_setting,'--create','saves/_autosave-manual.zip'],save_rename=False)
 
 def launch(path):
     return launch_with_params(["--load-game", path])

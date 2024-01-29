@@ -5,9 +5,9 @@ from collections.abc import Iterator
 import os
 import zipfile
 import pathlib
+import json
 
-import fa_paths
-import update_factorio
+from fa_arg_parse import dprint
 import config
 
 localised_str = Union[str,Iterator['localised_str']]
@@ -123,7 +123,10 @@ def do_special(special,n=0):
 def translate(l_str:localised_str,n=0,error=False):
     if type(l_str) == str:
         return l_str
-    key, *args = l_str
+    try:
+        key, *args = l_str
+    except:
+        return str(l_str)
     if key=='':
         return ''.join((translate(arg) for arg in args))
     if key=='?':
@@ -146,14 +149,16 @@ def translate(l_str:localised_str,n=0,error=False):
     
 
 translation_table=defaultdict(dict)
-
-
-class translated_args(UserDict):
+'''
+,args:list[localised_str]):
+        self.args=args'''
+class translated_args(dict):
     def __init__(self,args:list[localised_str]):
         self.args=args
+        super().__init__()
     def __missing__(self,key):
-        self.dict[key]=translate(self.args[int(key)])
-        return self.dict[key]
+        self[key]=translate(self.args[int(key)-1])
+        return self[key]
 
 def expand(template:str,args:list[localised_str] = []):
     parts=template.split('__')
@@ -175,7 +180,7 @@ def expand_r(parts:list[str],targs:translated_args,in_plural=False):
             assert remaining[0]=='{',"Unexpected start of plural. Expected {"
             remaining=remaining[1:]
             matched=False
-            while remaining!='}':
+            while remaining:
                 condition, remaining = remaining.split('=',1)
                 parts.insert(0,remaining)
                 temp_res, remaining = expand_r(parts,targs,True)
@@ -188,14 +193,14 @@ def expand_r(parts:list[str],targs:translated_args,in_plural=False):
                             break
                         if 'ends in ' in cond:
                             check=cond[8:]
-                            if check in my_num and check==my_num[-len(check):]:
+                            if my_num.endswith(check):
                                 break
                     else:
                         matched=False
                     if matched:
                         ret+=temp_res
         elif p.isdigit():
-            ret+=translated_args[p]
+            ret+=targs[p]
         else:
             if '|' in p or '}' in p and in_plural:
                 p,add_back = re.split(r'}|\|',p,1)
@@ -217,6 +222,7 @@ fancy=re.compile(r'[\.?()\[\]]')
 
 
 def iterate_over_mods(re_filter:re.Pattern[str] =None) -> Iterator[pathlib.Path]:
+    import fa_paths
     if re_filter:
         for mod_path in iterate_over_mods():
             if re_filter.fullmatch(mod_path.name):
@@ -288,6 +294,7 @@ check_cats={
 
 
 def check_config_locale():
+    import fa_paths
     with open(os.path.join(fa_paths.READ_DIR,'core/locale/en/core.cfg')) as fp:
         translations = read_cfg(fp)
     with open(os.path.join(fa_paths.CONFIG)) as fp:
@@ -319,8 +326,71 @@ def check_config_locale():
             print('\t',tcat,count)
 
 
-for locale_file in iterate_over_mod_files('locale/en/.*.cfg'):
-    with locale_file.open(encoding='utf8') as fp:
-        read_cfg(fp,ret=translation_table)
+# for locale_file in iterate_over_mod_files('locale/en/.*.cfg'):
+#     with locale_file.open(encoding='utf8') as fp:
+#         read_cfg(fp,ret=translation_table)
+
+def load_lang(code):
+    for locale_file in iterate_over_mod_files(f'locale/{code}/.*.cfg'):
+        with locale_file.open(encoding='utf8') as fp:
+            read_cfg(fp,ret=translation_table)
+
+def get_langs():
+    lang={}
+    regstr=r'locale/([\w-]+)/info.json'
+    reg=re.compile(regstr)
+    for path in iterate_over_mod_files(regstr):
+        code = reg.search(str(path).replace('\\','/'))[1]
+        if code in lang:
+            continue
+        with open(path,encoding='utf8') as fp: 
+            info=json.load(fp)
+        if 'language-name' in info:
+            lang[code]=info['language-name']
+    return lang
+
+def tprint(*args,**kargs):
+    print(*(translate(arg) for arg in args),**kargs)
+
+def check_lang():
+    with config.current_conf:
+        code = config.general.locale
+        if not code or code=='auto':
+            import locale
+            import fa_menu
+            import sys
+            if  True:# getattr(sys, 'frozen', False) and sys.platform == "WIN":
+                import ctypes
+                loc = locale.windows_locale[ ctypes.windll.kernel32.GetUserDefaultUILanguage() ]
+            else:
+                loc,enc = locale.getlocale()
+            langs= get_langs()
+            short_list=[]
+            if loc is not None and len(loc)>1:
+                for code, lang in langs.items():
+                    if loc.startswith(code) or lang in loc:
+                        short_list.append(code)
+            if len(short_list):
+                if len(short_list)==1:
+                    code=short_list[0]
+                    load_lang(code)
+                    op=fa_menu.select_option([
+                        ('gui.confirm',),
+                        ('fa-l.list-all-langs',)],
+                        ('fa-l.guessed-language',langs[code]))
+                    if op==0:
+                        config.general.locale = code
+                        return
+                else:
+                    dprint("We got a short list for langs",short_list)
+            else:
+                load_lang('en')
+            lang_op=fa_menu.select_option(langs.values(),('gui-interface-settings.locale',))
+            config.general.locale = list(langs.keys())[lang_op]
+        load_lang(config.general.locale)
+
+            
+
+
 if __name__ == "__main__":
-    print(expand('__ALT_CONTROL_RIGHT_CLICK__2__'))
+    check_lang()
