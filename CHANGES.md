@@ -18,7 +18,8 @@ This update brings many interface tweaks and additions. Most importantly, we are
 
 - The tutorial system has been added.
   * Press "H" to hear the current tutorial step. Press "SHIFT + H" and "CONTROL + H" to go forward and backward along the steps.
-  * To make it easier to review steps, there is a chapter and summary system. You can toggle between hearing step details or their summaries by pressing "CONTROL + SHIFT + H". You can jump between the chapters by using "ALT + SHIFT + H" and "ALT + CONTROL + H".
+  * To make it easier to review steps, there is a chapter and summary system. You can toggle between hearing step details or their summaries by pressing "CONTROL + SHIFT + H". 
+  * You can jump between the chapters by using "ALT + SHIFT + H" and "ALT + CONTROL + H".
   * The system works by giving info in steps. There are around 100 steps including objectives, basic info, tips and so on. They are spread out over 7 chapters.
   * The logic of the system is to teach the controls, and give the player small objectives up until they complete their first research, and provide condensed wiki information about everything they use.
   * Reading the wiki will now be needed if you want to learn more advanced info such as transport belt lane management, or if you prefer to have the basics explained in detail.
