@@ -1,7 +1,7 @@
 # Version 0.7.1 BETA
-Released on XXX
+Released on February 1st, 2024.
 
-This is a minor update to fix bugs, tweaks some basic behavior, and extend the tutorial.
+This is a minor update to extend the tutorial, tweaks some basic behavior, and fix bugs.
 
 ## Changes
 
