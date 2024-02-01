@@ -1,3 +1,29 @@
+# Version 0.7.1 BETA
+Released on XXX
+
+This is a minor update to fix bugs, tweaks some basic behavior, and extend the tutorial.
+
+## Changes
+
+- The tutorial has been reviewed and extended.
+  * You need to rewind the tutorial to the very top for it to reset. Consider using "CONTROL + ALT + H" to jump back in chapters.
+  * Now there are 9 chapters, covering up until the end of building a complete automation science factory.
+  * Internal names for keybinds have been added to later chapters as well.
+  * Because the "LEFT BRACKET" and "RIGHT BRACKET" keys can vary between different keyboards and vocalizers, a warning has been added to the tutorial start messages about this.
+  
+- The placement system for underground belt chutes has been revised.
+  * Now you do not need to rotate the exit chute in hand for it to be connected and built. It will simply be at the same rotation as the entrance chute, while the flipping is handled by the mod internally.
+  
+- Selecting your own character has been re-enabled in Cursor Mode.
+
+- Toggling vanilla mode or cursor hiding now reads this out too.
+
+## Bug fixes 
+
+- Fixed a crash that occured when adding to an existing stack of an item.
+
+- Fixed a crash due to incrementing a logistic request for an item with stack size 1.
+
 # Version 0.7.0 BETA
 
 Released on January 30th, 2024.
