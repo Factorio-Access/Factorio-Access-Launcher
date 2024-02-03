@@ -16,6 +16,8 @@ This is a minor update mainly to fix bugs, but it also features a special little
 
 - Added rectangular obstacle clearing under building preview footprints prior to building, so that simple obstacles like trees or items on the ground will not block you from building.
 
+- Visual building previews now account for build lock mode, when the buildings are set to be placed behind you as you walk.
+
 ## Bug fixes 
 
 - Fixed the automatic aiming function crashing the game due to a mistake with changing function names.
@@ -23,6 +25,10 @@ This is a minor update mainly to fix bugs, but it also features a special little
 - Fixed some bugs related to entity selection that caused multiple things to happen in one buttom press. If you are still experiencing issues, go to your config ini file and make sure that you set "open-gui-alternative=" to have nothing after the equals sign.
 
 - Fixed a crash when opening train menus while riding a train.
+
+- Fixed build lock mode in cursor mode bugs that were introduced in 0.7.0. 
+
+- Fixed electric pole distances not being correct in some build lock mode cases.
 
 
 # Version 0.7.1 BETA
