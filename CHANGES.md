@@ -1,3 +1,30 @@
+# Version 0.7.2 BETA
+
+Released on February 4th, 2024.
+
+This is a minor update mainly to fix bugs, but it also features a special little addition from a community member.
+
+## New features
+
+- Thanks to contributions from @dzsoker, logistic request support for spidertrons has been added. It works like player logistic requests, and is uniquely available for spidertrons among all vehicles.
+
+## Changes
+
+- Reduced volume for some new mod sounds.
+
+- Better explained the rail in hand rotation issue. Note that you can rotate another item in hand, and then grab the rail item to get it in hand with the right rotation.
+
+- Added rectangular obstacle clearing under building preview footprints prior to building, so that simple obstacles like trees or items on the ground will not block you from building.
+
+## Bug fixes 
+
+- Fixed the automatic aiming function crashing the game due to a mistake with changing function names.
+
+- Fixed some bugs related to entity selection that caused multiple things to happen in one buttom press. If you are still experiencing issues, go to your config ini file and make sure that you set "open-gui-alternative=" to have nothing after the equals sign.
+
+- Fixed a crash when opening train menus while riding a train.
+
+
 # Version 0.7.1 BETA
 Released on February 1st, 2024.
 
