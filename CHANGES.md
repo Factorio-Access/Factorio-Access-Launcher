@@ -2,7 +2,7 @@
 
 Released on February 4th, 2024.
 
-This is a minor update mainly to fix bugs, but it also features a special little addition from a community member.
+This is a minor update mainly to fix bugs and improve building tools, but it also features a special little addition from a community member.
 
 ## New features
 
@@ -12,9 +12,9 @@ This is a minor update mainly to fix bugs, but it also features a special little
 
 - Reduced volume for some new mod sounds.
 
-- Better explained the rail in hand rotation issue. Note that you can rotate another item in hand, and then grab the rail item to get it in hand with the right rotation.
-
 - Added rectangular obstacle clearing under building preview footprints prior to building, so that simple obstacles like trees or items on the ground will not block you from building.
+
+- Better explained the rail in hand rotation issue. Note that you can rotate another item in hand, and then grab the rail item to get it in hand with the right rotation.
 
 - Visual building previews now account for build lock mode, when the buildings are set to be placed behind you as you walk.
 
@@ -22,11 +22,11 @@ This is a minor update mainly to fix bugs, but it also features a special little
 
 - Fixed the automatic aiming function crashing the game due to a mistake with changing function names.
 
-- Fixed some bugs related to entity selection that caused multiple things to happen in one buttom press. If you are still experiencing issues, go to your config ini file and make sure that you set "open-gui-alternative=" to have nothing after the equals sign.
+- Fixed some bugs related to entity selection that caused multiple things to happen in one buttom press. If you are still experiencing issues, go to your "config.ini" file and make sure that you set "open-gui-alternative=" to have nothing after the equals sign.
 
 - Fixed a crash when opening train menus while riding a train.
 
-- Fixed build lock mode in cursor mode bugs that were introduced in 0.7.0. 
+- Fixed build lock mode in cursor mode having offset bugs that were introduced in 0.7.0. 
 
 - Fixed electric pole distances not being correct in some build lock mode cases.
 
