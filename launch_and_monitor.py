@@ -8,17 +8,27 @@ import os
 import accessible_output2.outputs.auto
 import pyautogui as gui
 
-from fa_arg_parse import launch_args, args
+from fa_arg_parse import launch_args, args,dprint
 from save_management import save_game_rename
+from translations import translate
 
 gui.FAILSAFE = False
 
 ao_output = accessible_output2.outputs.auto.Auto()
 ao_output.output("Hello Factorio!", False)
 
-rich_text=re.compile(r'\[[^\]]*\]')
+rich_text=re.compile(r'\[\/?(font|color|img|item|entity|technology|recipe|item-group|fluid|tile|virtual-signal|achievement|gps|special-item|armor|train|train-stop|tooltip)[^\]]*\]')
+maybe_key=re.compile(r'"([^\s])"')
+def translate_key_name(m:re.Match):
+    key=m[1]
+    if key == '[':
+        key = 'left-bracket'
+    return f'"{translate(("?",("control-keys."+key,),m[1]))}"'
+
 def speak_interuptible_text(text):
     text=rich_text.sub('',text)
+    text=maybe_key.sub(translate_key_name,text)
+    dprint(text)
     ao_output.output(text,True)
 def setCursor(coordstring):
     coords = [int(coord) for coord in coordstring.split(",")]
@@ -43,8 +53,7 @@ def process_game_stdout(stdout,announce_press_e,tweak_modified):
     player_index=""
     restarting=False
     for bline in iter(stdout.readline, b''):
-        if args.fa_debug:
-            print(bline)
+        dprint(bline)
         line:str = bline.decode('utf-8').rstrip('\r\n')
         parts = line.split(' ',1)
         if len(parts)==2:
