@@ -1,3 +1,67 @@
+# Version 0.7.3 BETA 
+
+Release pending.
+
+In this minor update the launcher has been improved so that it reads punctuation key names as intended, and translates key names when localization is used. In addition, the update brings support for the deconstruction planner and the upgrade planner, as well as an experimental preview of the blueprint support implemented so far. For the full blueprint support plan, read the section for upcoming features.
+
+## New features
+
+- Deconstruction planner support
+  * Press "ALT + D" to hold a decontruction planner in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for deconstruction. You can cancel the ongoing selection by clearing your hand before marking the end point.
+  * Info: The deconstruction planner is useful for picking up large areas of entities with the help of construction robots. You can use the deconstruction planner item to select an area and mark all entities inside for deconstruction. The selection includes player built structures but also trees and rocks. These marked entities will stop working and get picked up by available construction robots that can reach them, and be taken to logistic storage chests.
+  * Note: If you are near the area and have your own construction robots in your personal roboport, they will join the deconstruction and take their picked up items into your inventory.
+  * Note: You can undo the deconstruction order by pressing "CONTROL + Z" if it was the last action performed.
+
+- Upgrade planner support
+  * Press "ALT + U" to hold an upgrade planner in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. You can cancel the ongoing selection by clearing your hand before marking the end point.
+  * Info: The upgrade planner is useful for upgrading large areas of buildings with the help of construction robots. A building being marked for an upgrade means that there is a request made for it to be replaced with its higher tier version. For example, transport belts being upgraded would request for fast transport belts. If the upgraded versions of marked buildings can be found in a logistic network, construction robots will take them and replace the buildings and then take the picked up old buildings to logistic storage. Upgrade requests remain active indefinitely and they do not pause building operation.
+  * Note: Your personal roboport can do this too using your own inventory for supply and dropoff instead of the logistic network.
+  * Note: You can undo the upgrade order by pressing "CONTROL + Z" if it was the last action performed.
+
+- Experimental preview of blueprint support (work in progress)
+  * Press "ALT + B" to hold an empty blueprint in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. You can cancel the ongoing selection by clearing your hand before marking the end point.
+  * Entities within the selection area become a new filled blueprint, which is saved to the blueprint in hand.
+  * You can press "LEFT BRACKET" with the filled blueprint in hand to place down its contents as ghosts, for construction robots to fill if the relevant buildings can be found in storage.
+  * Note: Blueprints at the moment are being held from the middle instead of the top left corner. In addition the blueprint dimensions cannot be read yet. All this makes them harder to align and will be fixed.
+  * Info about the featured entities in a blueprint can be read. Up to four featured entities are selected automatically by the game and a used to clarify the blueprint's visual icon.
+
+- Area mining added for ghosts. Press "SHIFT + X" on a ghost to remove all ghosts within 10 tiles.
+
+## Changes 
+
+- The launcher should now read out punctuation key names correctly.
+
+- The launcher translates the names of keys.
+
+- Improved area mining for railway objects to include train stops and a better explanation about removing all such objects within 10 tiles.
+
+## Bug fixes
+
+- Fixed a launcher crash due to incorrect keybind naming.
+
+## Upcoming features 
+
+- Holding blueprints from the northwest corner instead of the center.
+  * Report the blueprint dimensions to assist with preview information.
+  * Correctly sync the graphical blueprint preview.
+
+- Blueprint management menu, with options such as the following:
+  * Add or change this blueprint's label (short)
+  * Add or change this blueprint's description (long)
+  * Copy or delete this blueprint 
+  * List all blueprint contents by count
+  * Export a blueprint string from this blueprint.
+  * Import a blueprint string to overwrite this blueprint.
+  * Possibly other features such as upgrading entities within the blueprint.
+  * Possibly allowing the blueprint selection to include placed tiles.
+  
+- Better information about rotating a blueprint in hand (if possible).
+
+- Canceling deconstruction orders or upgrade orders via area selection.
+
+- Ordering downgrades using the upgrade planner via area selection.
+
+
 # Version 0.7.2 BETA
 
 Released on February 4th, 2024.
