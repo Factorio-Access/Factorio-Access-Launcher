@@ -220,6 +220,15 @@ def expand_r(parts:list[str],targs:translated_args,in_plural=False):
 
 fancy=re.compile(r'[\.?()\[\]]')
 
+def get_mod_path_parts(path: Union[zipfile.Path , pathlib.Path]):
+    import fa_paths
+    if isinstance(path,pathlib.Path):
+        return path.relative_to(fa_paths.MODS).parts
+    parts=[]
+    while isinstance(path.parent,zipfile.Path):
+        parts.append(path.name)
+        path = path.parent
+    return tuple(parts[::-1])
 
 def iterate_over_mods(re_filter:re.Pattern[str] =None) -> Iterator[pathlib.Path]:
     import fa_paths
@@ -227,6 +236,7 @@ def iterate_over_mods(re_filter:re.Pattern[str] =None) -> Iterator[pathlib.Path]
         for mod_path in iterate_over_mods():
             if re_filter.fullmatch(mod_path.name):
                 yield mod_path
+        return
     base_path = pathlib.Path(fa_paths.READ_DIR)
     for base_core in ['core','base']:
         yield base_path.joinpath(base_core)
@@ -249,16 +259,18 @@ def mod_re_files_sub(parts:list[str],path: Union[zipfile.Path , pathlib.Path]):
         if myre.fullmatch(path_part.name):
             yield from mod_re_files_sub(parts[1:],path_part)
 
+def iterate_over_this_mods_files(parts:list[str],mod_path:pathlib.Path):
+    if mod_path.is_file():
+        if not zipfile.is_zipfile(mod_path):
+            return
+        mod_path = zipfile.Path(mod_path)
+        mod_path = next(mod_path.iterdir())
+    yield from mod_re_files_sub(parts,mod_path)
+
 def iterate_over_mod_files(inner_re_path:str,mod_filter:re.Pattern[str] =None):
     parts=inner_re_path.split('/')
     for mod in iterate_over_mods(mod_filter):
-        path = pathlib.Path(mod)
-        if path.is_file():
-            if not zipfile.is_zipfile(path):
-                continue
-            path = zipfile.Path(mod)
-            path = next(path.iterdir())
-        yield from mod_re_files_sub(parts,path)
+        yield from iterate_over_this_mods_files(parts,mod)
 
 def read_cfg(fp :Iterable[str],conf=False,ret=defaultdict(dict)):
     name=''
@@ -340,7 +352,7 @@ def get_langs():
     regstr=r'locale/([\w-]+)/info.json'
     reg=re.compile(regstr)
     for path in iterate_over_mod_files(regstr):
-        code = reg.search(str(path).replace('\\','/'))[1]
+        code = get_mod_path_parts(path)[2]
         if code in lang:
             continue
         with open(path,encoding='utf8') as fp: 
@@ -352,7 +364,9 @@ def get_langs():
 def tprint(*args,**kargs):
     print(*(translate(arg) for arg in args),**kargs)
 
+code='en'
 def check_lang():
+    global code
     with config.current_conf:
         code = config.general.locale
         if not code or code=='auto':
