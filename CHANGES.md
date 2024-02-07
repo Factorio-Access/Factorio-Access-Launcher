@@ -39,6 +39,8 @@ In this minor update the launcher has been improved so that it reads punctuation
 
 - Tweaked some tutorial steps to clarify them based on community feedback.
 
+- Direction names are now given by the game, which may be localised.
+
 ## Bug fixes
 
 - Fixed a launcher crash due to incorrect keybind naming.
@@ -48,8 +50,7 @@ In this minor update the launcher has been improved so that it reads punctuation
 ## Upcoming features 
 
 - Better blueprint preview info 
-  * Report the blueprint dimensions to assist with preview information.
-  * Correctly sync the graphical blueprint preview.
+  * Correctly sync the graphical blueprint preview and give the correct dimensions.
   * Support rotating the preview (depends on being able to read the cursor blueprint direction.)
 
 - Blueprint management menu, with options such as the following:
