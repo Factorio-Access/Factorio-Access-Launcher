@@ -27,6 +27,8 @@ In this minor update the launcher has been improved so that it reads punctuation
 
 - Area mining added for ghosts. Press "SHIFT + X" on a ghost to remove all ghosts within 10 tiles.
 
+- Regular rail signal pairs can now be placed on mid rails, with a warning about how it is easy to get deadlocks with them.
+
 ## Changes 
 
 - The launcher should now read out punctuation key names correctly.
