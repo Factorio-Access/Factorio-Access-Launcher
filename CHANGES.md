@@ -37,9 +37,13 @@ In this minor update the launcher has been improved so that it reads punctuation
 
 - Improved area mining for railway objects to include train stops and a better explanation about removing all such objects within 10 tiles.
 
+- Tweaked some tutorial steps to clarify them based on community feedback.
+
 ## Bug fixes
 
 - Fixed a launcher crash due to incorrect keybind naming.
+
+- Fixed a crash when placing the last underground belt in hand.
 
 ## Upcoming features 
 
