@@ -22,7 +22,7 @@ In this minor update the launcher has been improved so that it reads punctuation
   * Press "ALT + B" to hold an empty blueprint in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. You can cancel the ongoing selection by clearing your hand before marking the end point.
   * Entities within the selection area become a new filled blueprint, which is saved to the blueprint in hand.
   * You can press "LEFT BRACKET" with the filled blueprint in hand to place down its contents as ghosts, for construction robots to fill if the relevant buildings can be found in storage.
-  * Note: Blueprints at the moment are being held from the middle instead of the top left corner. In addition the blueprint dimensions cannot be read yet. All this makes them harder to align and will be fixed.
+  * Note: Blueprints in the mod, like building previews, are held by their top left corners instead of their centers.
   * Info about the featured entities in a blueprint can be read. Up to four featured entities are selected automatically by the game and a used to clarify the blueprint's visual icon.
 
 - Area mining added for ghosts. Press "SHIFT + X" on a ghost to remove all ghosts within 10 tiles.
@@ -47,9 +47,10 @@ In this minor update the launcher has been improved so that it reads punctuation
 
 ## Upcoming features 
 
-- Holding blueprints from the northwest corner instead of the center.
+- Better blueprint preview info 
   * Report the blueprint dimensions to assist with preview information.
   * Correctly sync the graphical blueprint preview.
+  * Support rotating the preview (depends on being able to read the cursor blueprint direction.)
 
 - Blueprint management menu, with options such as the following:
   * Add or change this blueprint's label (short)
