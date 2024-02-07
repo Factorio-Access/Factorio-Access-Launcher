@@ -2,7 +2,7 @@
 
 Release pending.
 
-In this minor update the launcher has been improved so that it reads punctuation key names as intended, and translates key names when localization is used. In addition, the update brings support for the deconstruction planner and the upgrade planner, as well as an experimental preview of the blueprint support implemented so far. For the full blueprint support plan, read the section for upcoming features.
+In this intermediate update the launcher has been improved so that it reads punctuation key names as intended, and translates key names when localization is used. In addition, the update brings support for the deconstruction planner and the upgrade planner, and the basics for blueprint support. For the full blueprint support plan, read the section for upcoming features.
 
 ## New features
 
@@ -21,8 +21,9 @@ In this minor update the launcher has been improved so that it reads punctuation
 - Experimental preview of blueprint support (work in progress)
   * Press "ALT + B" to hold an empty blueprint in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. You can cancel the ongoing selection by clearing your hand before marking the end point.
   * Entities within the selection area become a new filled blueprint, which is saved to the blueprint in hand.
-  * You can press "LEFT BRACKET" with the filled blueprint in hand to place down its contents as ghosts, for construction robots to fill if the relevant buildings can be found in storage.
-  * Note: Blueprints in the mod, like building previews, are held by their top left corners instead of their centers.
+  * You can press "LEFT BRACKET" with the filled blueprint in hand to place down its contents as ghosts, for construction robots to fill if the relevant buildings can be found in storage. 
+  * Note: A blueprint can be placed at an distance from the player but if it is near the player and not too large, obstacles in the build area are cleared automatically when placing.
+  * Note: Blueprints in the mod, like building previews, are held by their top left corners instead of their centers. The previews can be rotated and have correct graphical previews. The rotation resets each time you take a blueprint in hand.
   * Info about the featured entities in a blueprint can be read. Up to four featured entities are selected automatically by the game and a used to clarify the blueprint's visual icon.
 
 - Area mining added for ghosts. Press "SHIFT + X" on a ghost to remove all ghosts within 10 tiles.
@@ -49,10 +50,6 @@ In this minor update the launcher has been improved so that it reads punctuation
 
 ## Upcoming features 
 
-- Better blueprint preview info 
-  * Correctly sync the graphical blueprint preview and give the correct dimensions.
-  * Support rotating the preview (depends on being able to read the cursor blueprint direction.)
-
 - Blueprint management menu, with options such as the following:
   * Add or change this blueprint's label (short)
   * Add or change this blueprint's description (long)
@@ -62,12 +59,10 @@ In this minor update the launcher has been improved so that it reads punctuation
   * Import a blueprint string to overwrite this blueprint.
   * Possibly other features such as upgrading entities within the blueprint.
   * Possibly allowing the blueprint selection to include placed tiles.
-  
-- Better information about rotating a blueprint in hand (if possible).
 
-- Canceling deconstruction orders or upgrade orders via area selection.
-
-- Ordering downgrades using the upgrade planner via area selection.
+- More planner orders supported 
+  * Canceling deconstruction orders or upgrade orders via area selection.
+  * Ordering downgrades using the upgrade planner via area selection.
 
 
 # Version 0.7.2 BETA
