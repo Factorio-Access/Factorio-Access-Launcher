@@ -1,22 +1,22 @@
 # Version 0.7.3 BETA 
 
-Release pending.
+Released on February 7th, 2024.
 
 In this intermediate update the launcher has been improved so that it reads punctuation key names as intended, and translates key names when localization is used. In addition, the update brings support for the deconstruction planner and the upgrade planner, and the basics for blueprint support. For the full blueprint support plan, read the section for upcoming features.
 
 ## New features
 
 - Deconstruction planner support
-  * Press "ALT + D" to hold a decontruction planner in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for deconstruction. You can cancel the ongoing selection by clearing your hand before marking the end point.
+  * Press "ALT + D" to hold a decontruction planner in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for deconstruction. The order is given when the selection ends. You can cancel the ongoing selection by clearing your hand before marking the end point, or press "Z" to undo the order if it was your last action.
+  * To cancel deconstruction orders for an area being selected, finish the selection by pressing "RIGHT BRACKET" instead.
   * Info: The deconstruction planner is useful for picking up large areas of entities with the help of construction robots. You can use the deconstruction planner item to select an area and mark all entities inside for deconstruction. The selection includes player built structures but also trees and rocks. These marked entities will stop working and get picked up by available construction robots that can reach them, and be taken to logistic storage chests.
   * Note: If you are near the area and have your own construction robots in your personal roboport, they will join the deconstruction and take their picked up items into your inventory.
-  * Note: You can undo the deconstruction order by pressing "CONTROL + Z" if it was the last action performed.
 
 - Upgrade planner support
-  * Press "ALT + U" to hold an upgrade planner in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. You can cancel the ongoing selection by clearing your hand before marking the end point.
+  * Press "ALT + U" to hold an upgrade planner in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. The order is given when the selection ends. You can cancel the ongoing selection by clearing your hand before marking the end point, or press "Z" to undo the order if it was your last action.
+  * To cancel upgrade orders for an area being selected, finish the selection by pressing "RIGHT BRACKET" instead.
   * Info: The upgrade planner is useful for upgrading large areas of buildings with the help of construction robots. A building being marked for an upgrade means that there is a request made for it to be replaced with its higher tier version. For example, transport belts being upgraded would request for fast transport belts. If the upgraded versions of marked buildings can be found in a logistic network, construction robots will take them and replace the buildings and then take the picked up old buildings to logistic storage. Upgrade requests remain active indefinitely and they do not pause building operation.
   * Note: Your personal roboport can do this too using your own inventory for supply and dropoff instead of the logistic network.
-  * Note: You can undo the upgrade order by pressing "CONTROL + Z" if it was the last action performed.
 
 - Experimental preview of blueprint support (work in progress)
   * Press "ALT + B" to hold an empty blueprint in hand. Press "LEFT BRACKET" with the planner in hand to mark the start point and end point of the selection area for upgrading. You can cancel the ongoing selection by clearing your hand before marking the end point.
@@ -42,6 +42,8 @@ In this intermediate update the launcher has been improved so that it reads punc
 
 - Direction names are now given by the game, which may be localised.
 
+- Ghost names are now localised and read more quickly.
+
 ## Bug fixes
 
 - Fixed a launcher crash due to incorrect keybind naming.
@@ -60,10 +62,8 @@ In this intermediate update the launcher has been improved so that it reads punc
   * Possibly other features such as upgrading entities within the blueprint.
   * Possibly allowing the blueprint selection to include placed tiles.
 
-- More planner orders supported 
-  * Canceling deconstruction orders or upgrade orders via area selection.
-  * Ordering downgrades using the upgrade planner via area selection.
-
+- Press a key to review information about the area being selected right now, before finishing the selection.
+  * This can include the area size and affected entity count.
 
 # Version 0.7.2 BETA
 
