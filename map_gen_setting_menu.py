@@ -116,15 +116,15 @@ mgsj = { #Map Gen Settings Json file
   "width": fa_menu.setting_menu_int(('gui-map-generator.map-width',)),
   "height": fa_menu.setting_menu_int(('gui-map-generator.map-height',)),
 
-  "starting_area": fa_menu.setting_menu_float(('gui-map-generator.starting-area-size',),('gui-map-generator.starting-area-size-desciption',)),
+  "starting_area": fa_menu.setting_menu_float(('gui-map-generator.starting-area-size',),('gui-map-generator.starting-area-size-description',)),
 
-  "peaceful_mode": fa_menu.setting_menu_bool(('gui-map-generator.peaceful-mode-checkbox',),('gui-map-generator.peaceful-mode-desciption',),False,False),
+  "peaceful_mode": fa_menu.setting_menu_bool(('gui-map-generator.peaceful-mode-checkbox',),('gui-map-generator.peaceful-mode-description',),False,False),
   "autoplace_controls":{},
 
   "cliff_settings":
   {
-    "cliff_elevation_interval": menu_setting_cliff_freq(('gui-map-generator.cliff-frequency',),('gui-map-generator.cliff-frequency-desciption',),40,40),
-    "richness": fa_menu.setting_menu_float(('gui-map-generator.cliff-continuity',),('gui-map-generator.cliff-continuity-desciption',))
+    "cliff_elevation_interval": menu_setting_cliff_freq(('gui-map-generator.cliff-frequency',),('gui-map-generator.cliff-frequency-description',),40,40),
+    "richness": fa_menu.setting_menu_float(('gui-map-generator.cliff-continuity',),('gui-map-generator.cliff-continuity-description',))
   },
 
   "property_expression_names":
@@ -191,20 +191,20 @@ msj = { #Map Settings Json
   {
     "enabled": None, #placeholder
     "max_expansion_distance": fa_menu.setting_menu_int(
-        ('enemy-expansion-maximum-expansion-distance',),
-        ('enemy-expansion-maximum-expansion-distance-description',), 7,7),
+        ('gui-map-generator.enemy-expansion-maximum-expansion-distance',),
+        ('gui-map-generator.enemy-expansion-maximum-expansion-distance-description',), 7,7),
     "settler_group_min_size": fa_menu.setting_menu_int(
-        ('enemy-expansion-minimum-expansion-group-size',),
-        ('enemy-expansion-minimum-expansion-group-size-description',), 5,5),
+        ('gui-map-generator.enemy-expansion-minimum-expansion-group-size',),
+        ('gui-map-generator.enemy-expansion-minimum-expansion-group-size-description',), 5,5),
     "settler_group_max_size": fa_menu.setting_menu_int(
-        ('enemy-expansion-maximum-expansion-group-size',),
-        ('enemy-expansion-maximum-expansion-group-size-description',), 20,20),
+        ('gui-map-generator.enemy-expansion-maximum-expansion-group-size',),
+        ('gui-map-generator.enemy-expansion-maximum-expansion-group-size-description',), 20,20),
     "min_expansion_cooldown": menu_setting_ticks_to_min(
-        ('enemy-expansion-minimum-expansion-cooldown',),
-        ('enemy-expansion-minimum-expansion-cooldown-description',), 14400,14400),
+        ('gui-map-generator.enemy-expansion-minimum-expansion-cooldown',),
+        ('gui-map-generator.enemy-expansion-minimum-expansion-cooldown-description',), 14400,14400),
     "max_expansion_cooldown": menu_setting_ticks_to_min(
-        ('enemy-expansion-maximum-expansion-cooldown',),
-        ('enemy-expansion-maximum-expansion-cooldown-description',), 216000,216000),
+        ('gui-map-generator.enemy-expansion-maximum-expansion-cooldown',),
+        ('gui-map-generator.enemy-expansion-maximum-expansion-cooldown-description',), 216000,216000),
     "min_base_spacing": 3,
     "friendly_base_influence_radius": 2,
     "enemy_building_influence_radius": 2,
@@ -363,7 +363,7 @@ def launch_new(*args):
                     ensure_ascii=False,
                     indent=2,
                     cls=SettingEncoder)
-    save=fa_paths.SAVES.joinpath('_autosave-manual.zip').absolute()
+    save=fa_paths.SAVES.joinpath('_autosave-new.zip').absolute()
     launch_with_params(["--map-gen-settings", str(mgsp), "--map-settings",str(msp),'--create',str(save)],save_rename=False)
     launch(save)
     return 20
