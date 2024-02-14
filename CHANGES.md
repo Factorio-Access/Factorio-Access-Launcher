@@ -1,3 +1,72 @@
+# Version 0.8.0 BETA 
+Not released yet.
+
+No summary yet.
+
+## New features
+
+- Added blueprint menu for editing and managing blueprints. ***
+
+- Added spidertron menu (work done by @dzsoker from our Discord). ***
+  * A spidertron is controlled using a remote that is paired with it.
+
+- Added spidertron equipment grid support (work done by @dzsoker from our Discord).
+  * Press "SHIFT + LEFT BRACKET" to equip a selected equipment item in the spidertron trunk or an item in hand while the spidertron menu is open.
+  * Press "G" and "SHIFT + G" on the spidertron menu to get info about its equipment.
+  * Press "CONTROL + SHIFT + G" to empty out the spidertron equipment grid.
+
+- Added repeating reminders for the start of the game about basic controls. 
+  * Press "TAB" to begin.
+  * Press "H" to open the tutorial.
+
+- New game sounds 
+  * Moving the cursor mode makes a virtual sound to distinguish it from walking.
+  * Resizing the cursor uses this sound too as it is another cursor action.
+  * Ongoing crafting now makes a background sound.
+  
+
+## Changes
+
+- When a building cannot be built, objects in the way are now identified.
+  * This also includes water tiles in the way.
+  * This has been added also for nudging.
+
+- Nudging buildings has been improved so that obstacles in the nudge area such as items on the ground are cleared automatically.
+
+- Adjusted game sounds
+  * The entity scanner is a little quieter.
+  * Footsteps are louder.
+
+- Better reporting about items in hand.
+  * Rotating items in hand says "in hand" after the new direction.
+  * "Empty hand" revised to "Emptied hand".
+  * Ghosts in hand are now correctly identified instead of an empty hand.
+  
+- Revised tutorial controls.
+  * You now press "CONTROL + H" to go along the list and "SHIFT + H" to go back.
+  * You can now press "ALT + H" to read the summary for the current step only, or press "CONTROL + SHIFT + H" to toggle between summary mode and details mode.
+
+- Improved entity ghost information, like when reading entities or scan entries.
+
+- Logistic chests and their previews now report info about their logistic network connection status.
+
+- Partial localisation made for entity status reading, and a layout was added for easily improving localisation across the rest of the mod later on.
+
+- Menu search for the technologies menu now checks all three categories, now matching other menus.
+
+- Visual menu icons can now come in pairs. 
+  * The crafting queue menu now has a pair of icons to distinguish it from the crafting menu.
+  * For blueprint menus all four blueprint icons can be displayed too.
+
+## Bug fixes
+
+- Fixed a recent bug that was preventing diagonal rail appending when running diagonally in smooth walk mode.
+
+- Fixed a crash related to reading building fluids.
+
+- Fixed a crash due to an API bug in reading entity status number 23. The original bug has been fixed for a later release.
+
+
 # Version 0.7.3 BETA 
 
 Released on February 7th, 2024.
