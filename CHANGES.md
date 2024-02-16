@@ -5,10 +5,26 @@ No summary yet.
 
 ## New features
 
-- Added blueprint menu for editing and managing blueprints. ***
+- Added blueprint menu for editing and managing blueprints. Menu options include:
+   1. Read the description of this blueprint
+   2. Read the icons of this blueprint, which are its features components
+   3. List all components of this blueprint
+   4. List all missing components for building this blueprint 
+   5. Edit the label of this blueprint
+   6. Edit the description of this blueprint
+   7. Create a copy of this blueprint
+   8. Clear this blueprint 
+   9. Export this blueprint as a text string
+   10. Import a text string to overwrite this blueprint
 
-- Added spidertron menu (work done by @dzsoker from our Discord). ***
-  * A spidertron is controlled using a remote that is paired with it.
+- Added spidertron remote menu (work done by @dzsoker from our Discord). It has the following options:
+  1. Link or unlink a remote with a spidertron
+  2. Rename the linked spidertron
+  3. Set the cursor position as the spidertron autopilot target 
+  4. Add the cursor position to the spidertron autopilot queue 
+  5. Toggle automatically targetting enemies when the spidertron is working by itself
+  6. Toggle automatically targetting enemies when there is a gunner insider
+  7. Set the spidertron autopilot to follow the selected entity
 
 - Added spidertron equipment grid support (work done by @dzsoker from our Discord).
   * Press "SHIFT + LEFT BRACKET" to equip a selected equipment item in the spidertron trunk or an item in hand while the spidertron menu is open.
@@ -19,23 +35,33 @@ No summary yet.
   * Press "TAB" to begin.
   * Press "H" to open the tutorial.
 
-- New game sounds 
+- New game sounds added, others were adjusted 
   * Moving the cursor mode makes a virtual sound to distinguish it from walking.
   * Resizing the cursor uses this sound too as it is another cursor action.
   * Ongoing crafting now makes a background sound.
+  * Artillery remote usage makes a sound.
+  * Footsteps were made louder
+  * Scanner was made quieter.
+  * When you are mining ore, you hear only one mining sound. 
+  * You hear a sound when you pick up an item such as ore while mining continuously.
   
+- New console command added to load enemy spawners into uncharted chunks. This can be used if you started a game with no enemies and later want to add them in.
+
+- Added functionality for the artillery remote.
+  * When you press LEFT BRACKET with it, artillery cannons within range can fire to the cursor position, even if it is not on screen.
+  * If you are standing next to the cursor when you order a strike, a warning is read out.
+
+- Visual addition: Now in cursor mode, if the cursor is out of player reach, the camera will focus on the cursor in map view.
+  * This applies when you jump the cursor around when scrolling the scanner list or the fast travel list.
+  * This also applies when you move the cursor with ARROW KEYS, but pressing W A S D keeps the vanilla functionality of panning the camera instead of making it focus on the cursor.
 
 ## Changes
 
-- When a building cannot be built, objects in the way are now identified.
-  * This also includes water tiles in the way.
-  * This has been added also for nudging.
+- When a building cannot be built, objects in the way are now identified, such as buildings or cliffs or water.
 
-- Nudging buildings has been improved so that obstacles in the nudge area such as items on the ground are cleared automatically.
+- Nudging buildings has been improved so that obstacles in the nudge area such as items on the ground are cleared automatically and larger obstacles are identified, such as buildings or cliffs or water.
 
-- Adjusted game sounds
-  * The entity scanner is a little quieter.
-  * Footsteps are louder.
+- Improved entity ghost information, like when reading entities or scan entries.
 
 - Better reporting about items in hand.
   * Rotating items in hand says "in hand" after the new direction.
@@ -46,9 +72,15 @@ No summary yet.
   * You now press "CONTROL + H" to go along the list and "SHIFT + H" to go back.
   * You can now press "ALT + H" to read the summary for the current step only, or press "CONTROL + SHIFT + H" to toggle between summary mode and details mode.
 
-- Improved entity ghost information, like when reading entities or scan entries.
+- Revised crafting menu and crafting queue info
+  * The crafting category name (also called the item group name) is now stated when you change the category by pressing "W" or "S".
+  * The mod now clearly specifies how many times you can craft a recipe.
+  * When you begin to craft a recipe, the menu reads how many batches there are in queue in total.
+  * Improved localisation for these menus to include the recipe names.
 
 - Logistic chests and their previews now report info about their logistic network connection status.
+
+- Entities in general will now report whether they are missing inputs or have a full output, when you select them with the cursor.
 
 - Partial localisation made for entity status reading, and a layout was added for easily improving localisation across the rest of the mod later on.
 
