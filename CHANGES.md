@@ -25,6 +25,9 @@ No summary yet.
   5. Toggle automatically targetting enemies when the spidertron is working by itself
   6. Toggle automatically targetting enemies when there is a gunner insider
   7. Set the spidertron autopilot to follow the selected entity
+  * Open the menu by pressing "RIGHT BRACKET" with the remote in hand.
+  * Shortcut: If you press "LEFT BRACKET" with the rempote in hand, it will set the cursor position as the spidertron autopilot target.
+  * Shortcut: If you press "CONTROL + LEFT BRACKET" with the rempote in hand, it will set the spidertron autopilot to follow the selected entity.
 
 - Added spidertron equipment grid support (work done by @dzsoker from our Discord).
   * Press "SHIFT + LEFT BRACKET" to equip a selected equipment item in the spidertron trunk or an item in hand while the spidertron menu is open.
