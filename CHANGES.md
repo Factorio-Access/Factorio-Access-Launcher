@@ -47,9 +47,7 @@ No summary yet.
   * Scanner was made quieter.
   * When you are mining ore, you hear only one mining sound. 
   * You hear a sound when you pick up an item such as ore while mining continuously.
-  
-- New console command added to load enemy spawners into uncharted chunks. This can be used if you started a game with no enemies and later want to add them in.
-
+    
 - Added functionality for the artillery remote.
   * When you press LEFT BRACKET with it, artillery cannons within range can fire to the cursor position, even if it is not on screen.
   * If you are standing next to the cursor when you order a strike, a warning is read out.
