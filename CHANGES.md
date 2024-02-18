@@ -1,7 +1,21 @@
 # Version 0.8.0 BETA 
-Not released yet.
+Released on February 18th, 2024.
 
-No summary yet.
+This update includes full support for blueprints, and also for the spidertron thanks to contributions from @dzsoker. The update also has several improvement tweaks across the mod thanks to detailed feedback from @SightlessKombat. More tweaks are on the way in future updates.
+
+## Launcher changes
+
+- Demo maps have been converted into mod scenarios.
+  * Every time you launch a scenario, it starts from the same defined point.
+  * You can save a scenario map and load it like any other map.
+  * With this new mode, we will be able to publish improvements to the demo maps.
+  
+- Fixed a bug that did not read out punctuation key names when they were a part of a key combination.
+
+- Fixed a crash related to language selection.
+
+- Fixed a bug related to the --mod-directory flag.
+
 
 ## New features
 
@@ -98,6 +112,8 @@ No summary yet.
 - Fixed a crash related to reading building fluids.
 
 - Fixed a crash due to an API bug in reading entity status number 23. The original bug has been fixed for a later release.
+
+- Fixed a crash related to inventory browsing after handling armor equipment.
 
 
 # Version 0.7.3 BETA 
