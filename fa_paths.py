@@ -3,7 +3,7 @@ import sys
 import re
 import subprocess
 import shutil
-import pathlib
+from pathlib import Path
 
 from __main__ import __file__ as main_file
 from fa_arg_parse import args, dprint, launch_args
@@ -32,7 +32,7 @@ dprint(f"steam={steam}")
 if steam:
     _user=os.environ['SteamAppUser']
     _game=os.environ['SteamAppId']
-    steam_game_path = pathlib.Path(os.getcwd())
+    steam_game_path = Path(os.getcwd())
     _steam_path = steam_game_path.joinpath('..','..','..')
     _steam_config = _steam_path.joinpath('config','config.vdf')
     with open(_steam_config,encoding='utf8') as fp:
@@ -61,7 +61,7 @@ if args.bin:
                 BIN=arg
                 break
     if not BIN:
-        print('It looks like a command line option was given to launch factorio, but we couldn\'t figure out where factorio is located. PLease add the --executable-path option with the location of the facotrio binary to be launched')
+        print('It looks like a command line option was given to launch factorio, but we couldn\'t figure out where factorio is located. Please add the --executable-path option with the location of the facotrio binary to be launched')
         input("press enter to exit...")
         raise SystemExit
 else:
@@ -159,14 +159,14 @@ else:
     launch_args.append('-c')
     launch_args.append(CONFIG)
 dprint(f"CONFIG={CONFIG}")
-WRITE_DIR:pathlib.Path|None = None
-READ_DIR:pathlib.Path|None = None
+WRITE_DIR:Path|None = None
+READ_DIR:Path|None = None
 with open(CONFIG,encoding='utf8') as fp:
     for line in fp:
         if match:=re.match(r'write-data=(.*)',line):
-            WRITE_DIR = pathlib.Path(proccess(match[1]))
+            WRITE_DIR = Path(proccess(match[1]))
         if match:=re.match(r'read-data=(.*)',line):
-            READ_DIR = pathlib.Path(proccess(match[1]))
+            READ_DIR = Path(proccess(match[1]))
         if WRITE_DIR and READ_DIR:
             break
 if not WRITE_DIR or not WRITE_DIR.is_dir():
@@ -180,7 +180,7 @@ dprint(f"READ_DIR={READ_DIR}")
 
 
 if args.mod_directory:
-    MODS=pathlib.path(args.mod_directory)
+    MODS=Path(args.mod_directory)
 else:
     MODS=WRITE_DIR.joinpath('mods')
 if not MODS.is_dir():

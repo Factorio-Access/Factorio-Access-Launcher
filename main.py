@@ -15,6 +15,7 @@ import save_management
 from fa_arg_parse import args
 from map_gen_setting_menu import sub_preset
 from translations import check_lang
+from fa_scenarios import get_scenarios,pre_launch_scenario
 
 os.chdir(fa_paths.MY_CONFIG_DIR)
 
@@ -23,11 +24,16 @@ os.chdir(fa_paths.MY_CONFIG_DIR)
 menu = {
     "Launch last played":launch_and_monitor.just_launch,
     ("gui-menu.single-player-menu",):{
-        ("gui-menu.new-game",): sub_preset,
+        ("gui-menu.new-game",): {
+            ("gui-new-game.main-game",):sub_preset,
+            ("gui-new-game.mod-scenarios",):{
+                get_scenarios:pre_launch_scenario
+            }
+        },
         ("gui-menu.load-game",) : {
             save_management.get_menu_saved_games:launch_and_monitor.launch,
-            },
         },
+    },
     ("gui-menu.multi-player-menu",):{
         multiplayer.get_username_menu:multiplayer.username_menu,
         "Host Settings":{
@@ -55,7 +61,7 @@ check_lang()
 modify_config.do_config_check()
 
 if args.launch:
-    launch_and_monitor.launch_with_params([])
+    launch_and_monitor.launch_with_params([],save_rename=False)
 else:
     my_main_menu = menu_item(("gui-menu.main-menu",),menu,None,False)
     my_main_menu()

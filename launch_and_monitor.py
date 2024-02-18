@@ -18,12 +18,12 @@ ao_output = accessible_output2.outputs.auto.Auto()
 ao_output.output("Hello Factorio!", False)
 
 rich_text=re.compile(r'\[\/?(font|color|img|item|entity|technology|recipe|item-group|fluid|tile|virtual-signal|achievement|gps|special-item|armor|train|train-stop|tooltip)[^\]]*\]')
-maybe_key=re.compile(r'"([^\s])"')
+maybe_key=re.compile(r'(?<=[\s"]).(?=[\s"])')
 def translate_key_name(m:re.Match):
-    key=m[1]
+    key=m[0]
     if key == '[':
         key = 'left-bracket'
-    return f'"{translate(("?",("control-keys."+key,),m[1]))}"'
+    return translate(("?",("control-keys."+key,),m[0]))
 
 def speak_interuptible_text(text):
     text=rich_text.sub('',text)

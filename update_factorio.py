@@ -337,7 +337,11 @@ def prep_update(credentials, current_version, update_canidates):
         download(f"https://updater.factorio.com/updater/get-download?"+urllib.parse.urlencode(this_params),update_filename(params,update))
     print('Finished Downloads')
     return
-    
+def process_exists():
+    call = 'TASKLIST', '/FI', 'imagename eq Factorio.exe'
+    if subprocess.check_output(call).splitlines()[3:]:
+        return True
+
 def execute_update(current_version, update_canidates):
     applying=re.compile(r'Applying update .*-(\d+\.\d+\.\d+)-update')
     print(current_version,update_canidates)
@@ -348,11 +352,18 @@ def execute_update(current_version, update_canidates):
         params.append(file)
     print(params)
     child=subprocess.Popen(params,stdout=subprocess.PIPE)
-    for line in child.stdout:
-        if m:=applying.search(line.decode()):
-            print(f'Applying Update:{m[1]}')
-        elif debug:
-            print('--',line.decode(),end='')
+    if current_version['package']=='core-win64':
+        #the windows UAC makes it so we can't monitor the output
+        while process_exists():
+            time.sleep(1)
+    else:
+        for line in child.stdout:
+            print(line)
+            if m:=applying.search(line.decode()):
+                print(f'Applying Update:{m[1]}')
+            elif debug:
+                print('--',line.decode(),end='')
+    
 
 def cleanup_update(current_version, update_canidates):
     for update in update_canidates:

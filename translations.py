@@ -223,7 +223,11 @@ fancy=re.compile(r'[\.?()\[\]]')
 def get_mod_path_parts(path: Union[zipfile.Path , pathlib.Path]):
     import fa_paths
     if isinstance(path,pathlib.Path):
-        return path.relative_to(fa_paths.MODS).parts
+        try:
+            return path.relative_to(fa_paths.MODS).parts
+        except:
+            pass
+        return path.relative_to(fa_paths.READ_DIR).parts
     parts=[]
     while isinstance(path.parent,zipfile.Path):
         parts.append(path.name)
