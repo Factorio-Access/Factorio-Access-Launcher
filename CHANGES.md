@@ -8,7 +8,7 @@ This update includes full support for blueprints, and also for the spidertron th
 - Demo maps have been converted into mod scenarios.
   * Every time you launch a scenario, it starts from the same defined point.
   * You can save a scenario map and load it like any other map.
-  * With this new mode, we will be able to publish improvements to the demo maps.
+  * With this new mode, we will be able to publish improvements to the demo maps in later updates.
   
 - Fixed a bug that did not read out punctuation key names when they were a part of a key combination.
 
@@ -72,6 +72,10 @@ This update includes full support for blueprints, and also for the spidertron th
 
 ## Changes
 
+- Changed tutorial controls.
+  * You now press "CONTROL + H" to go along the list and "SHIFT + H" to go back.
+  * You can now press "ALT + H" to read the summary for the current step only, or press "CONTROL + SHIFT + H" to toggle between summary mode and details mode.
+
 - When a building cannot be built, objects in the way are now identified, such as buildings or cliffs or water.
 
 - Nudging buildings has been improved so that obstacles in the nudge area such as items on the ground are cleared automatically and larger obstacles are identified, such as buildings or cliffs or water.
@@ -83,10 +87,6 @@ This update includes full support for blueprints, and also for the spidertron th
   * "Empty hand" revised to "Emptied hand".
   * Ghosts in hand are now correctly identified instead of an empty hand.
   
-- Revised tutorial controls.
-  * You now press "CONTROL + H" to go along the list and "SHIFT + H" to go back.
-  * You can now press "ALT + H" to read the summary for the current step only, or press "CONTROL + SHIFT + H" to toggle between summary mode and details mode.
-
 - Revised crafting menu and crafting queue info
   * The crafting category name (also called the item group name) is now stated when you change the category by pressing "W" or "S".
   * The mod now clearly specifies how many times you can craft a recipe.
