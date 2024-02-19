@@ -22,7 +22,14 @@ This update fixes bugs identified in the last update, and also rolls back the ca
   * You go to the next step by pressing "CONTROL + H" and go to the previous step by pressing "SHIFT + H".
   * You go to the next chapter by pressing "CONTROL + ALT + H" and go to the previous chapter by pressing "SHIFT + ALT + H".
 
+- Changed a configuration setting to enable building the ghosts.
+  * You can now (correctly) place a ghost of the buildable item in hand by pressing "SHIFT + LEFT BRACKET".
+
 ## Bug fixes
+
+- Fixed a crash due to analyzing ghost belts.
+
+- Fixed a bug due to belt placement previews not accounting for underground belt entrances and exits. However, ghost belts still cannot be accounted for.
 
 
 # Version 0.8.0 BETA 
