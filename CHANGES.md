@@ -1,7 +1,7 @@
 # Version 0.8.1 BETA 
-Released on February 19th, 2024. 
+Released on February 20th, 2024. 
 
-This update some new and old bugs, and also rolls back the camera change functions for now.
+This update fixes some new and old bugs, and brings some minor tweaks and additions.
 
 ## New Features
 
@@ -14,6 +14,7 @@ This update some new and old bugs, and also rolls back the camera change functio
 - Entity names are now localised when read by the cursor.
 
 - Selecting an entity using the scanner or the pipette tool now jumps the cursor to its northwest corner.
+  * This is very useful when you want to manually fill in ghosts quickly.
 
 - Generalized the new tutorial summary control to read in the opposite mode.
   * By default, pressing "ALT + H" will read the current step's summary.
@@ -35,9 +36,12 @@ This update some new and old bugs, and also rolls back the camera change functio
 
 - Fixed a crash due to analyzing ghost belts.
 
-- Fixed a bug due to belt placement previews not accounting for underground belt entrances and exits. However, ghost belts still cannot be accounted for.
-
 - Fixed a pipe preview reading bug due to it reading the player.
+
+- Fixed some typos in the tutorial text.
+
+- Fixed a bug due to belt placement previews not accounting for underground belt entrances and exits. 
+  * However, ghost belts still cannot be accounted for.
 
 
 # Version 0.8.0 BETA 
