@@ -13,7 +13,7 @@ This update fixes some new and old bugs, and brings some minor tweaks and additi
 
 - Entity names are now localised when read by the cursor.
 
-- Selecting an entity using the scanner or the pipette tool now jumps the cursor to its northwest corner.
+- Selecting an entity using the scanner in any mode, or using the pipette tool in cursor mode, now jumps the cursor to the entity's northwest corner.
   * This is very useful when you want to manually fill in ghosts quickly.
 
 - Generalized the new tutorial summary control to read in the opposite mode.
