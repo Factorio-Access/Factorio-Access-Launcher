@@ -1,7 +1,7 @@
 # Version 0.8.1 BETA 
 Released on February 19th, 2024. 
 
-This update fixes bugs identified in the last update, and also rolls back the camera change functions for now.
+This update some new and old bugs, and also rolls back the camera change functions for now.
 
 ## New Features
 
@@ -12,6 +12,8 @@ This update fixes bugs identified in the last update, and also rolls back the ca
 - Removed camera changing focus to the cursor in cursor mode. This was causing audio confusion and also had issues with map view panning.
 
 - Entity names are now localised when read by the cursor.
+
+- Selecting an entity using the scanner or the pipette tool now jumps the cursor to its northwest corner.
 
 - Generalized the new tutorial summary control to read in the opposite mode.
   * By default, pressing "ALT + H" will read the current step's summary.
@@ -25,11 +27,17 @@ This update fixes bugs identified in the last update, and also rolls back the ca
 - Changed a configuration setting to enable building the ghosts.
   * You can now (correctly) place a ghost of the buildable item in hand by pressing "SHIFT + LEFT BRACKET".
 
+- Clarified build preview dimension info.
+
 ## Bug fixes
+
+- Fixed a crash when renaming a fast travel point.
 
 - Fixed a crash due to analyzing ghost belts.
 
 - Fixed a bug due to belt placement previews not accounting for underground belt entrances and exits. However, ghost belts still cannot be accounted for.
+
+- Fixed a pipe preview reading bug due to it reading the player.
 
 
 # Version 0.8.0 BETA 
