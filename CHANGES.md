@@ -1,3 +1,30 @@
+# Version 0.8.1 BETA 
+Released on February 19th, 2024. 
+
+This update fixes bugs identified in the last update, and also rolls back the camera change functions for now.
+
+## New Features
+
+- You can now read your character's coordinates by pressing "CONTROL + K". This is independent from the cursor.
+
+## Changes
+
+- Removed camera changing focus to the cursor in cursor mode. This was causing audio confusion and also had issues with map view panning.
+
+- Entity names are now localised when read by the cursor.
+
+- Generalized the new tutorial summary control to read in the opposite mode.
+  * By default, pressing "ALT + H" will read the current step's summary.
+  * In summary mode, pressing "ALT + H" will read the current step's details.
+  * You can toggle summary mode by pressing "CONTROL + SHIFT + H".
+
+- Adjusted tutorial controls for skipping chapters, to match previous changes.
+  * You go to the next step by pressing "CONTROL + H" and go to the previous step by pressing "SHIFT + H".
+  * You go to the next chapter by pressing "CONTROL + ALT + H" and go to the previous chapter by pressing "SHIFT + ALT + H".
+
+## Bug fixes
+
+
 # Version 0.8.0 BETA 
 Released on February 18th, 2024.
 
@@ -92,6 +119,9 @@ This update includes full support for blueprints, and also for the spidertron th
   * The mod now clearly specifies how many times you can craft a recipe.
   * When you begin to craft a recipe, the menu reads how many batches there are in queue in total.
   * Improved localisation for these menus to include the recipe names.
+
+- Examining or previewing heat pipes now gives Information about the heat connections.
+  * The same applies for examining heat exchangers and nuclear reactors that are already built.
 
 - Logistic chests and their previews now report info about their logistic network connection status.
 
