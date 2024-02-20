@@ -25,8 +25,8 @@ This minor update is all about blueprints and ghosts. It fixes recently reported
   * Error due to an obstacle reads the obstacle.
 
 - Improved blueprint menu
-* New menu line: Read this blueprint's dimensions and total component count
-* Rotating the blueprint in hand while the menu is open will update this info and the visual previews correctly.
+  * New menu line: Read this blueprint's dimensions and total component count
+  * Rotating the blueprint in hand while the menu is open will update this info and the visual previews correctly.
 
 ## Bug fixes
 
@@ -664,17 +664,17 @@ This is a pre-release of the logistics robots update before I need to go on a de
 - Roboport information will be improved concerning details like range, neighbors, and availability.
 
 - Other logistic robot features will be added.
-* Chest logistics access, which is very powerful.
-* Personal trash access
-* Better info about existing logistic requests
+  * Chest logistics access, which is very powerful.
+  * Personal trash access
+  * Better info about existing logistic requests
 
 - Other construction robot features will be added.
-* Selecting rectangular areas to mark it for automatic deconstruction.
-* Selecting rectangular areas to mark it for automatic upgrading to hier machine tiers.
-* Selecting rectangular areas that you can save as a blueprint item, which lets you copy and paste the area.
-* Placing down a blueprint for contruction robots to build.
-* Giving key information about blueprint items.
-* Possibly, hopefully, support for importing and exporting blueprint items as text strings.
+  * Selecting rectangular areas to mark it for automatic deconstruction.
+  * Selecting rectangular areas to mark it for automatic upgrading to hier machine tiers.
+  * Selecting rectangular areas that you can save as a blueprint item, which lets you copy and paste the area.
+  * Placing down a blueprint for contruction robots to build.
+  * Giving key information about blueprint items.
+  * Possibly, hopefully, support for importing and exporting blueprint items as text strings.
 
 # Version 0.4.9 BETA
 
