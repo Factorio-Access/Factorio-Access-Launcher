@@ -1,13 +1,19 @@
 # Version 0.8.2 BETA 
 Not released yet.
 
-DRAFT: This minor update fixes recently reported crashes related to blueprints and ghosts, and tweaks related things.
+This minor update fixes recently reported crashes related to blueprints and ghosts, adds blueprint book reading support, and tweaks related things. The update does not affect anything else.
 
 ## New features
 
+- Added support for importing and browsing blueprint books.
+  * Press LEFT BRACKET for a blueprint book in hand to begin browsing it as a list.
+  * Navigate the list with W and S. This will read blueprints in the book in terms of their names and icons.
+  * Press LEFT BRACKET to put the book away and copy the selected blueprint into hand.
+  * Further support regarding blueprint books will be added later, such as renaming them or adding blueprints to them.
+
 - Added information to note that a blueprint in hand is being flipped.
-  * You can flip a blueprint in hand horizontally by pressing "F"
-  * You can flip a blueprint in hand vertically by pressing "G"
+  * You can flip a blueprint in hand horizontally by pressing "F".
+  * You can flip a blueprint in hand vertically by pressing "G".
   * Note: Flipping a blueprint creates a symmetric version of it that you cannot get by rotating it. It is useful for putting similarly designed factory areas on the two sides of the same transport belt. For example if your machine row goes from East to West and has the input belt on the North side, you can flip it to make it go from West to East instead while the input belt remains on the North side.
   * Note: If a blueprint contains a building that cannot be flipped, such as a burner mining drill, oil refinery, chemical plant, or the such, then none of the blueprint gets flipped. This will become allowed in Factorio version 2.0.
 
@@ -28,8 +34,6 @@ DRAFT: This minor update fixes recently reported crashes related to blueprints a
 - Fixed a crash that prevented nudging ghosts.
 
 - Fixed a crash due to emptying the hand while the blueprint menu is still open.
-
-- Fixed a crash due to importing blueprint books. You can safely import them now but support for them is not ready yet.
 
 
 # Version 0.8.1 BETA 
