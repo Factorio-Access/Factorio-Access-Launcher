@@ -1,9 +1,43 @@
+# Version 0.8.2 BETA 
+Not released yet.
+
+DRAFT: This minor update fixes recently reported crashes related to blueprints and ghosts, and tweaks related things.
+
+## New features
+
+- Added information to note that a blueprint in hand is being flipped.
+  * You can flip a blueprint in hand horizontally by pressing "F"
+  * You can flip a blueprint in hand vertically by pressing "G"
+  * Note: Flipping a blueprint creates a symmetric version of it that you cannot get by rotating it. It is useful for putting similarly designed factory areas on the two sides of the same transport belt. For example if your machine row goes from East to West and has the input belt on the North side, you can flip it to make it go from West to East instead while the input belt remains on the North side.
+  * Note: If a blueprint contains a building that cannot be flipped, such as a burner mining drill, oil refinery, chemical plant, or the such, then none of the blueprint gets flipped. This will become allowed in Factorio version 2.0.
+
+## Changes
+
+- Attempting to build a blueprint now reads feedback.
+  * Success includes the blueprint name.
+  * Error due to an obstacle reads the obstacle.
+
+- Improved blueprint menu
+* New menu line: Read this blueprint's dimensions and total component count
+* Rotating the blueprint in hand while the menu is open will update this info and the visual previews correctly.
+
+## Bug fixes
+
+- Fixed a crash that prevented handling blueprints with circuit signal icons added to their icon lists.
+
+- Fixed a crash that prevented nudging ghosts.
+
+- Fixed a crash due to emptying the hand while the blueprint menu is still open.
+
+- Fixed a crash due to importing blueprint books. You can safely import them now but support for them is not ready yet.
+
+
 # Version 0.8.1 BETA 
 Released on February 20th, 2024. 
 
 This update fixes some new and old bugs, and brings some minor tweaks and additions.
 
-## New Features
+## New features
 
 - You can now read your character's coordinates by pressing "CONTROL + K". This is independent from the cursor.
 
