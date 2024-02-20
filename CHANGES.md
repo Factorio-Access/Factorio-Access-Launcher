@@ -1,15 +1,16 @@
 # Version 0.8.2 BETA 
-Not released yet.
+Released on February 21st, 2024. 
 
-This minor update fixes recently reported crashes related to blueprints and ghosts, adds blueprint book reading support, and tweaks related things. The update does not affect anything else.
+This minor update is all about blueprints and ghosts. It fixes recently reported crashes related to blueprints and ghosts, adds blueprint book reading support after some serious tinkering, and tweaks a few related things.
 
 ## New features
 
 - Added support for importing and browsing blueprint books.
   * Press LEFT BRACKET for a blueprint book in hand to begin browsing it as a list.
-  * Navigate the list with W and S. This will read blueprints in the book in terms of their names and icons.
+  * Navigate the list with W and S. This will read blueprints in the book in terms of their names and icons. Note that many community blueprints tend to have no name and automatically generated icons.
   * Press LEFT BRACKET to put the book away and copy the selected blueprint into hand.
-  * Further support regarding blueprint books will be added later, such as renaming them or adding blueprints to them.
+  * Note: Blueprint books can go inside each other. If a blueprint book slot contains another blueprint book in it, the mod is not yet able to identify it.
+  * Note: Further support regarding blueprint books will be added later, such as renaming them or adding blueprints into them.
 
 - Added information to note that a blueprint in hand is being flipped.
   * You can flip a blueprint in hand horizontally by pressing "F".
@@ -19,7 +20,7 @@ This minor update fixes recently reported crashes related to blueprints and ghos
 
 ## Changes
 
-- Attempting to build a blueprint now reads feedback.
+- Attempting to build a blueprint now reads out feedback.
   * Success includes the blueprint name.
   * Error due to an obstacle reads the obstacle.
 
