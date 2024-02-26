@@ -1,3 +1,72 @@
+# Version 0.8.3 BETA 
+Not released yet.
+
+No summary yet.
+
+## New features
+
+- Added support for manually connecting wires.
+  * Copper wires can be connected to electric poles or power switches. Electric pole connections to each other are automatic.
+  * Electricity wires between poles and machines are based on coverage area and cannot be edited.
+  * Red or green circuit wires can connected to electric poles or applicable machines. This is done to form circuit networks (not supported yet).
+  * If you redraw a particular wire connection, it gets cut instead.
+  
+- Added constant combinator support.
+  * You can manually configure the signals of this machine and switching it on will send the signals constantly to the connected circuit network.
+  * A secondary use for these machines is to place them next to transport belts to represent the expected belt contents, which is useful when the belt is empty.
+  * Selecting a constant combinator will read the signals it has.
+  * You can add a signal for the item in hand by holding it over the constant combinator and pressing CONTROL + LEFT BRACKET.
+  * You clear the last signal by holding your empty hand over the constant combinator and pressing CONTROL + LEFT BRACKET.
+  * Support will be added later for writing fluid signals and virtual signals.
+
+- Added feature to jump the cursor to coordinates typed into a text box. Open this by pressing "ALT + T".
+
+- If you choose to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it.
+
+- New area mining feature: If a deconstruction planner is in hand, the character will try to mine everything marked for deconstruction, except for cliffs.
+
+## Changes
+
+- Ghost directions can now be read.
+
+- New fast travel option added: Relocate this point to your current player position.
+
+- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing.
+
+- The research queue is forced to be turned off because you cannot edit it yet. We will re-add it as an accessible feature later.
+
+- Selecting a splitter now reads out its priority situation.
+
+- You can now add a selected entity to the quickbar if you have no item in hand and no menus open.
+
+- Transport belt content assumptions now also check the input belts for a unit, so that sparsely filled belts can better suggest what they carry.
+
+- The sandbox world scenario has been revised. 
+  * It now includes infinity chests with their filters set so that you can build new chests elsewhere and copy over the filters.
+  * Blueprints items containing guidance info have been added.
+  * Instant free crafting mode is not enabled by default, but the instructions to enable it have been added in a blueprint.
+  
+- Improved localisation, so that the translated names are read out for:
+  * Selected entities.
+  * Items previewed on transport belts.
+  * Items previewed in selected containers.
+  * Fluids previewed in selected buildings and pipes.
+  * Note: There is still much localisation work to do, such as opening up full mod sentences for translating.
+
+## Bug fixes
+
+- Removed unnecessary message of a building not being equipped after you place it as a ghost.
+
+- Fixed crude oil amount reading to match the vanilla numbers.
+
+- Fixed crashes due to shooting when you have no ammo.
+
+- Fixed crashes after deaths or at game start due to missing player characters.
+
+- Fixed a crash due to sorting the scan with enemies missing.
+
+- Removed the sound cues of the character randomly getting selected sometimes while running in smooth walk mode.
+
 # Version 0.8.2 BETA 
 Released on February 21st, 2024. 
 
