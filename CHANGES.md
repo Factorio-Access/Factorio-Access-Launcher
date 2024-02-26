@@ -14,7 +14,10 @@ No summary yet.
   * The maximum connection range is either about 7 tiles or greater if you are connecting together electric poles with long wire reach.
   * If you redraw a particular wire connection, it gets cut instead.
   
-- Added manual control support for power switches. ***todo
+- Added manual control support for power switches.
+  * Selecting a power switch will read the connected power and circuit networks.
+  * If no circuit wire is connected to the switch, you can manually switch it on or off by pressing "LEFT BRACKET" on it.
+  * If a circuit wire is connnected to the switch, it will automatically work according to the circuit condition (not yet supported).
   
 - Added constant combinator support.
   * You can manually configure the signals of this machine and switching it on will send the signals constantly to the connected circuit network.
