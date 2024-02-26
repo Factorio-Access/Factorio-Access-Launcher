@@ -36,19 +36,21 @@ No summary yet.
 
 - Ghost directions can now be read.
 
-- New fast travel option added: Relocate this point to your current player position. ***test
+- New fast travel option added: Relocate this point to your current player position. 
 
-- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing. ***test
+- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing.
 
 - The research queue is forced to be turned off because you cannot edit it yet. We will re-add it as an accessible feature later.
 
 - Selecting a splitter now reads out its priority situation.
 
-- You can now add a selected entity to the quickbar if you have no item in hand and no menus open.  ***test this and below 
+- You can now add a selected entity to the quickbar if you have no item in hand and no menus open.
 
 - Transport belt content assumptions now also check the input belts of belt unit, so that sparsely filled belts can better suggest what they carry.
 
-- If you try to shoot an atomic bomb to a position within 30 tiles, you get an alert and the bombs are unequipped. 
+- If you try to shoot an atomic bomb to a position within 35 tiles (the explosion range) you get an alert.
+  * You can keep holding down SPACE to fire anyway.
+  * Successfully firing will require you to zoom out by scrolling the mouse wheel.
 
 - The sandbox world scenario has been revised. 
   * It now includes infinity chests with their filters set so that you can build new chests elsewhere and copy over the filters.
