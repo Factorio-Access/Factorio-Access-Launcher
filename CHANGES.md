@@ -9,7 +9,12 @@ No summary yet.
   * Copper wires can be connected to electric poles or power switches. Electric pole connections to each other are automatic.
   * Electricity wires between poles and machines are based on coverage area and cannot be edited.
   * Red or green circuit wires can connected to electric poles or applicable machines. This is done to form circuit networks (not supported yet).
+  * Press LEFT BRACKET on the relevant building with the relevant wire in hand to begin connecting. 
+  * For copper wires, you need to press for the start and end point every time, while for circuit wires every relevant building will connect to the last one pressed if within range. 
+  * The maximum connection range is either about 7 tiles or greater if you are connecting together electric poles with long wire reach.
   * If you redraw a particular wire connection, it gets cut instead.
+  
+- Added manual control support for power switches. ***todo
   
 - Added constant combinator support.
   * You can manually configure the signals of this machine and switching it on will send the signals constantly to the connected circuit network.
@@ -19,32 +24,37 @@ No summary yet.
   * You clear the last signal by holding your empty hand over the constant combinator and pressing CONTROL + LEFT BRACKET.
   * Support will be added later for writing fluid signals and virtual signals.
 
-- Added feature to jump the cursor to coordinates typed into a text box. Open this by pressing "ALT + T".
+- Added feature to jump the cursor to coordinates typed into a text box. 
+  * Open this by pressing "ALT + T".
+  * When typing, the X coordinate comes first, followed by a space and then the y coordinate.
 
-- If you choose to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it.
+- If you choose to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it. 
 
-- New area mining feature: If a deconstruction planner is in hand, the character will try to mine everything marked for deconstruction, except for cliffs.
+- New area mining feature: If a deconstruction planner is in hand, the character will try to mine obstacles and also everything marked for deconstruction, except for cliffs.
 
 ## Changes
 
 - Ghost directions can now be read.
 
-- New fast travel option added: Relocate this point to your current player position.
+- New fast travel option added: Relocate this point to your current player position. ***test
 
-- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing.
+- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing. ***test
 
 - The research queue is forced to be turned off because you cannot edit it yet. We will re-add it as an accessible feature later.
 
 - Selecting a splitter now reads out its priority situation.
 
-- You can now add a selected entity to the quickbar if you have no item in hand and no menus open.
+- You can now add a selected entity to the quickbar if you have no item in hand and no menus open.  ***test this and below 
 
-- Transport belt content assumptions now also check the input belts for a unit, so that sparsely filled belts can better suggest what they carry.
+- Transport belt content assumptions now also check the input belts of belt unit, so that sparsely filled belts can better suggest what they carry.
+
+- If you try to shoot an atomic bomb to a position within 30 tiles, you get an alert and the bombs are unequipped. 
 
 - The sandbox world scenario has been revised. 
   * It now includes infinity chests with their filters set so that you can build new chests elsewhere and copy over the filters.
   * Blueprints items containing guidance info have been added.
   * Instant free crafting mode is not enabled by default, but the instructions to enable it have been added in a blueprint.
+  * You can now find power armor and construction robots ready to go at the start.
   
 - Improved localisation, so that the translated names are read out for:
   * Selected entities.
