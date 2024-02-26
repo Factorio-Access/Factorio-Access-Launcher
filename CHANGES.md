@@ -1,7 +1,7 @@
 # Version 0.8.3 BETA 
 Not released yet.
 
-No summary yet.
+In this intermediate update some requested features are added and several bugs are fixed. There is also some preparation work related to circuit networks, which are not yet supported but they will be in the next major update.
 
 ## New features
 
@@ -31,15 +31,15 @@ No summary yet.
   * Open this by pressing "ALT + T".
   * When typing, the X coordinate comes first, followed by a space and then the y coordinate.
 
-- If you choose to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it. 
-
 - New area mining feature: If a deconstruction planner is in hand, the character will try to mine obstacles and also everything marked for deconstruction, except for cliffs.
+
+- New fast travel option added: Relocate this point to your current player position. 
+
+- If you choose to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it.
 
 ## Changes
 
 - Ghost directions can now be read.
-
-- New fast travel option added: Relocate this point to your current player position. 
 
 - Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing.
 
@@ -52,8 +52,9 @@ No summary yet.
 - Transport belt content assumptions now also check the input belts of belt unit, so that sparsely filled belts can better suggest what they carry.
 
 - If you try to shoot an atomic bomb to a position within 35 tiles (the explosion range) you get an alert.
-  * You can keep holding down SPACE to fire anyway.
-  * Successfully firing will require you to zoom out by scrolling the mouse wheel.
+  * The alert prevents you from firing for 5 seconds. You can keep holding down SPACE to fire despite the alert.
+  * Furthermore, successfully aiming will require you to zoom out by scrolling the mouse wheel. 
+  * Note: Therefore the expected firing range for atomic bombs is between 35 and 54 tiles.
 
 - The sandbox world scenario has been revised. 
   * It now includes infinity chests with their filters set so that you can build new chests elsewhere and copy over the filters.
