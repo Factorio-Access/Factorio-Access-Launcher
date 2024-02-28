@@ -15,6 +15,7 @@ In this intermediate update some requested features are added and several bugs a
   * If you redraw a particular wire connection, it gets cut instead.
   
 - Added manual control support for power switches.
+  * A power switch has an east side and a west side when connecting copper wires, and you can connect to a particular side by pressing on the correct edge. Meanwhile, there is just one connection for circuit wires.
   * Selecting a power switch will read the connected power and circuit networks.
   * If no circuit wire is connected to the switch, you can manually switch it on or off by pressing "LEFT BRACKET" on it.
   * If a circuit wire is connnected to the switch, it will automatically work according to the circuit condition (not yet supported).
