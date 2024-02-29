@@ -1,7 +1,7 @@
 # Version 0.8.3 BETA 
-Not released yet.
+Released on February 29th, 2024.
 
-In this intermediate update some requested features are added and several bugs are fixed. There is also some preparation work related to circuit networks, which are not yet supported but they will be in the next major update.
+In this intermediate update some requested features are added and several bugs are fixed. There is also some preparation work related to circuit networks, which are not yet supported but they will be in the next major update. Additions include connecting wires, power switches, constant combinators, cursor position typing, cursor bookmarking, and item production summary reading. For changes, the sandbox world scenario has been improved and improvements were made to trees, ghosts, remnants, transport belts, and localization.
 
 ## New features
 
@@ -15,7 +15,7 @@ In this intermediate update some requested features are added and several bugs a
   * If you redraw a particular wire connection, it gets cut instead.
   
 - Added manual control support for power switches.
-  * A power switch has an east side and a west side when connecting copper wires, and you can connect to a particular side by pressing on the correct edge. Meanwhile, there is just one connection for circuit wires.
+  * Power switches allow you to connect or disconnect two different electric networks using a manual switch or a circuit condition. A power switch has an east side and a west side when connecting copper wires, and you can connect to a particular side by pressing on the correct edge. Meanwhile, there is just one connection for circuit wires.
   * Selecting a power switch will read the connected power and circuit networks.
   * If no circuit wire is connected to the switch, you can manually switch it on or off by pressing "LEFT BRACKET" on it.
   * If a circuit wire is connnected to the switch, it will automatically work according to the circuit condition (not yet supported).
@@ -24,33 +24,56 @@ In this intermediate update some requested features are added and several bugs a
   * You can manually configure the signals of this machine and switching it on will send the signals constantly to the connected circuit network.
   * A secondary use for these machines is to place them next to transport belts to represent the expected belt contents, which is useful when the belt is empty.
   * Selecting a constant combinator will read the signals it has.
-  * You can add a signal for the item in hand by holding it over the constant combinator and pressing CONTROL + LEFT BRACKET.
-  * You clear the last signal by holding your empty hand over the constant combinator and pressing CONTROL + LEFT BRACKET.
+  * You can add a signal for the item in hand by holding it over the constant combinator and pressing "CONTROL + LEFT BRACKET".
+  * You clear the last signal by holding your empty hand over the constant combinator and pressing "CONTROL + LEFT BRACKET".
   * Support will be added later for writing fluid signals and virtual signals.
 
 - Added feature to jump the cursor to coordinates typed into a text box. 
   * Open this by pressing "ALT + T".
   * When typing, the X coordinate comes first, followed by a space and then the y coordinate.
 
+- Added a simple cursor bookmark feature.
+  * Press "SHIFT + B" to save the current position as your bookmark.
+  * Press "B" to load the last position.
+  * There is support for only one bookmark for now.
+  
+- Added production summary feature: Press "U" for an item selected in hand or in the inventory to read the summary of how many units were produced in the last one minute, last one hour, and last one thousand hours.
+
 - New area mining feature: If a deconstruction planner is in hand, the character will try to mine obstacles and also everything marked for deconstruction, except for cliffs.
 
-- New fast travel option added: Relocate this point to your current player position. 
+- New fast travel option added: Relocate this point to your current character position. 
 
-- If you choose to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it.
+- If you choose the option to respawn after a death, the respawn time is about 10 seconds. A reminder system as been added for it.
+
+- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing.
 
 ## Changes
 
 - Ghost directions can now be read.
 
-- Checking the time by pressing "T" now also notes the total mission time, which is the time played since crash landing.
+- Improved cursor detection of remnants.
+  * Remnants can be built over and they also fade over time. They can still be useful by standing in for ghosts, because destroyed buildings do not leave behind ghosts until you unlock construction robots.
+  * Remnants are the same size as the buildings they used to be but the cursor is only able to detect their middle parts, which is an improvement over no detection at all for some cases.
+
+- Added remnants to the "Other" category of the scan list.
+
+- Re-added individual trees to the scanner list in a streamlined way.
+  * The scanner range for individual trees is 25 tiles.
+  * All tree types including different species or dead trunks are simply listed as "tree types". You can still check the specific type with the cursor.
 
 - The research queue is forced to be turned off because you cannot edit it yet. We will re-add it as an accessible feature later.
+
+- Removed player collision with inserters so that it will be much easier to walk around crowded factory areas. The hitboxes were already small, so there is very little lost here.
+
+- Removed player collision with constant combinators because they are often used to explain transport belt contents and it would be smoother to walk over them like with belts.
 
 - Selecting a splitter now reads out its priority situation.
 
 - You can now add a selected entity to the quickbar if you have no item in hand and no menus open.
 
 - Transport belt content assumptions now also check the input belts of belt unit, so that sparsely filled belts can better suggest what they carry.
+
+- Transport belt junction type reading has been improved so that the belt units before belt corners are now recognised as regular middle belt units instead of pouring ends.
 
 - If you try to shoot an atomic bomb to a position within 35 tiles (the explosion range) you get an alert.
   * The alert prevents you from firing for 5 seconds. You can keep holding down SPACE to fire despite the alert.
@@ -80,9 +103,10 @@ In this intermediate update some requested features are added and several bugs a
 
 - Fixed crashes after deaths or at game start due to missing player characters.
 
-- Fixed a crash due to sorting the scan with enemies missing.
+- Fixed a crash due to sorting the scan list with enemies missing.
 
 - Removed the sound cues of the character randomly getting selected sometimes while running in smooth walk mode.
+
 
 # Version 0.8.2 BETA 
 Released on February 21st, 2024. 
