@@ -64,6 +64,10 @@ To install a mod release, follow the instructions below:
 ## General
 Start playing when a new game begins: TAB
 
+Repeat last spoken phrase: CONTROL + TAB
+
+Start tutorial or read tutorial step: H
+
 Close most menus: E
 
 Read the current menu name: SHIFT + E
@@ -72,23 +76,17 @@ Save game: F1
 
 Pause or unpause the game with the visual pause menu: ESC
 
-Repeat last spoken phrase: CONTROL + TAB
-
 Time of day and current research: T
 
 Toggle Vanilla Mode: CONTROL + ALT + V. Note that this will mute the narrator until you toggle back out.
 
 Toggle Cursor Drawing: CONTROL + ALT + C. Note: This is enabled by Vanilla Mode by default, but it can be toggled separately for those who want it.
 
-Rotate vanilla cursor: SHIFT + R
-
 Toggle cursor hiding: CONTROL + ALT + C. This is for Vanilla Mode players who do not want to see the mod building previews.
 
-Reset mod renders: CONTROL + ALT + R. This is rarely needed for resolving bugs related to drawn objects that do not disappear.
-
-Recalibrate: CONTROL + END. This is rarely needed for resolving bugs related to zooming.
-
 Clear all renders: CONTROL + ALT + R. Note: This is for clearing any mod-drawn objects that fail to disappear on their own.
+
+Recalibrate zoom: CONTROL + END. This is rarely needed for resolving bugs related to zooming.
 
 ## Movement
 
@@ -106,72 +104,138 @@ Note the 3 movement types are as follows:
 
    3- Smooth-Walking: In this mode the character will move similarly to in a sighted game. The player will be notified if they run into something, but otherwise will not be notified of entities they are passing. Very fast, and great for getting around!
 
-## Interactions
+## Coordinates
+Read cursor coordinates: K
 
-Get entity description: Y, for most entities and for items. 
+Read cursor distance and direction from your character: SHIFT + K
 
-Get entity description for the last scanned entity: SHIFT + Y
+Read character coordinates: CONTROL + K
 
-Note: The description key used to be L.
+Save cursor bookmark coordinates: SHIFT + B
 
-Read building status: RIGHT BRACKET, for applicable buildings when your hand is empty
+Load cursor bookmark coordinates: B
 
-Check cursor coordinates and building part: K
+Type in cursor coordinates to jump to: ALT + T
 
-Check relative distance and direction of cursor: SHIFT + K
+## Scanner Tool
+Entities in the world get indexed by the scanner tool when you run a scan. If there are multiple instances of the same entity, they tend to be grouped in the same scanner list entry.
 
-Open building's menu: LEFT BRACKET
+Scan for entities: END
 
-Mine or pick up: X
+Scan for entities in only the direction you are facing: SHIFT + END
 
-Clear obstacles around within 5 tiles: SHIFT + X on an empty tile. Obstacles include trees, rocks, items on the ground, tree stumps, scorch marks. Items are added to your inventory.
+Navigate scanner list entries: PAGE UP and PAGE DOWN. Alternatively you can use UP ARROW and DOWN ARROW.
 
-Grab in hand instant mining tool: CONTROL + X. Also known as the cut and paste tool, this will instantly mine almost anything touched by the cursor. Does not work for ores.
+Repeat scanner list entry: HOME
 
-Pick up all objects within 5 tiles: SHIFT + X with the instant mining tool in hand.
-  
-Put away instant mining tool: Q
+Switch between different instances of the same entry: SHIFT + PAGE UP and SHIFT + PAGE DOWN.  Alternatively you can use SHIFT + UP ARROW and SHIFT + DOWN ARROW.
 
-Open player inventory: E
+Change scanner list filter category: CONTROL + PAGE UP and CONTROL + PAGE DOWN. Alternatively you can use CONTROL + UP ARROW and CONTROL + DOWN ARROW.
 
-Collect nearby items, from the ground or from belts: Hold F
+Sort scan results by distance from current character location: N. If you change location, you need to press again.
+
+Sort scan results by total counts: SHIFT + N
+
+## Interactions with one entity
+Select an entity by moving the cursor on top of it. This includes selecting it from the scanner list.
 
 Read other entities on the same tile, if any: SHIFT + F
 
-Rotate: R. 
+Get its description: Y, for most entities or items. 
 
-Rotation Note 1: If you have something in your hand, you will rotate that.  Otherwise you will rotate the building your cursor is over.
+Get the description for the current scanner entry: SHIFT + Y
 
-Rotation Note 2: The first time you press the rotate key, it will simply say the direction a building is facing. Subsequent presses will actually rotate the building.
+Read its status: RIGHT BRACKET, for applicable buildings when your hand is empty
 
-Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
+Open its menu: LEFT BRACKET
 
-Smart pippette/picker tool: For a selected entity, Q, with an empty hand. This brings to hand more of the selected entity's item form, if you have it in your inventory.
+Mine it or pick it up: X
 
-Nudge building by one tile: CONTROL + SHIFT + DIRECTION, where the direction is one of W A S D. 
+Shoot at it: C (not recommended)
 
-Copy building settings: With empty hand, SHIFT + RIGHT BRACKET on the building
+Rotate it: R. 
 
-Paste building settings: With empty hand, SHIFT + LEFT BRACKET on the building
+Rotation Note: If you have something in your hand, you will rotate that instead, and some buildings cannot be rotated after placing them down while others cannot be rotated at all.
 
-Quickly collect the entire output of a building: With empty hand, CONTROL + LEFT BRACKET on the building
+Nudge it by one tile: CONTROL + SHIFT + DIRECTION, where the direction is one of W A S D. 
 
-Quickly collect half of the entire output of a building: With empty hand, CONTROL + RIGHT BRACKET on the building
+Smart pipette/picker tool: For a selected entity, Q, with an empty hand. This brings to hand more of the selected entity's item form, if you have it in your inventory.
+
+Copy its settings: With empty hand, SHIFT + RIGHT BRACKET on the building
+
+Paste its settings: With empty hand, SHIFT + LEFT BRACKET on the building
+
+Smart collect its entire output: With empty hand, CONTROL + LEFT BRACKET on the building
+
+Smart collect half of its entire output: With empty hand, CONTROL + RIGHT BRACKET on the building
+
+## Interactions with multiple entities
+Collect nearby items from the ground or from belts: Hold F
 
 Repair every machine within reach: CONTROL + SHIFT + LEFT BRACKET, while you have at least 2 repair packs in your hand
 
-## Faster mining
-Clear area: SHIFT + X. This automatically clears trees and rocks and dropped items within a 10 tile radius. If you press this shortcut on rails, it clears rails too.
+Clear area: SHIFT + X. This automatically clears trees and rocks and dropped items within a 5 tile radius. If you press this shortcut on rails, it clears rail objects specifically. 
 
 Start instant mining tool: CONTROL + X. When you are holding this tool, everything the cursor touches is mined instantly.
 
 Stop instant mining tool: Q
 
+Mine up all entities within 5 tiles: SHIFT + X with the instant mining tool in hand.
+
+## Blueprints and planner tools
+Grab a new upgrade planner: ALT + U
+
+Grab a new deconstruction planner: ALT + D
+
+Grab a new blueprint planner: ALT + B
+
+Start and end planner area selection: LEFT BRACKET
+
+Cancel selection: Q
+
+Open blueprint hand blueprint menu: RIGHT BRACKET
+
+Open blueprint hand blueprint book menu: RIGHT BRACKET
+
+Open blueprint hand blueprint book contents: LEFT BRACKET
+
+## Inventory
+
+Open player inventory: E
+
+Navigate inventory slots: W A S D
+
+Get slot coordinates: K
+
+Take selected item to hand: LEFT BRACKET
+
+Get selected item description: Y
+
+Get selected item logistic requests info: L
+
+Get selected item production info: U
+
+Pick an item from quickbar: NUMBER KEY, for keys 1 to 9 and 0.
+
+Switch to a new quickbar page: SHIFT + NUMBER KEY, for keys 1 to 9 and 0.
+
+Add selected item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0. Note: hand items have priority.
+
+Switch to other menus: TAB
+
+Close most menus: E
+
+Select the inventory slot for the item in hand: CONTROL + Q
+
+Select the crafting menu recipe for the item in hand: CONTROL + SHIFT + Q
+
 ## Cursor
 
-Speak cursor coordinates: K. If the cursor is over an entity, its relative location upon the entity is read out, such as the Southwest corner.
+Read cursor coordinates: K. If the cursor is over an entity, its relative location upon the entity is read out, such as the Southwest corner.
 
-Speak relative cursor location: SHIFT + K.
+Check building preview dimensions when building in cursor mode: K
+
+Read cursor distance and direction from character: SHIFT + K
 
 Enable or disable cursor mode: I
 
@@ -191,39 +255,21 @@ Decrease cursor size to examine a smaller area: CONTROL + I
 
 Note: You must be in cursor mode for the size of the cursor to make any difference in area scans.
 
-Check building preview dimensions when building in cursor mode: K
+Save cursor bookmark coordinates: SHIFT + B
 
-## Inventory
+Load cursor bookmark coordinates: B
 
-Open player inventory: E
-
-Navigate inventory slots: W A S D
-
-Get slot coordinates: K
-
-Get selected item info: Y
-
-Pick up selected item to hand: LEFT BRACKET
-
-Pick from quickbar: NUMBER KEY, for keys 1 to 9 and 0.
-
-Switch to a new quickbar page: SHIFT + NUMBER KEY, for keys 1 to 9 and 0.
-
-Add selected item to quickbar: CONTROL + NUMBER KEY, for keys 1 to 9 and 0. Note: hand items have priority.
-
-Switch to other menus: TAB
-
-Close most menus: E
-
-Select the inventory slot for the item in hand: CONTROL + Q
-
-Select the crafting menu recipe for the item in hand: CONTROL + SHIFT + Q
+Type in cursor coordinates to jump to: ALT + T
 
 ## Item in Hand
 
 Read item in hand: SHIFT + Q
 
-Get info on item in hand: L
+Get hand item description: Y
+
+Get hand item logistic requests info: L
+
+Get hand item production info: U
 
 Empty the hand to your inventory: Q
 
@@ -233,7 +279,7 @@ Select the player inventory slot for the item in hand: CONTROL + Q
 
 Select the crafting menu recipe for the item in hand: CONTROL + SHIFT + Q
 
-Pick from quickbar: NUMBER KEY, for keys 1 to 9 and 0.
+Pick from the quickbar: NUMBER KEY, for keys 1 to 9 and 0.
 
 Switch to a new quickbar page: SHIFT + NUMBER KEY, for keys 1 to 9 and 0.
 
@@ -243,13 +289,7 @@ Place building: LEFT BRACKET, for items that support it
 
 Toggle build lock for continuous building: CONTROL + B. It is also turned off while switching cursor modes or emptying the hand.
 
-Rotate: R. 
-
-Rotation Note 1: If you have something in your hand, you will rotate that.  Otherwise you will rotate the building your cursor is over.
-
-Rotation Note 2: The first time you press the rotate key, it will simply say the direction a building is facing. Subsequent presses will actually rotate the building.
-
-Rotation Note 3: To rotate the vanilla cursor, which is separate, press SHIFT + R.
+Rotate hand item: R. 
 
 Drop 1 unit: Z. Drops the item onto the ground or onto a belt or inside an applicable building.
 
@@ -259,11 +299,11 @@ Insert half a stack of the item in hand where applicable: CONTROL + RIGHT BRACKE
 
 ## Floor Pavings and Thrown Items
 
-Pave the floor with bricks or concrete: With the paving item in hand, LEFT BRACKET. This affects a 3 by 3 area with your character in the center.
+Pave the floor with bricks or concrete: With the paving item in hand, LEFT BRACKET. The brush size is the cursor size.
   
-Pick up floor paving: With any bricks or concrete in hand: X. This will pick up a 2 by 2 area centered on the cursor.
+Pick up floor paving: With any bricks or concrete in hand: X. The brush size is the cursor size.
   
-Place landfill over water: With landfill in hand, LEFT BRACKET. This affects any water in a 3 by 3 area with your character in the center. Note: This is not reversible!
+Place landfill over water: With landfill in hand, LEFT BRACKET.  The brush size is the cursor size.
   
 Throw a capsule item at the cursor within range: With the item in hand, LEFT BRACKET. Warning: Throwing grenades will hurt you unless the cursor is moved far enough away.
 
@@ -297,26 +337,6 @@ Read armor equipment list: SHIFT + G
   
 Return all equipment and armor to inventory: CONTROL + SHIFT + G
 
-## Scanner Tool
-
-Scan for nearby entities: END
-
-Scan for entities in the direction you are facing: SHIFT + END
-
-Repeat scanned entry: HOME
-
-Navigate scanned entity list: PAGE UP and PAGE DOWN. Alternatively you can use UP ARROW and DOWN ARROW.
-
-Switch between different instances of the same entity: SHIFT + PAGE UP and SHIFT + PAGE DOWN.  Alternatively you can use SHIFT + UP ARROW and SHIFT + DOWN ARROW.
-
-Change scanned category: CONTROL + PAGE UP and CONTROL + PAGE DOWN. Alternatively you can use CONTROL + UP ARROW and CONTROL + DOWN ARROW.
-
-Sort scan results by total counts: SHIFT + N
-
-Sort scan results by distance from current character location: N. If you change location, you need to press again.
-
-Move cursor to scanned target in cursor mode: CONTROL + HOME
-
 ## Fast Travel
 
 Open Fast Travel Menu: V
@@ -331,7 +351,7 @@ Note:  Options include Teleporting to a saved point, renaming a saved point, del
 
 Confirm a new name: ENTER
 
-## BStride / Structure Travel
+## Structure Travel
 
 Travel freely from building to building as if they were laid out in a grid pattern.
 
