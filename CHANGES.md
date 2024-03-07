@@ -1,3 +1,45 @@
+# Version 0.8.4 BETA
+Not released yet.
+
+No summary yet.
+
+## New features
+
+- Fast travel points can now have descriptions attached to them. They can be read or changed from the fast travel menu.
+
+- Added cursor skipping, as suggested by @ohylli.
+  * When you press SHIFT + a walking direction key, the cursor now moves in that direction and skips over repeating tiles until it reaches a change point.
+  * Crossing from an entity to empty ground counts as a change.
+  * Crossing from empty ground to an entity counts as a change.
+  * Crossing between two entities with different names counts as a change.
+  * Crossing between two entities with the same name does not count as a change unless they are facing different directions.
+  * One skip has a maximum distance of 100 tiles, but you can instruct another skip afterward.
+  * The character does not skip along with the cursor but you can always teleport to it.
+
+- The raw resources needed to craft a recipe can now be listed by pressing 'SHIFT + K'
+  * Right now this does not include the counts.
+
+- Constant combinators now read their on/off state and this can be toggled by pressing 'LEFT BRACKET' on them.
+
+## Changes 
+
+- When the player is standing in the area where a building is being placed, they are now teleported out of the way, to the northwest corner of the build area.
+
+- The crafting menu now lists every recipe unlocked so far, including the ones you cannot craft by hand. When you try to craft a recipe that requires a building, the name of the building is read out.
+  
+- Production statistics can now be checked also for recipes in the crafting menu.
+
+- Production statistics for an item now include the number produced in the last 10 minutes (thank you @ohylli).
+
+- Blueprint name and description changing now starts with a blank text box instead of starting with the existing text.
+
+- Selecting an entity now also mentions if the entity is currently marked for deconstruction or for upgrading.
+
+## Bug fixes
+
+- Fixed roboports crashing when they have no networks.
+
+
 # Version 0.8.3 BETA 
 Released on February 29th, 2024.
 
