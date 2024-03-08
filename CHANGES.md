@@ -21,11 +21,21 @@ No summary yet.
 
 - Constant combinators now read their on/off state and this can be toggled by pressing 'LEFT BRACKET' on them.
 
+- You can now honk a vehicle horn by pressing 'V'.
+
+- Trains now make a clacking sound when turning at a curved rail.
+
 ## Changes 
+
+- If an inserter is picking up from another entity, its name is reported.
+
+- If an inserter or a mining drill is placing into another entity, its name is reported.
 
 - When the player is standing in the area where a building is being placed, they are now teleported out of the way, to the northwest corner of the build area.
 
 - The crafting menu now lists every recipe unlocked so far, including the ones you cannot craft by hand. When you try to craft a recipe that requires a building, the name of the building is read out.
+
+- If an item cannot be crafted because you do not have enough ingredients, the missing ingredients will now be reported.
   
 - Production statistics can now be checked also for recipes in the crafting menu.
 
@@ -35,9 +45,13 @@ No summary yet.
 
 - Selecting an entity now also mentions if the entity is currently marked for deconstruction or for upgrading.
 
+- Area mining now also reports a count of how many item stacks are collected from it.
+
 ## Bug fixes
 
 - Fixed roboports crashing when they have no networks.
+
+- Fixed a bug where nudged entities were not connecting properly to other entities.
 
 
 # Version 0.8.3 BETA 
