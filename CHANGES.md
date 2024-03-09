@@ -27,9 +27,16 @@ No summary yet.
 
 ## Changes 
 
-- If an inserter is picking up from another entity, its name is reported.
+- Inserters now report pick up and drop off locations with more detail.
 
-- If an inserter or a mining drill is placing into another entity, its name is reported.
+- Mining drills now report output locations with more detail.
+
+- Mining drills now report when selected that they have their outputs full.
+
+- Expanded filter inserter support.
+  * If any filters are set, they are reported when the inserter is selected.
+  * Like with splitter filters, you can add the item in hand to the filter by pressing 'CONTROL + LEFT BRACKET'.
+  * Like with splitter filters, you can clear the last filter by pressing 'CONTROL + LEFT BRACKET' with an empty hand.
 
 - When the player is standing in the area where a building is being placed, they are now teleported out of the way, to the northwest corner of the build area.
 
