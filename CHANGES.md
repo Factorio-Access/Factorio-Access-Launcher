@@ -1,28 +1,32 @@
 # Version 0.8.4 BETA
-Not released yet.
+Released on March 9th, 2024.
 
-No summary yet.
+In this medium-sized quality-of-life update there are several tweaks and additions based on community feedback. Additions include fast travel point descriptions and cursor skipping and vehicle horns. Changes include improvements to crafting menus, production statistics, and inserters.
 
 ## New features
 
 - Fast travel points can now have descriptions attached to them. They can be read or changed from the fast travel menu.
 
-- Added cursor skipping, as suggested by @ohylli.
+- Added cursor skipping for cursor mode, as suggested by @ohylli.
   * When you press SHIFT + a walking direction key, the cursor now moves in that direction and skips over repeating tiles until it reaches a change point.
   * Crossing from an entity to empty ground counts as a change.
   * Crossing from empty ground to an entity counts as a change.
   * Crossing between two entities with different names counts as a change.
+  * Crossing between two transport belt units with different neighbor counts or shapes also counts as a change.
   * Crossing between two entities with the same name does not count as a change unless they are facing different directions.
   * One skip has a maximum distance of 100 tiles, but you can instruct another skip afterward.
   * The character does not skip along with the cursor but you can always teleport to it.
 
+- You can now honk a vehicle horn by pressing 'V'.
+  * There are different sounds for cars, tanks, and trains.
+  * Trains still honk by themselves in different ways to indicate safety issues.
+  * Spidertrons honk like cars but anyone is welcome to recommend a unique sound.
+
+- Trains now make a clacking sound when turning at a curved rail.
+
 - The base ingredients needed to craft a recipe can now be listed by pressing 'SHIFT + K'. Right now this does not include the counts.
 
 - Constant combinators now read their on/off state and this can be toggled by pressing 'LEFT BRACKET' on them.
-
-- You can now honk a vehicle horn by pressing 'V'.
-
-- Trains now make a clacking sound when turning at a curved rail.
 
 ## Changes 
 
@@ -50,11 +54,13 @@ No summary yet.
 
 - Blueprint name and description changing now starts with a blank text box instead of starting with the existing text.
 
-- Selecting an entity now also mentions if the entity is currently marked for deconstruction or for upgrading.
+- Selecting an entity now also reports if the entity is currently marked for deconstruction or for upgrading.
 
 - Area mining now also reports a count of how many item stacks are collected from it.
 
 ## Bug fixes
+
+- Fixed pumpjack yield reporting
 
 - Fixed roboports crashing when they have no networks.
 
