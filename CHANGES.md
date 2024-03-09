@@ -16,8 +16,7 @@ No summary yet.
   * One skip has a maximum distance of 100 tiles, but you can instruct another skip afterward.
   * The character does not skip along with the cursor but you can always teleport to it.
 
-- The raw resources needed to craft a recipe can now be listed by pressing 'SHIFT + K'
-  * Right now this does not include the counts.
+- The base ingredients needed to craft a recipe can now be listed by pressing 'SHIFT + K'. Right now this does not include the counts.
 
 - Constant combinators now read their on/off state and this can be toggled by pressing 'LEFT BRACKET' on them.
 
@@ -39,6 +38,7 @@ No summary yet.
   * Like with splitter filters, you can clear the last filter by pressing 'CONTROL + LEFT BRACKET' with an empty hand.
 
 - When the player is standing in the area where a building is being placed, they are now teleported out of the way, to the northwest corner of the build area.
+  * If the corner is completely blocked, the character will still teleport but to inside the corner and therefore still in the way.
 
 - The crafting menu now lists every recipe unlocked so far, including the ones you cannot craft by hand. When you try to craft a recipe that requires a building, the name of the building is read out.
 
