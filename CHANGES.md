@@ -22,7 +22,7 @@ No summary yet.
   * When driving a car or tank or train forward or while stopped, the nearest entity ahead will beep. 
   * When driving in reverse, the nearest entity behind is checked instead.
   * For trains, the entity must be on or near rails and not part of the same train. The distance reference looks only at the wagon or locomotive that you are riding and not the whole train.
-  * You can press "L" while driving to identify what last beeped and its distance, if you are still facing it.
+  * You can press 'J' while driving to identify what last beeped and its distance, if you are still facing it.
   * Nearer entities will beep faster. The alert distances for cars are 50 meters, 25 meters, 10 meters, and 3 meters. For trains, these distances are trippled.
   * Entities that you can pass over or under without crashing will not beep.
   * This feature does not yet detect water bodies. Your vehicle might still snag into water shores but it will not be damaged from it.
@@ -32,11 +32,16 @@ No summary yet.
   * This mod makes a moving car or tank lock to one of the 8 main directions after you press 'A' or 'D' to turn it.
   * This way you can maintain a heading a lot more easily.
   
-- Experimental: Partially integrated the mod Pavement Driving Assist Continued.
+- Integrated the mod Pavement Driving Assist Continued.
   * This mod allows cars and tanks to follow paved roads automatically, such as stone brick or concrete roads.
-  * The driving assistant can be enabled by pressing 'U' to turn it. This will disable vehicle snapping
+  * The driving assistant can be enabled by pressing 'L' to turn it. This will disable vehicle snapping.
+  * The cruise control system can be enabled by pressing 'O'. This is recommended because it keeps the car speed at 35 kilometers per hour unless you press 'S' to slow down and stop.
+  * The mod also introduces some extra tools such as stop signs for automatic vehicles to interact with.
+  * The mod technology needs to be unlocked with research.
   
 ## Changes 
+
+- Tweaked cursor skipping so that skipping towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end. ******* test me!
 
 - Updated constant combinator support to use the circuit menu.
   * As a new feature, you can now change the count of the last added signal.
@@ -59,11 +64,14 @@ No summary yet.
 
 ## Bug fixes
 
+- Fixed a crash while reading fluid descriptions.
+
 - Fixed a recent bug where empty inventory slots were not being reported.
 
 - Fixed crashes due to inventory transfer result reporting, by shortening the results list.
 
 - Fixed a warnings menu bug where a furnace with its output full would be listed instead as out of fuel.
+
 
 # Version 0.8.4 BETA
 Released on March 9th, 2024.
