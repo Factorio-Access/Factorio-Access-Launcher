@@ -39,9 +39,11 @@ No summary yet.
   * The mod also introduces some extra tools such as stop signs for automatic vehicles to interact with.
   * The mod technology needs to be unlocked with research.
   
+- You can now send the cursor stack or the selected inventory stack to your logistic trash by pressing 'O'.
+  
 ## Changes 
 
-- Tweaked cursor skipping so that skipping towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end. ******* test me!
+- Tweaked cursor skipping so that skipping towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end.
 
 - Updated constant combinator support to use the circuit menu.
   * As a new feature, you can now change the count of the last added signal.
