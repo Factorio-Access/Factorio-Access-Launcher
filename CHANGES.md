@@ -1,3 +1,70 @@
+# Version 0.9.0 BETA
+Not released yet.
+
+No summary yet.
+
+## New features
+
+- Added circuit network support for the most popular features.
+  * Circuit networks allow you to tune your factory by reading signals from machines and instructing other machines to act according to signal values.
+  * You can create circuit networks by connecting applicable buildings with red or green circuit wires, as discussed in update 0.8.3. Everything connected to the same wire without interruption is part of the same network.
+  * Different buildings can have different reading or operation modes in the circuit network. The most used feature is enabling the operation of a machine, such as a pump or a belt or an inserter, based on a circuit signal's current value.
+  * To open the circuit network menu for a machine, press "N" when you select it with the cursor or after opening its menu.
+  * In the circuit network menu you can examine the network connections and also configure the machine's enabling condition.
+  
+- Added signal selector menu.
+  * You can use this menu to select signals when setting up a constant combinator or an enabling condition on another machine.
+  * Signals can include items or fluids. They also include virtual signals such as signal channels labeled using letters or digits or colors.
+  * Virtual signals include the special "everything" signal that checks every nonzero signal at the same time, and the "anything" signal that passes for any nonzero signal.
+  * The signal selector supports menu search. 
+
+- Added first version of driving proximity alert.
+  * When driving a car or tank or train forward or while stopped, the nearest entity ahead will beep. 
+  * When driving in reverse, the nearest entity behind is checked instead.
+  * For trains, the entity must be on or near rails and not part of the same train. The distance reference looks only at the wagon or locomotive that you are riding and not the whole train.
+  * You can press "L" while driving to identify what last beeped and its distance, if you are still facing it.
+  * Nearer entities will beep faster. The alert distances for cars are 50 meters, 25 meters, 10 meters, and 3 meters. For trains, these distances are trippled.
+  * Entities that you can pass over or under without crashing will not beep.
+  * This feature does not yet detect water bodies. Your vehicle might still snag into water shores but it will not be damaged from it.
+  * It is recommended to drive slowly by lightly tapping the 'W' key because unless you clear out your own road first, there is always a lot you can crash into.
+  
+- Integrated the mod Vehicle Snap.
+  * This mod makes a moving car or tank lock to one of the 8 main directions after you press 'A' or 'D' to turn it.
+  * This way you can maintain a heading a lot more easily.
+  
+- Experimental: Partially integrated the mod Pavement Driving Assist Continued.
+  * This mod allows cars and tanks to follow paved roads automatically, such as stone brick or concrete roads.
+  * The driving assistant can be enabled by pressing 'U' to turn it. This will disable vehicle snapping
+  
+## Changes 
+
+- Updated constant combinator support to use the circuit menu.
+  * As a new feature, you can now change the count of the last added signal.
+  * Other combinators are not supported yet.
+  
+- Revised item and entity descriptions (English) to improve accuracy, fix typos, and include entries that did not exist before.
+
+- Tweaked inventory transfer via pressing 'CONTROL + LEFT BRACKET' on an empty slot.
+  * You can no longer transfer blueprints and blueprint books this way because this custom code does not preserve blueprint data. Other shortcuts work fine.
+  
+- Restored cursor mode usage while driving and improved the issue of vehicles moving when you move the cursor.
+  * Moving cars and tanks will slow down.
+  * Stopped cars and tanks will not move.
+  * Moving trains with manual control will slow down.
+  * Stopped trains with manual control will fidget much less than before.
+  
+- Improved vehicle direction and speed reporting.
+  * Heading and speed is reported first.
+  * Spidertron heading is irrelevant so it is not reported.
+
+## Bug fixes
+
+- Fixed a recent bug where empty inventory slots were not being reported.
+
+- Fixed crashes due to inventory transfer result reporting, by shortening the results list.
+
+- Fixed a warnings menu bug where a furnace with its output full would be listed instead as out of fuel.
+
 # Version 0.8.4 BETA
 Released on March 9th, 2024.
 
