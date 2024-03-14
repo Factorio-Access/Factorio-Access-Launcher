@@ -1,7 +1,7 @@
 # Version 0.9.0 BETA
 Released on March 14th, 2024.
 
-This major update introduces support for circuit networks and several improvements to vehicle driving.
+This major update introduces support for circuit networks, and several improvements to vehicle driving, and manual control over player logistic trash.
 
 ## New features
 
@@ -41,7 +41,13 @@ This major update introduces support for circuit networks and several improvemen
   * The mod also introduces some extra tools such as stop signs for automatic vehicles to interact with.
   * The mod technology needs to be unlocked with research, although the basic tools are unlocked just with logistic science.
   
-- Inventory management: You can now directly send the cursor stack or the selected inventory stack to your logistic trash by pressing 'O'.
+- Added manual control over player logistic trash.
+  * You can now directly send the cursor stack or the selected inventory stack to your logistic trash by pressing 'O'.
+  * The logistic trash inventory can now be accessed when it is unlocked, as a new tab of the player menu, after "technologies".
+  * This inventory has a fixed size of 3 rows of 10 slots each.
+  * This inventory can be searched.
+  * You can take items in hand from this menu and press 'Q' to restore them to the inventory, unless logistic limits throw it back into trash automatically.
+  * You can check slot coordinates and item descriptions from this menu.
   
 ## Changes 
 
@@ -53,7 +59,7 @@ This major update introduces support for circuit networks and several improvemen
   
 - Revised item and entity descriptions (in English) to improve accuracy, fix typos, and include entries that did not exist before.
 
-- The player inventory opened through a build menu can now use menu search.
+- Vehicle trunks, and the player inventory opened through a building menu, can now use menu search.
 
 - Tweaked the inventory transfer shortcut, the one via pressing 'CONTROL + LEFT BRACKET' on an empty slot.
   * You can no longer transfer blueprints and blueprint books this way because this custom code does not preserve blueprint data. Other shortcuts work fine.
