@@ -1,68 +1,76 @@
 # Version 0.9.0 BETA
-Not released yet.
+Released on March 14th, 2024.
 
-No summary yet.
+This major update introduces support for circuit networks and several improvements to vehicle driving.
 
 ## New features
 
-- Added circuit network support for the most popular features.
+- Added circuit network support for the most popular features. **todo: test the pumps example and the steam solar panel accum example and a power switch***** and a const combi**
   * Circuit networks allow you to tune your factory by reading signals from machines and instructing other machines to act according to signal values.
-  * You can create circuit networks by connecting applicable buildings with red or green circuit wires, as discussed in update 0.8.3. Everything connected to the same wire without interruption is part of the same network.
-  * Different buildings can have different reading or operation modes in the circuit network. The most used feature is enabling the operation of a machine, such as a pump or a belt or an inserter, based on a circuit signal's current value.
-  * To open the circuit network menu for a machine, press "N" when you select it with the cursor or after opening its menu.
-  * In the circuit network menu you can examine the network connections and also configure the machine's enabling condition.
+  * You can create circuit networks by connecting applicable buildings with red or green circuit wires, as discussed in update 0.8.3. Everything connected to the same wire without interruption is part of the same network. You can connect circuit wires to electric poles as well.
+  * Different buildings can have different reading or operation modes for the circuit network. The most used feature is enabling the operation of a machine, such as a pump or a belt or an inserter, based on a circuit signal's condition. For example, you can activate a belt unit to feed coal to your steam power system when your accumulators are running low on charge.
+  * To open the circuit network menu for a machine, press 'N' when you select it with the cursor or after opening its menu.
+  * In the circuit network menu you can examine the network connections and also configure the machine's modes and its enabling condition.
   
 - Added signal selector menu.
   * You can use this menu to select signals when setting up a constant combinator or an enabling condition on another machine.
   * Signals can include items or fluids. They also include virtual signals such as signal channels labeled using letters or digits or colors.
-  * Virtual signals include the special "everything" signal that checks every nonzero signal at the same time, and the "anything" signal that passes for any nonzero signal.
+  * Special virtual signals include the "everything" signal that checks every nonzero signal at the same time, and the "anything" signal that passes for any nonzero signal.
   * The signal selector supports menu search. 
 
 - Added first version of driving proximity alert.
   * When driving a car or tank or train forward or while stopped, the nearest entity ahead will beep. 
   * When driving in reverse, the nearest entity behind is checked instead.
+  * Nearer entities will beep faster. The alert distances for cars are 50 meters, 25 meters, 10 meters, and 3 meters. For trains, these distances are trippled.
   * For trains, the entity must be on or near rails and not part of the same train. The distance reference looks only at the wagon or locomotive that you are riding and not the whole train.
   * You can press 'J' while driving to identify what last beeped and its distance, if you are still facing it.
-  * Nearer entities will beep faster. The alert distances for cars are 50 meters, 25 meters, 10 meters, and 3 meters. For trains, these distances are trippled.
   * Entities that you can pass over or under without crashing will not beep.
   * This feature does not yet detect water bodies. Your vehicle might still snag into water shores but it will not be damaged from it.
-  * It is recommended to drive slowly by lightly tapping the 'W' key because unless you clear out your own road first, there is always a lot you can crash into.
+  * Despite the added alerts, it is recommended to drive slowly, perhaps using the newly added cruise control mode.
   
 - Integrated the mod Vehicle Snap.
   * This mod makes a moving car or tank lock to one of the 8 main directions after you press 'A' or 'D' to turn it.
   * This way you can maintain a heading a lot more easily.
+  * It does not work while pavement driving assistance is active.
   
 - Integrated the mod Pavement Driving Assist Continued.
   * This mod allows cars and tanks to follow paved roads automatically, such as stone brick or concrete roads.
-  * The driving assistant can be enabled by pressing 'L' to turn it. This will disable vehicle snapping.
-  * The cruise control system can be enabled by pressing 'O'. This is recommended because it keeps the car speed at 35 kilometers per hour unless you press 'S' to slow down and stop.
+  * A good road width to use is 5 tiles, and turns need to include diagonal sections, although the diagonals can be short, like for 5 tiles.
+  * The driving assistant can be enabled by pressing 'L'. This will disable vehicle direction snapping.
+  * The cruise control system can be enabled by pressing 'O'. This is recommended because it keeps the car speed at 35 kilometers per hour. You can stop and start with 'W' and 'S' during cruise control so that the speed changes between 0 and 35.
   * The mod also introduces some extra tools such as stop signs for automatic vehicles to interact with.
-  * The mod technology needs to be unlocked with research.
+  * The mod technology needs to be unlocked with research, although the basic tools are unlocked just with logistic science.
   
-- You can now send the cursor stack or the selected inventory stack to your logistic trash by pressing 'O'.
+- Inventory management: You can now directly send the cursor stack or the selected inventory stack to your logistic trash by pressing 'O'.
   
 ## Changes 
 
-- Tweaked cursor skipping so that skipping towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end.
+- Cursor skip special case for underground segments: Skipping from one end towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end.
 
 - Updated constant combinator support to use the circuit menu.
   * As a new feature, you can now change the count of the last added signal.
   * Other combinators are not supported yet.
   
-- Revised item and entity descriptions (English) to improve accuracy, fix typos, and include entries that did not exist before.
+- Revised item and entity descriptions (in English) to improve accuracy, fix typos, and include entries that did not exist before.
 
-- Tweaked inventory transfer via pressing 'CONTROL + LEFT BRACKET' on an empty slot.
+- The player inventory opened through a build menu can now use menu search.
+
+- Tweaked the inventory transfer shortcut, the one via pressing 'CONTROL + LEFT BRACKET' on an empty slot.
   * You can no longer transfer blueprints and blueprint books this way because this custom code does not preserve blueprint data. Other shortcuts work fine.
+  * Identified a bug where if you try to do this more than once, the code always makes the building transfer to the player, unless you re-open the building's menu.
   
 - Restored cursor mode usage while driving and improved the issue of vehicles moving when you move the cursor.
   * Moving cars and tanks will slow down.
   * Stopped cars and tanks will not move.
   * Moving trains with manual control will slow down.
   * Stopped trains with manual control will fidget much less than before.
+  * Spidertrons and automatic trains should not be affected.
   
 - Improved vehicle direction and speed reporting.
-  * Heading and speed is reported first.
+  * Heading and speed is now reported before the vehicle name.
   * Spidertron heading is irrelevant so it is not reported.
+  
+- Building reserved slot reporting now uses the localised names and the amounts of ingredients and products per recipe cycle.
 
 ## Bug fixes
 
@@ -70,7 +78,7 @@ No summary yet.
 
 - Fixed a recent bug where empty inventory slots were not being reported.
 
-- Fixed crashes due to inventory transfer result reporting, by shortening the results list.
+- Fixed crashes due to inventory transfer result reporting, by shortening the results lists to 5 individually named items at most.
 
 - Fixed a warnings menu bug where a furnace with its output full would be listed instead as out of fuel.
 
