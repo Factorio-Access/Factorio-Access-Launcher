@@ -5,12 +5,15 @@ This major update introduces support for circuit networks, and several improveme
 
 ## New features
 
-- Added circuit network support for the most popular features. **todo: test the pumps example and the steam solar panel accum example and a power switch***** and a const combi**
+- Added circuit network support for the most popular features. 
   * Circuit networks allow you to tune your factory by reading signals from machines and instructing other machines to act according to signal values.
   * You can create circuit networks by connecting applicable buildings with red or green circuit wires, as discussed in update 0.8.3. Everything connected to the same wire without interruption is part of the same network. You can connect circuit wires to electric poles as well.
   * Different buildings can have different reading or operation modes for the circuit network. The most used feature is enabling the operation of a machine, such as a pump or a belt or an inserter, based on a circuit signal's condition. For example, you can activate a belt unit to feed coal to your steam power system when your accumulators are running low on charge.
   * To open the circuit network menu for a machine, press 'N' when you select it with the cursor or after opening its menu.
   * In the circuit network menu you can examine the network connections and also configure the machine's modes and its enabling condition.
+  * For a machine with an enabling condition, you can check if the condition is met at the moment by checking the machine's status. It will be either disabled by control behavior or have a different status such as working.
+  * Note that to connect a gate, you actually need to connect to the wall unit next to the gate.
+  * For circuit network features that are not implemented into the mod yet, feel free to make requests.
   
 - Added signal selector menu.
   * You can use this menu to select signals when setting up a constant combinator or an enabling condition on another machine.
@@ -34,10 +37,11 @@ This major update introduces support for circuit networks, and several improveme
   * It does not work while pavement driving assistance is active.
   
 - Integrated the mod Pavement Driving Assist Continued.
-  * This mod allows cars and tanks to follow paved roads automatically, such as stone brick or concrete roads.
+  * This mod allows cars and tanks to follow paved roads automatically, such as stone brick or concrete roads. Exiting a road produces an alert with 3 beeps.
   * A good road width to use is 5 tiles, and turns need to include diagonal sections, although the diagonals can be short, like for 5 tiles.
   * The driving assistant can be enabled by pressing 'L'. This will disable vehicle direction snapping.
   * The cruise control system can be enabled by pressing 'O'. This is recommended because it keeps the car speed at 35 kilometers per hour. You can stop and start with 'W' and 'S' during cruise control so that the speed changes between 0 and 35.
+  * You can type in a new cruise control speed by pressing 'CONTROL + O'. Note that the driving assistant requires a minimum speed of 21 kilometers per hour.
   * The mod also introduces some extra tools such as stop signs for automatic vehicles to interact with.
   * The mod technology needs to be unlocked with research, although the basic tools are unlocked just with logistic science.
   
