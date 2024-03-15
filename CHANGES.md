@@ -58,12 +58,6 @@ In this medium-sized quality-of-life update there are several tweaks and additio
 
 - Area mining now also reports a count of how many item stacks are collected from it.
 
-- Splitter priority direction reading now gives the compass direction too.
-
-- The player logistic requests summary info 'L' key, now reports whether the player is in construction or logistic range of the nearest roboport network.
-
-- The roboport menu's info options are now simply introduced when selected, and are activated when clicked using 'LEFT BRACKET'.
-
 ## Bug fixes
 
 - Fixed pumpjack yield reporting
