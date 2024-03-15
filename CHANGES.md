@@ -1,5 +1,5 @@
 # Version 0.9.0 BETA
-Released on March 14th, 2024.
+Released on March 15th, 2024.
 
 This major update introduces support for circuit networks, and several improvements to vehicle driving, and manual control over player logistic trash. Please check the details for other tweaks and fixes.
 
