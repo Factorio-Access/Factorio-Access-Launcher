@@ -4,7 +4,6 @@ Released on March 14th, 2024.
 This major update introduces support for circuit networks, and several improvements to vehicle driving, and manual control over player logistic trash. Please check the details for other tweaks and fixes.
 
 ## New features
-
 - Added circuit network support for the most popular features. 
   * Circuit networks allow you to tune your factory by reading signals from machines and instructing other machines to act according to signal values.
   * You can create circuit networks by connecting applicable buildings with red or green circuit wires, as discussed in update 0.8.3. Everything connected to the same wire without interruption is part of the same network. You can connect circuit wires to electric poles as well.
@@ -25,7 +24,7 @@ This major update introduces support for circuit networks, and several improveme
   * When driving a car or tank or train forward or while stopped, the nearest entity ahead will beep. 
   * When driving in reverse, the nearest entity behind is checked instead.
   * Nearer entities will beep faster. The alert distances for cars are 50 meters, 25 meters, 10 meters, and 3 meters. For trains, these distances are trippled.
-  * For trains, the entity must be on or near rails and not part of the same train. The distance reference looks only at the wagon or locomotive that you are riding and not the whole train.
+  * For trains, the entity must be not part of the same train and it must be on rails, although this includes disconnected rails that would actually be safe from this train. The distance reference looks only at the wagon or locomotive that you are riding and not the whole train.
   * You can press 'J' while driving to identify what last beeped and its distance, if you are still facing it.
   * Entities that you can pass over or under without crashing will not beep.
   * This feature does not yet detect water bodies. Your vehicle might still snag into water shores but it will not be damaged from it.
@@ -54,6 +53,7 @@ This major update introduces support for circuit networks, and several improveme
   * You can check slot coordinates and item descriptions from this menu.
   
 ## Changes 
+- Reading the rail structure ahead is now run by pressing 'SHIFT + J' and reading the structure behind is now run by pressing 'CONTROL + J'. This is because pressing only 'J' is reserved for reporting entities that raise the driving proximity alert.
 
 - Cursor skip special case for underground segments: Skipping from one end towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end.
 
@@ -82,8 +82,13 @@ This major update introduces support for circuit networks, and several improveme
   
 - Building reserved slot reporting now uses the localised names and the amounts of ingredients and products per recipe cycle.
 
-## Bug fixes
+- Splitter priority direction reading now gives the compass direction too.
 
+- The player or spidertron logistic requests summary info from the 'L' key, now reports whether the player or spidertron is in the construction or logistic range of the nearest roboport network. Note that the logistic range is 25 tiles and the contruction range is 55 tiles.
+
+- The roboport menu's info options are now simply introduced when selected, and are activated when clicked using 'LEFT BRACKET'.
+
+## Bug fixes
 - Fixed a crash while reading fluid descriptions.
 
 - Fixed a recent bug where empty inventory slots were not being reported.
