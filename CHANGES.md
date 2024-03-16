@@ -1,3 +1,22 @@
+# Version 0.9.1 BETA
+Not released yet.
+
+This is a quick update based on feedback for 0.9.0.
+
+## New features
+
+- Added support for programmable speakers.
+* You can use them to set up audio alerts based on circuit conditions. 
+* You also can get creative with them like by connecting speakers along a transport belt to play music.
+
+## Changes
+
+- None.
+
+## Bug fixes
+- Fixed the signal selector crashing when the end of a group is reached.
+
+
 # Version 0.9.0 BETA
 Released on March 15th, 2024.
 
