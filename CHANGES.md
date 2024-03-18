@@ -1,5 +1,5 @@
 # Version 0.9.1 BETA
-Not released yet.
+Released on March 19th, 2024.
 
 This is a quick update based on feedback for 0.9.0.
 
