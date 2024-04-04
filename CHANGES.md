@@ -40,7 +40,13 @@ No summary yet.
 
 - Pipes and storage tanks are now distinguished in the scanner list by the fluid contained.
 
+- When you successfully build a pipe to ground unit, the building direction in hand is flipped 180 degrees so that the other end can be built quickly.
+
 - The tutorial now gifts one stack of coal as part of your emergency supply kit that is already provided at the start of the game. This is important for teaching game mechanics in a clean order. This gift switched from rocket fuel to coal in order to simplify the process and not offer a significant advantage.
+
+- Removed unnecessary repetition of "per cycle" when checking recipe ingredients.
+
+- Checking the status of an enemy spawner will reveal the enemy evolution factor.
 
 ## Bug fixes
 
