@@ -1,3 +1,52 @@
+# Version 0.10.0 BETA
+Not released yet.
+
+No summary yet.
+
+## New features
+
+- The tutorial has been rewritten, doubling in length.
+  * There are now 12 chapters covering everything up to producing logistic science packs, and general tips chapter at the end.
+  * There is a total of over 300 steps in total, with generally only 1 or 2 instructions per step.
+  * Recently added features such as blueprints, cursor skipping, and steam engine snapping have been included.
+
+- Steam engine snapping added.
+  * Press "CONTROL + LEFT BRACKET" with a steam engine in hand to try automatically building a correctly positioned steam engine next to the first free boiler found within 25 tiles.
+  * Mainly added because when you first need steam engines in the first hours of the game you are still new to building.
+  * Does not snap to anything else.
+  * You still need to clear the building area manually, inlcuding stepping out of the way.
+
+- A selected fluid in a building can now be permanently flushed away by pressing "X".
+
+- You can now read the cursor position distance vector from the character position by pressing "ALT + K".
+  * This reports the vertical and horizontal distance separately, without giving an average compass direction.
+  * This information is useful for building belts and pipes because you'll get the exact distances to cover since they cannot connect to each other diagonally.
+
+
+## Changes
+
+- Reading a tile or an entity now also comments about its visibility information.
+  * An uncharted tile is labelled as so. You cannot know what is there and it might not even be generated yet.
+  * A charted tile that is more than about 100 tiles away from the nearest player or powered radar is blurred by the game, and it is now also labelled as so. A blurred area has minimal information about what is happening there and produces no sounds even though machines continue to work and enemies continue to move. Tile blurring affects some but not all remote interactions, and sighted players prefer to spread radars around to keep most factory areas continuously visible. 
+  * For a camera centered on the player, which is the default case, a tile that is outside the camera view is outside the rendered screen area and is now labelled as "distant". This affects some actions involving remote controls, although we have tried to minimize the dependency on doing things on screen. You can use the mouse wheel to zoom in and out, which changes camera coverage.
+
+- Steam engine direction reporting now says only "vertical" or "horizontal" to acknowledge that the building is symmetrical.
+
+- A selected water tile is now identified as open or shore or crevice, depending on other water tiles around it.
+
+- A pipe end is now identified as a special case where a pipe has less than 2 connections. This is worth noting because usually a pipe should have at least 2.
+
+- Pipe ends are now distinguished from other pipes in the scanner list.
+
+- Pipes and storage tanks are now distinguished in the scanner list by the fluid contained.
+
+- The tutorial now gifts one stack of coal as part of your emergency supply kit that is already provided at the start of the game. This is important for teaching game mechanics in a clean order. This gift switched from rocket fuel to coal in order to simplify the process and not offer a significant advantage.
+
+## Bug fixes
+
+- None.
+
+
 # Version 0.9.1 BETA
 Released on March 19th, 2024.
 
@@ -6,14 +55,15 @@ This is a quick update based on feedback for 0.9.0.
 ## New features
 
 - Added support for programmable speakers.
-* You can use them to set up audio alerts based on circuit conditions. 
-* You also can get creative with them like by connecting speakers along a transport belt to play music.
+  * You can use them to set up audio alerts based on circuit conditions. 
+  * You also can get creative with them like by connecting speakers along a transport belt to play music.
 
 ## Changes
 
 - None.
 
 ## Bug fixes
+
 - Fixed the signal selector crashing when the end of a group is reached.
 
 
@@ -23,6 +73,7 @@ Released on March 15th, 2024.
 This major update introduces support for circuit networks, and several improvements to vehicle driving, and manual control over player logistic trash. Please check the details for other tweaks and fixes.
 
 ## New features
+
 - Added circuit network support for the most popular features. 
   * Circuit networks allow you to tune your factory by reading signals from machines and instructing other machines to act according to signal values.
   * You can create circuit networks by connecting applicable buildings with red or green circuit wires, as discussed in update 0.8.3. Everything connected to the same wire without interruption is part of the same network. You can connect circuit wires to electric poles as well.
@@ -72,6 +123,7 @@ This major update introduces support for circuit networks, and several improveme
   * You can check slot coordinates and item descriptions from this menu.
   
 ## Changes 
+
 - Reading the rail structure ahead is now run by pressing 'SHIFT + J' and reading the structure behind is now run by pressing 'CONTROL + J'. This is because pressing only 'J' is reserved for reporting entities that raise the driving proximity alert.
 
 - Cursor skip special case for underground segments: Skipping from one end towards the underground direction of an underground belt chute or pipe to ground will bring the cursor to the other end.
@@ -108,6 +160,7 @@ This major update introduces support for circuit networks, and several improveme
 - The roboport menu's info options are now simply introduced when selected, and are activated when clicked using 'LEFT BRACKET'.
 
 ## Bug fixes
+
 - Fixed a crash while reading fluid descriptions.
 
 - Fixed a recent bug where empty inventory slots were not being reported.
