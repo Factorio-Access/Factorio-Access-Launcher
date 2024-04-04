@@ -22,6 +22,7 @@ No summary yet.
   * This reports the vertical and horizontal distance separately, without giving an average compass direction.
   * This information is useful for building belts and pipes because you'll get the exact distances to cover since they cannot connect to each other diagonally.
 
+- The blueprint menu now has the option to reselect the blueprint area, while keeping its original name and descriptions and icons.
 
 ## Changes
 
@@ -47,6 +48,8 @@ No summary yet.
 - Removed unnecessary repetition of "per cycle" when checking recipe ingredients.
 
 - Checking the status of an enemy spawner will reveal the enemy evolution factor.
+
+- Removed the default descriptions from science packs so that the mod descriptions would apply.
 
 ## Bug fixes
 
