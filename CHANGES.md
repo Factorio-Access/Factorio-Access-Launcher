@@ -1,7 +1,7 @@
 # Version 0.10.0 BETA
 Released on April 6th, 2024.
 
-This update features a full rewrite of the mod tutorial to include new chapters and details. Please note that the new tutorial may need more tweaking despite being reviewed, so feel free to get in touch about issues or suggestions. The update also has some small additions and changes to improve the early game, and some changes originating from community feedback.
+This update features a full rewrite of the mod tutorial to include new chapters and details. Please note that the new tutorial may need more tweaking despite being reviewed, so feel free to get in touch about issues or suggestions. The update also has some launcher improvements such as mod management, as well as small additions and changes to improve the early game, and some changes thanks to community feedback.
 
 ## New features
 
@@ -11,6 +11,12 @@ This update features a full rewrite of the mod tutorial to include new chapters 
   * Recently added features such as blueprints, cursor skipping, and steam engine snapping have been included.
   * If you had started the tutorial before this update, jumping back to its start is recommended so that you can reset to the new version and then skip doing the steps that you have already covered. You can jumping back to the start by pressing "ALT + SHIFT + H" a few times. 
   * The tutorial needs further testing and will continue to receive minor tweaks. Experienced players are invited to give it a try as well, for review assistance.
+
+- New launcher version, with the following additions and changes:
+  * Added a mod management menu, for other mods. You can now enable or disable other mods here so that you no longer need to delete a mod to remove it.
+  * Saving the game now plays beeps at the start and end of it, instead of speaking a message that interrupts other speech.
+  * The launcher now loads much faster.
+  * Fixed a bug so that a missing translation key returns English text instead of an error.
 
 - Added steam engine snapped building.
   * Press "CONTROL + LEFT BRACKET" with a steam engine in hand to try automatically building a correctly positioned steam engine next to the first free boiler found within 25 tiles.
@@ -28,7 +34,9 @@ This update features a full rewrite of the mod tutorial to include new chapters 
 
 ## Changes
 
-- Reading a tile or an entity now also comments about its visibility information.
+- Autosaving now makes two click sounds in the background to signal its start and end, instead of interrupting speech output.
+
+- Reading a tile now also comments about its visibility information.
   * An uncharted tile is labelled as so. You cannot know what is there and it might not even be generated yet.
   * A charted tile that is more than about 100 tiles away from the nearest player or powered radar is blurred by the game, and it is now also labelled as so. A blurred area has minimal information about what is happening there and produces no sounds even though machines continue to work and enemies continue to move. Tile blurring affects some but not all remote interactions, and sighted players prefer to spread radars around to keep most factory areas continuously visible. 
   * For a camera centered on the player, which is the default case, a tile that is outside the camera view is outside the rendered screen area and is now labelled as "distant". This affects some actions involving remote controls, although we have tried to minimize the dependency on doing things on screen. You can use the mouse wheel to zoom in and out, which changes camera coverage.
@@ -67,6 +75,8 @@ This update features a full rewrite of the mod tutorial to include new chapters 
 - If the pipe to ground preview finds multiple successful underground connections, the closest one is now taken, which is the correct case.
 
 - Fixed a localisation error for when you start crafting a recipe.
+
+- Fixed self-interrupting reminders at the start of the game.
 
 
 # Version 0.9.1 BETA
