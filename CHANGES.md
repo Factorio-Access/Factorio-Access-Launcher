@@ -5,56 +5,62 @@ This update features a full rewrite of the mod tutorial to include new features.
 
 ## New features
 
-#- The tutorial has been rewritten, doubling in length.
+####- The tutorial has been rewritten, doubling in length.
   * There are now 12 chapters covering everything up to producing logistic science packs, and general tips chapter at the end.
   * There is a total of over 300 steps in total, with generally only 1 or 2 instructions per step.
   * Recently added features such as blueprints, cursor skipping, and steam engine snapping have been included.
 
-#- Steam engine snapping added.
+####- Steam engine snapping added.
   * Press "CONTROL + LEFT BRACKET" with a steam engine in hand to try automatically building a correctly positioned steam engine next to the first free boiler found within 25 tiles.
   * Mainly added because when you first need steam engines in the first hours of the game you are still new to building.
   * Does not snap to anything else.
   * You still need to clear the building area manually, inlcuding stepping out of the way.
 
-#- You can now read the cursor position distance vector from the character position by pressing "ALT + K".
+- You can now read the cursor position distance vector from the character position by pressing "ALT + K".
   * This reports the vertical and horizontal distance separately, without giving an average compass direction.
   * This information is useful for building belts and pipes because you'll get the exact distances to cover since they cannot connect to each other diagonally.
 
-#- A selected fluid in a building can now be permanently flushed away by pressing "X".
+- A selected fluid in a building can now be permanently flushed away by pressing "X".
 
-#- The blueprint menu now has the option to reselect the blueprint area, while keeping its original name and descriptions and icons.
+####- The blueprint menu now has the option to reselect the blueprint area, while keeping its original name and descriptions and icons.
 
 ## Changes
 
-#- Reading a tile or an entity now also comments about its visibility information.
+- Reading a tile or an entity now also comments about its visibility information.
   * An uncharted tile is labelled as so. You cannot know what is there and it might not even be generated yet.
   * A charted tile that is more than about 100 tiles away from the nearest player or powered radar is blurred by the game, and it is now also labelled as so. A blurred area has minimal information about what is happening there and produces no sounds even though machines continue to work and enemies continue to move. Tile blurring affects some but not all remote interactions, and sighted players prefer to spread radars around to keep most factory areas continuously visible. 
   * For a camera centered on the player, which is the default case, a tile that is outside the camera view is outside the rendered screen area and is now labelled as "distant". This affects some actions involving remote controls, although we have tried to minimize the dependency on doing things on screen. You can use the mouse wheel to zoom in and out, which changes camera coverage.
 
-#- The tutorial now gifts one stack of coal as part of your emergency supply kit that is already provided at the start of the game. This is important for teaching game mechanics in a clean order. This gift switched from rocket fuel to coal in order to simplify the process and not offer a significant advantage.
+- The tutorial now gifts one stack of coal as part of your emergency supply kit that is already provided at the start of the game. This is important for teaching game mechanics in a clean order. This gift switched from rocket fuel to coal in order to simplify the process and not offer a significant advantage.
 
-#- Steam engine direction reporting now says only "north and south", or "east and west", to acknowledge that the building is symmetrical.
+- Steam engine direction reporting now says "north and south", or "east and west", to acknowledge that the building is symmetrical.
 
-#- A selected water tile is now labelled as "open" or "shore" or "crevice", depending on the arrangement of other water tiles around it.
+- A selected water tile is now labelled as "open" or "shore" or "crevice", depending on the arrangement of other water tiles around it.
 
-#- A pipe end is now identified as a special case where a pipe has less than 2 connections. This is worth noting because it means the pipe does not lead to anything.
+- A pipe end is now identified as a special case where a pipe has less than 2 connections. This is worth noting because it means the pipe does not lead to anything.
 
-#- Pipe ends are now distinguished from other pipes in the scanner list.
+- Pipe ends are now distinguished from other pipes in the scanner list.
 
-#- Pipes and storage tanks are now distinguished in the scanner list by the fluid contained.
+- Pipes and storage tanks are now distinguished in the scanner list by the fluid contained.
 
-#- When you successfully build a pipe to ground unit, the building direction in hand is flipped 180 degrees so that the other end can be built quickly.
+- Storage tanks are now categorized as containers in the scanner list.
 
-#- Removed unnecessary repetition of "per cycle" when listing recipe ingredients.
+- When you successfully build a pipe to ground unit, the building direction in hand is flipped 180 degrees so that the other end can be built quickly.
 
-#- Checking the status of an enemy spawner now reveals the enemy evolution factor.
+- The pipe to ground building preview now also reports information about the above ground connection preview.
 
-#- Removed the default descriptions from science packs so that the mod descriptions would apply.
+- Removed unnecessary repetition of "per cycle" when listing recipe ingredients.
+
+- Checking the status of an enemy spawner now reveals the enemy evolution factor.
+
+####- Removed the default descriptions from science packs so that the mod descriptions would apply.
 
 ## Bug fixes
 
 - Fixed incorrect reporting of player weapons when you switch a vehicle weapon. 
-  * Note: Actually reading out the correct vehicle weapon has not been added yet.
+  * Note: Reading out the correct vehicle weapon has not been added yet.
+  
+- If the pipe to ground preview finds multiple successful underground connections, the closest one is now taken, which is the correct case.
 
 
 # Version 0.9.1 BETA
