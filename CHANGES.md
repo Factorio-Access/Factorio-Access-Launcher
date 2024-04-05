@@ -1,22 +1,16 @@
 # Version 0.10.0 BETA
-Not released yet.
+Released on April 6th, 2024.
 
-This update features a full rewrite of the mod tutorial to include new features. It also has small additions and changes to improve the early game or from community requests.
+This update features a full rewrite of the mod tutorial to include new chapters and details. It also has some small additions and changes to improve the early game or from community requests.
 
 ## New features
 
-- The tutorial has been rewritten, doubling in length.
+- The tutorial has been rewritten, doubling in length. The game should now be more accessible to new players.
   * There are now 12 chapters covering everything up to producing logistic science packs, and general tips chapter at the end.
   * There is a total of over 300 steps in total, with generally only 1 or 2 instructions per step.
   * Recently added features such as blueprints, cursor skipping, and steam engine snapping have been included.
-  * If had started the tutorial before this update, jumping back to its start is recommended so that you can reset to the new version and then skip doing the steps that you have already covered. You can jumping back to the start by pressing "ALT + SHIFT + H" a few times. 
-  
-- New launcher version, with the following additions and changes:
-  * Added a mod management menu. It has support for enabling and disabling other mods from the launcher so that you no longer need to delete a mod to remove it.
-  * Saving the game now plays beeps at the start and end of it, instead of speaking a message that interrupts other speech.
-  * The launcher now loads much faster.
-  * Fixed a bug so that a missing translation key returns English text instead of an error.
-
+  * If you had started the tutorial before this update, jumping back to its start is recommended so that you can reset to the new version and then skip doing the steps that you have already covered. You can jumping back to the start by pressing "ALT + SHIFT + H" a few times. 
+  * The tutorial needs further testing and will continue to receive minor tweaks. Experienced players are invited to give it a try as well for review purposes.
 
 - Added steam engine snapped building.
   * Press "CONTROL + LEFT BRACKET" with a steam engine in hand to try automatically building a correctly positioned steam engine next to the first free boiler found within 25 tiles.
@@ -24,8 +18,8 @@ This update features a full rewrite of the mod tutorial to include new features.
   * Does not snap to anything else.
   * You still need to clear the building area manually, inlcuding stepping out of the way.
 
-- You can now read the cursor position distance vector from the character position by pressing "ALT + K".
-  * This reports the vertical and horizontal distance separately, without giving an average compass direction.
+- You can now read the cursor position distance as a vector from the character position by pressing "ALT + K".
+  * This reports the vertical and horizontal distances separately, without giving an average compass direction.
   * This information is useful for building belts and pipes because you'll get the exact distances to cover since they cannot connect to each other diagonally.
 
 - A selected fluid in a building can now be permanently flushed away by pressing "X".
