@@ -5,12 +5,20 @@ This update features a full rewrite of the mod tutorial to include new features.
 
 ## New features
 
-####- The tutorial has been rewritten, doubling in length.
+- The tutorial has been rewritten, doubling in length.
   * There are now 12 chapters covering everything up to producing logistic science packs, and general tips chapter at the end.
   * There is a total of over 300 steps in total, with generally only 1 or 2 instructions per step.
   * Recently added features such as blueprints, cursor skipping, and steam engine snapping have been included.
+  * If had started the tutorial before this update, jumping back to its start is recommended so that you can reset to the new version and then skip doing the steps that you have already covered. You can jumping back to the start by pressing "ALT + SHIFT + H" a few times. 
+  
+- New launcher version, with the following additions and changes:
+  * Added a mod management menu. It has support for enabling and disabling other mods from the launcher so that you no longer need to delete a mod to remove it.
+  * Saving the game now plays beeps at the start and end of it, instead of speaking a message that interrupts other speech.
+  * The launcher now loads much faster.
+  * Fixed a bug so that a missing translation key returns English text instead of an error.
 
-####- Steam engine snapping added.
+
+- Added steam engine snapped building.
   * Press "CONTROL + LEFT BRACKET" with a steam engine in hand to try automatically building a correctly positioned steam engine next to the first free boiler found within 25 tiles.
   * Mainly added because when you first need steam engines in the first hours of the game you are still new to building.
   * Does not snap to anything else.
@@ -22,7 +30,7 @@ This update features a full rewrite of the mod tutorial to include new features.
 
 - A selected fluid in a building can now be permanently flushed away by pressing "X".
 
-####- The blueprint menu now has the option to reselect the blueprint area, while keeping its original name and descriptions and icons.
+- The blueprint menu now has the option to re-select the blueprint's area, while keeping its original name and descriptions and icons.
 
 ## Changes
 
@@ -53,7 +61,9 @@ This update features a full rewrite of the mod tutorial to include new features.
 
 - Checking the status of an enemy spawner now reveals the enemy evolution factor.
 
-####- Removed the default descriptions from science packs so that the mod descriptions would apply.
+- Tweaked names of curved rail and diagonal rail directions to improve clarity.
+
+- Removed the default descriptions from science packs and modules so that the mod's custom descriptions would apply.
 
 ## Bug fixes
 
@@ -61,6 +71,8 @@ This update features a full rewrite of the mod tutorial to include new features.
   * Note: Reading out the correct vehicle weapon has not been added yet.
   
 - If the pipe to ground preview finds multiple successful underground connections, the closest one is now taken, which is the correct case.
+
+- Fixed a localisation error for when you start crafting a recipe.
 
 
 # Version 0.9.1 BETA
