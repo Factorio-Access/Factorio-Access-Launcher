@@ -1,7 +1,7 @@
 # Version 0.10.0 BETA
 Released on April 6th, 2024.
 
-This update features a full rewrite of the mod tutorial to include new chapters and details. It also has some small additions and changes to improve the early game or from community requests.
+This update features a full rewrite of the mod tutorial to include new chapters and details. Please note that the new tutorial may need more tweaking despite being reviewed, so feel free to get in touch about issues or suggestions. The update also has some small additions and changes to improve the early game, and some changes originating from community feedback.
 
 ## New features
 
@@ -10,7 +10,7 @@ This update features a full rewrite of the mod tutorial to include new chapters 
   * There is a total of over 300 steps in total, with generally only 1 or 2 instructions per step.
   * Recently added features such as blueprints, cursor skipping, and steam engine snapping have been included.
   * If you had started the tutorial before this update, jumping back to its start is recommended so that you can reset to the new version and then skip doing the steps that you have already covered. You can jumping back to the start by pressing "ALT + SHIFT + H" a few times. 
-  * The tutorial needs further testing and will continue to receive minor tweaks. Experienced players are invited to give it a try as well for review purposes.
+  * The tutorial needs further testing and will continue to receive minor tweaks. Experienced players are invited to give it a try as well, for review assistance.
 
 - Added steam engine snapped building.
   * Press "CONTROL + LEFT BRACKET" with a steam engine in hand to try automatically building a correctly positioned steam engine next to the first free boiler found within 25 tiles.
