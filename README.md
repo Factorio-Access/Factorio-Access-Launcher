@@ -193,11 +193,15 @@ Start and end planner area selection: LEFT BRACKET
 
 Cancel selection: Q
 
-Open blueprint hand blueprint menu: RIGHT BRACKET
+Place blueprint in hand: LEFT BRACKET
 
-Open blueprint hand blueprint book menu: RIGHT BRACKET
+Open menu for blueprint in hand: RIGHT BRACKET
 
-Open blueprint hand blueprint book contents: LEFT BRACKET
+Open menu for blueprint book in hand: RIGHT BRACKET
+
+Open contents for blueprint book in hand: LEFT BRACKET
+
+Copy into hand a blueprint from the book menu: LEFT BRACKET
 
 ## Inventory
 
