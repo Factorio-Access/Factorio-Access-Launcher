@@ -15,7 +15,7 @@
 #Mod Files
 !/mods/
 !/mods/mod-list.json
-!/mods/FactorioAccess/**
+/mods/FactorioAccess/**
 
 #Launcher
 !/main.py
