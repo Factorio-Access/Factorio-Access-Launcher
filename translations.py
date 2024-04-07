@@ -323,12 +323,12 @@ def check_config_locale():
             if config_key[-12:] == '-alternative':
                 continue
             found=False
-            for tcat, trans in t_to_check.items():            
+            for tcat, trans in t_to_check.items():
                 if config_key in trans:
                     found=True
                     break
             if not found:
-                for tcat, trans in translations.items():            
+                for tcat, trans in translations.items():
                     if config_key in trans:
                         cross_cats[cat][tcat]+=[(config_key,trans[config_key])]
                         found=True
@@ -390,7 +390,7 @@ def check_lang():
             import locale
             import fa_menu
             import sys
-            if  True:# getattr(sys, 'frozen', False) and sys.platform == "WIN":
+            if sys.platform == "WIN":
                 import ctypes
                 loc = locale.windows_locale[ ctypes.windll.kernel32.GetUserDefaultUILanguage() ]
             else:
