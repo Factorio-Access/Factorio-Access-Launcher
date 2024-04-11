@@ -16,7 +16,7 @@ else:
 
 MY_CONFIG_DIR = os.path.dirname(MY_BIN)    
 
-MAC="Darwin"
+MAC="darwin"
 WIN="win32"
 LIN="linux"
 
@@ -109,6 +109,8 @@ factorio_replacements={
     '__PATH__executable__': os.path.dirname(BIN),
     '__PATH__system-read-data__': os.path.join(os.path.dirname(BIN),'..','..','data')
     }
+if sys.platform == MAC:
+    factorio_replacements['__PATH__system-read-data__'] = os.path.join(os.path.dirname(BIN),'..','data')
 
 def proccess(path):
     for k,v in factorio_replacements.items():

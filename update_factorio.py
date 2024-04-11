@@ -18,7 +18,7 @@ debug=False
 
 download_package_map = {
     "win32":"win64-manual",
-    "Darwin":"osx",
+    "darwin":"osx",
     "linux":"linux64"
     }
 download_package = download_package_map[platform]
