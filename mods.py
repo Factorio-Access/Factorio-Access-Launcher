@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 import json
 import re
 import zipfile
@@ -12,6 +13,37 @@ from fa_arg_parse import dprint
 from update_factorio import download, get_credentials,opener
 
 _mod_portal='https://mods.factorio.com'
+
+class mod_version(tuple):
+   def __new__(cls, version: str):
+      return super().__new__(cls,(int(n) for n in version.split('.')))
+   def __repr__(self) -> str:
+      return ".".join(str(n) for n in self)
+
+class dependancy(object):
+   __comp_map = {
+      '<':mod_version.__lt__,
+      '<=':mod_version.__le__,
+      '=':mod_version.__eq__,
+      '>=':mod_version.__ge__,
+      '>':mod_version.__gt__,
+      }
+   __re=re.compile(r'(!|\?|\(\?\)|~|)\s*(\S+)(?:\s*([><=]+)\s*(\d+\.\d+\.\d+))?')
+   def __init__(self,dep:str) -> None:
+      m=self.__re.fullmatch(dep)
+      if not m:
+         raise ValueError(f"Unmatched mod dependancy {dep}")
+      self.name = m[2]
+      self.type = m[1]
+      if m[4]:
+         self.comp = self.__comp_map[m[3]]
+         self.ver = mod_version(m[4])
+      else:
+         self.comp = None
+   def meets(self,other:mod_version):
+      if not self.comp:
+         return True
+      return self.comp(other,self.ver)
 
 class mod(object):
    def __init__(self,path:Union[zipfile.Path , pathlib.Path]) -> None:
@@ -28,11 +60,13 @@ class mod(object):
          self.info = json.load(fp)
       i=self.info
       self.name = i["name"]
-      self.version = i["version"]
-
+      self.version = mod_version(i["version"])
       re_name=f"{i['name']}(_{i['version']})?(.zip)?"
-      if not re.fullmatch(re_name,path.stem):
-         raise ValueError(f"mod path {path} does not match info {i['name']} init")
+      if not re.fullmatch(re_name,path.name):
+         raise ValueError(f"""Mod path mismatch:
+   mod path: {path}
+   name:{path.name}
+   re:{re_name}""")
    @staticmethod   
    def _iter_files_sub(parts:list[Union[str,re.Pattern]],path: Union[zipfile.Path , pathlib.Path]):
       if not path.exists():
@@ -52,6 +86,10 @@ class mod(object):
    def iterate_mods_files(self,parts:list[Union[str,re.Pattern]]):
       yield from self._iter_files_sub(parts,self.folder_path)
 
+   def get_dependencies(self):
+      deps= self.info['dependencies'] if 'dependencies' in self.info else []
+      return [dependancy(d) for d in deps]
+
 
 class __mod_manager(object):
    MOD_LIST_FILE = MODS.joinpath('mod-list.json')
@@ -66,7 +104,7 @@ class __mod_manager(object):
       self.dict = { m['name']:m for m in data['mods']}
       
       self.modified = False
-      self.by_name_version=defaultdict(dict)
+      self.by_name_version:defaultdict[str,dict[mod_version,mod]]=defaultdict(dict)
       self.allmods:list[mod] = []
       for mod_path in self._iterate_over_all_mod_paths():
          self.add_mod(mod_path)
@@ -101,16 +139,54 @@ class __mod_manager(object):
       self.dict[name]['version']=version
       self.modified = True
 
-   def install_mod(self,name,version=''):
-      with opener.open(f"{_mod_portal}/api/mods/{name}") as fp:
-         info=json.load(fp)         
-      for r in info['releases']:
-         if r['version'] == version:
-            release=r
-            break
-      else:
-         release=info['releases'][-1]
-      self.download_mod(release)
+   def check_dep(self, dep:dependancy,do_optional=False):
+      if dep.type=='!':
+         if dep.name in self.dict:
+            return not self.dict[dep.name]['enabled']
+         return True
+      if dep.name in self.dict:
+         current=self.dict[dep.name]
+         if 'version' in current:
+            current_ver=mod_version(current['version'])
+         else:
+            current_ver=max(self.by_name_version[dep.name])
+         return dep.meets(current_ver)
+      if dep.type == '(?)' or (dep.type == '?'  and not do_optional):
+         return True
+      return False
+   
+   def force_dep(self, dep:dependancy,do_optional=False):
+      if dep.type=='!':
+         if dep.name in self.dict:
+            self.dict[dep.name]['enabled']=False
+         return True
+      if dep.name in self.dict:
+         current=self.dict[dep.name]
+         if 'version' in current:
+            current_ver=mod_version(current['version'])
+         else:
+            current_ver=max(self.by_name_version[dep.name])
+         if dep.meets(current_ver):
+            return True
+         ops = [ver for ver in self.by_name_version[dep.name] if dep.meets(ver)]
+         if ops:
+            current['enabled']=True
+            current['version']=str(ops[-1])
+            return True
+         if dep.type == '(?)' or (dep.type == '?'  and not do_optional):
+            self.dict[dep.name]['enabled']=False
+            return True
+      if dep.type == '(?)' or (dep.type == '?'  and not do_optional):
+         return True
+      return self.install_mod(dep)
+
+   def install_mod(self,dep:dependancy):
+      with opener.open(f"{_mod_portal}/api/mods/{dep.name}") as fp:
+         info=json.load(fp)
+      ops = [r for r in info['releases'] if dep.meets(mod_version(r['version']))]
+      if not ops:
+         raise ValueError(f"No mods on portal matching dependency:{dep}")
+      self.download_mod(ops[-1])
       
    def download_mod(self,release):
       cred=get_credentials()
@@ -150,8 +226,7 @@ class __mod_manager(object):
          path = path.parent
       return tuple(parts[::-1])
    def _iterate_over_all_mod_paths(self) -> Iterator[pathlib.Path]:
-      for base_core in ['core','base']:
-         yield READ_DIR.joinpath(base_core)
+      yield READ_DIR.joinpath('base')
       yield from MODS.iterdir()
    
    def iter_mods(self,require_enabled=True,mod_filter:re.Pattern =None) -> Iterator[mod]:
@@ -174,7 +249,7 @@ mod_manager=__mod_manager()
 
 
 if __name__ == "__main__":
+   print(dependancy('! stop >= 3.4.5').meets(mod_version('3.4.5')))
    with mod_manager:
       pass
-      #mod_manager.install_mod('stop-on-red')
-      
+          

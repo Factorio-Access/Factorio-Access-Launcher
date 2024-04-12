@@ -6,9 +6,9 @@ from translations import translate,localised_str,tprint
 import fa_paths
 from fa_arg_parse import args
 
-def getAffirmation():
+def getAffirmation(prompt=""):
     while True:
-        i = input()
+        i = input(translate(prompt))
         if i == 'yes' or i == 'Yes' or i == 'YES' or i == 'y' or i == 'Y':
             return True
         elif i == 'no' or i == 'No' or i == 'n' or i == 'N' or i == 'NO':
