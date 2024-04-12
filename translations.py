@@ -390,7 +390,7 @@ def check_lang():
             import locale
             import fa_menu
             import sys
-            if sys.platform == "WIN":
+            if sys.platform == "win32":
                 import ctypes
                 loc = locale.windows_locale[ ctypes.windll.kernel32.GetUserDefaultUILanguage() ]
             else:
