@@ -118,7 +118,7 @@ with open('tutorial.md', 'w') as md_file:
             if step_num == '1' and kind == 'header':
                 md_file.write(f"## {value}\n\n")
             elif kind == 'header':
-                md_file.write(f"### {value}\n\n")
+                md_file.write("### " + step_num + f": {value}\n\n")
             elif kind == 'detail' and step_num != '1':
                 # detail of first step is same as chapter header so do not repeat that
                 # Replace the control names with corresponding keyboard commands
