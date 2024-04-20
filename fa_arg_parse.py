@@ -9,6 +9,7 @@ parser=argparse.ArgumentParser(prog="Factorio Access Launcher",prefix_chars='-+'
 fa=parser.add_argument_group(title="FacotrioAccess",description="Arguments meant just for the launcher. These will not be passed along to Factorio")
 
 fa.add_argument('--fa-debug',action="store_true",help='This will print debugging information intervleaved with the launcher. This includes factorio output which can be quite verbose')
+fa.add_argument('--fa-stdout-bytes',action="store_true",help='This will print the facotrio output as bytes')
 
 used=parser.add_argument_group(title="Dual Use",description="Arguments that are passed to factorio and also modify the launcher behavior")
 

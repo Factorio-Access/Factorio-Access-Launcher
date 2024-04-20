@@ -4,6 +4,7 @@ import time
 import json
 import re
 import os
+import sys
 from pathlib import Path
 
 import accessible_output2.outputs.auto
@@ -61,9 +62,14 @@ re_player_join_game = re.compile(r'PlayerJoinGame .*?playerIndex\((\d+)\)')
 def process_game_stdout(stdout,announce_press_e,tweak_modified):
     player_index=""
     restarting=False
-    for bline in iter(stdout.readline, b''):
-        dprint(bline)
+    for bline in stdout:
         line:str = bline.decode('utf-8').rstrip('\r\n')
+        if args.fa_debug:
+            if args.fa_stdout_bytes:
+                print(bline)
+            else:
+                sys.stdout.buffer.write(bline)
+                sys.stdout.buffer.flush()
         parts = line.split(' ',1)
         if len(parts)==2:
             if parts[0] in player_specific_commands:
@@ -125,7 +131,7 @@ def launch_with_params(params,announce_press_e=False,save_rename=True,tweak_modi
     params = launch_args + params
     try:
         print("Launching")
-        proc = subprocess.Popen(params , stdout=subprocess.PIPE)
+        proc = subprocess.Popen(params , stdout=subprocess.PIPE,stdin=sys.stdin.buffer)
         threading.Thread(target=process_game_stdout, args=(proc.stdout,announce_press_e,tweak_modified), daemon=True).start()
         proc.wait()
     except Exception as e:
