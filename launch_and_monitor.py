@@ -5,6 +5,7 @@ import json
 import re
 import os
 import sys
+import io
 from pathlib import Path
 
 import accessible_output2.outputs.auto
@@ -59,11 +60,19 @@ global_commands = {
 re_save_started=re.compile(r"Saving to _autosave\w* \(blocking\).")
 re_player_join_game = re.compile(r'PlayerJoinGame .*?playerIndex\((\d+)\)')
 
-def process_game_stdout(stdout,announce_press_e,tweak_modified):
+def process_game_stdout(stdout:io.BytesIO,announce_press_e,tweak_modified):
     player_index=""
     restarting=False
     for bline in stdout:
-        line:str = bline.decode('utf-8').rstrip('\r\n')
+        if bline.startswith(b'\xEF\xB7'):
+            sys.stdout.buffer.write(bline)
+            sys.stdout.buffer.flush()
+            continue
+        try:
+            line:str = bline.decode('utf-8').rstrip('\r\n')
+        except UnicodeDecodeError as e:
+            print(bline)
+            raise e
         if args.fa_debug:
             if args.fa_stdout_bytes:
                 print(bline)
