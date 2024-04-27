@@ -14,7 +14,7 @@ if getattr(sys, 'frozen', False):
 else:
     MY_BIN = main_file
 
-MY_CONFIG_DIR = os.path.dirname(MY_BIN)    
+MY_CONFIG_DIR = Path(MY_BIN).parent   
 
 MAC="darwin"
 WIN="win32"
@@ -51,51 +51,55 @@ if steam:
     steam_write_folder = steam_write_folder.absolute()
     dprint(steam_write_folder)
 
+_check_end='factorio'
+if sys.platform == WIN:
+    _check_end+='.exe'
 
-BIN=''
-if args.bin:
-    check_end='factorio.exe' if sys.platform == WIN else 'factorio'
-    for arg in launch_args:
-        if arg.endswith(check_end):
-            if os.path.isfile(arg):
-                BIN=arg
+BIN=MY_CONFIG_DIR.joinpath(_check_end)
+if not BIN.is_file():
+    if args.bin:
+        for arg in launch_args:
+            if arg.endswith(_check_end):
+                if os.path.isfile(arg):
+                    BIN=arg
+                    break
+        if not BIN:
+            print('It looks like a command line option was given to launch factorio, but we couldn\'t figure out where factorio is located. Please add the --executable-path option with the location of the facotrio binary to be launched')
+            input("press enter to exit...")
+            raise SystemExit
+    else:
+        exe_map = {
+            WIN:[
+                "./bin/x64/factorio.exe",
+                r"%ProgramFiles%\Factorio\bin\x64\factorio.exe",
+                r'%ProgramFiles(x86)%\Steam\steamapps\common\Factorio\bin\x64\factorio.exe'
+                ],
+            MAC:[
+                "/Applications/factorio.app/Contents/MacOS/factorio",
+                '~/Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/MacOS/factorio'
+                ],
+            LIN:[
+                "./bin/x64/factorio",
+                r'~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio',
+                r'~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio'
+                ]
+            }
+        for path in exe_map[sys.platform]:
+            path=os.path.expanduser(os.path.expandvars(path))
+            if os.path.isfile(path):
+                BIN = os.path.abspath(path)
                 break
-    if not BIN:
-        print('It looks like a command line option was given to launch factorio, but we couldn\'t figure out where factorio is located. Please add the --executable-path option with the location of the facotrio binary to be launched')
-        input("press enter to exit...")
-        raise SystemExit
-else:
-    exe_map = {
-        WIN:[
-            "./bin/x64/factorio.exe",
-            r"%ProgramFiles%\Factorio\bin\x64\factorio.exe",
-            r'%ProgramFiles(x86)%\Steam\steamapps\common\Factorio\bin\x64\factorio.exe'
-            ],
-        MAC:[
-            "/Applications/factorio.app/Contents/MacOS/factorio",
-            '~/Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/MacOS/factorio'
-            ],
-        LIN:[
-            "./bin/x64/factorio",
-            r'~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio',
-            r'~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio'
-            ]
-        }
-    for path in exe_map[sys.platform]:
-        path=os.path.expanduser(os.path.expandvars(path))
-        if os.path.isfile(path):
-            BIN = os.path.abspath(path)
-            break
-        dprint(f"checked:{path}")
+            dprint(f"checked:{path}")
+        else:
+            input("Could not find factorio. If you've installed factorio in a standard way please contact the mod developers with your system details. If you're using the protable version please either place this launcher in the folder with the data and bin folders or launch with the factorio execuable path as an argument.")
+            raise SystemExit
     if BIN.find('steam') >= 0 and not steam:
         print("Looks like you have a steam installed version of factorio, but didn't launch this launcher through steam. Please launch through steam after updating it's command line parameters to the following:")
         print('"' + os.path.abspath(MY_BIN) + '" %command%')
         input("press enter to exit")
         raise SystemExit
-    launch_args.insert(0,BIN)
-if not BIN:
-    input("Could not find factorio. If you've installed factorio in a standard way please contact the mod developers with your system details. If you're using the protable version please either place this launcher in the folder with the data and bin folders or launch with the factorio execuable path as an argument.")
-    raise SystemExit
+launch_args.insert(0,BIN)
+    
 _FACTORIO_VERSION_output = subprocess.check_output([BIN,'--version']).decode()
 _factorio_version_match = re.search(r'Version: (\d+\.\d+.\d+)', _FACTORIO_VERSION_output)
 if not _factorio_version_match:
@@ -130,7 +134,7 @@ if args.config:
 else:
 
     config_path='config/config.ini'
-    configs=[os.path.join(MY_CONFIG_DIR,config_path)]
+    configs=[MY_CONFIG_DIR.joinpath(config_path)]
     #try to append another config path from config-path.cfg
     try:
         fp=open(proccess('__PATH__executable__/../../config-path.cfg'),encoding='utf8')
