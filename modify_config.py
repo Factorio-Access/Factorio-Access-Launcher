@@ -40,6 +40,8 @@ def get_all_changes(after='AA'):
         version=cfg_path.name[:2]
         if version <= after:
             continue
+        if not re.fullmatch('[A-Z]{2}',version):
+            raise ValueError("configureation change sets must begin with the next two capital letters")
         with cfg_path.open(encoding='utf8') as fp:
             all_changes[version]=get_changes_from_fp(fp)
     return all_changes
@@ -52,6 +54,8 @@ def do_config_check():
                 current+=config.current_conf.get_setting('controls',f'access-config-version{i}-DO-NOT-EDIT')
         except config.Config_Missing:
             current='AA'
+        if current=="Co":
+            current='AE' #to correct for an issue with a config file being baddly named.
         change_sets=get_all_changes(after=current)
         if not change_sets:
             return
