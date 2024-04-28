@@ -1,33 +1,24 @@
-*
-!*/
-# Git essentials
-!.gitignore
-!.gitattributes
-!/LICENSE
-
-#Documentation
-!/README.md
-!/CHANGES.md
-
-!*.py
+/build/**
 /venv/**
+/__pycache__/**
+.VSCodeCounter/**
+/dist/**
+*.spec
+launcher.exe
 
 #Mod Files
-!/mods/
-!/mods/mod-list.json
-/mods/FactorioAccess/**
+/mods/**
 
-#Launcher
-!/main.py
-!/main.spec
-
-#Jaws File
-!/Factorio.jkm
-
-#web
-!/web/**
-
-!/r/**
-
-.vscode/
-mods/FactorioAccess/FA.lnk
+#facotrio files
+*.dat
+/saves/**
+.lock
+*.log
+player-data.json
+server-adminlist.json
+server-id.json
+server-whitelist.json
+config.ini
+scenarios/**
+script-output/**
+temp/**
