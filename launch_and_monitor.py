@@ -17,6 +17,8 @@ from fa_arg_parse import launch_args, args, dprint
 from save_management import save_game_rename
 from translations import translate
 
+multi_line_buffer_end = "fa-end-multi-line"
+
 gui.FAILSAFE = False
 
 ao_output = accessible_output2.outputs.auto.Auto()
@@ -40,6 +42,14 @@ def translate_key_name(m: re.Match):
     return translate(("?", ("control-keys." + key,), m[0]))
 
 
+multi_line_buffer: list[str] = []
+
+
+def start_multi_line_buffer(first_line):
+    global multi_line_buffer
+    multi_line_buffer = [first_line]
+
+
 def speak_interuptible_text(text):
     text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
@@ -61,6 +71,7 @@ def set_player_list(jsons):
 
 
 player_specific_commands = {
+    "fa-out-multi": start_multi_line_buffer,
     "out": speak_interuptible_text,
     "setCursor": setCursor,
 }
@@ -73,6 +84,7 @@ re_player_join_game = re.compile(r"PlayerJoinGame .*?playerIndex\((\d+)\)")
 
 
 def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
+    global multi_line_buffer
     player_index = ""
     restarting = False
     for bline in stdout:
@@ -91,6 +103,13 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             else:
                 sys.stdout.buffer.write(bline)
                 sys.stdout.buffer.flush()
+        if multi_line_buffer:
+            if line == multi_line_buffer_end:
+                speak_interuptible_text("\n".join(multi_line_buffer))
+                multi_line_buffer = []
+            else:
+                multi_line_buffer.append(line)
+            continue
         parts = line.split(" ", 1)
         if len(parts) == 2:
             if parts[0] in player_specific_commands:
