@@ -62,7 +62,7 @@ if not BIN.is_file():
     BIN = None
     if args.bin:
         for arg in launch_args:
-            if arg.endswith(_check_end):
+            if arg.lower().endswith(_check_end):
                 if os.path.isfile(arg):
                     BIN = arg
                     break

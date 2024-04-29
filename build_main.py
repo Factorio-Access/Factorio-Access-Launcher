@@ -38,7 +38,7 @@ if not os.path.isdir("./" + venv):
 if sys.platform == "linux":
     hidden_imports += linux_hidden_modules
 
-
+locale_copy_error = None
 try:
     p = Path("./mods/FactorioAccess/locale")
     base = Path("./r/locale")
@@ -50,10 +50,8 @@ try:
             continue
         dest = base.joinpath(loc.name + ".cfg")
         shutil.copyfile(file_to_copy, dest)
-
 except Exception as e:
-    print(e)
-    input("WARNING: failed to copy locale files")
+    locale_copy_error = e
 
 if os.path.isfile("launcher.spec"):
     os.system(venv_python + " -m PyInstaller launcher.spec")
@@ -68,3 +66,6 @@ else:
         + ' main.py -n launcher --add-data="./r:./r"'
         + ex
     )
+if locale_copy_error:
+    print(locale_copy_error)
+    print("WARNING: failed to copy locale files")
