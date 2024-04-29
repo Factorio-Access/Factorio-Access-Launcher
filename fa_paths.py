@@ -59,6 +59,7 @@ if sys.platform == WIN:
 
 BIN = MY_CONFIG_DIR.joinpath(_check_end)
 if not BIN.is_file():
+    BIN = None
     if args.bin:
         for arg in launch_args:
             if arg.endswith(_check_end):
@@ -99,7 +100,7 @@ if not BIN.is_file():
                 "Could not find factorio. If you've installed factorio in a standard way please contact the mod developers with your system details. If you're using the protable version please either place this launcher in the folder with the data and bin folders or launch with the factorio execuable path as an argument."
             )
             raise SystemExit
-    if BIN.find("steam") >= 0 and not steam:
+    if str(BIN).find("steam") >= 0 and not steam:
         print(
             "Looks like you have a steam installed version of factorio, but didn't launch this launcher through steam. Please launch through steam after updating it's command line parameters to the following:"
         )

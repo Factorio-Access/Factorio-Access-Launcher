@@ -20,7 +20,7 @@ from translations import translate
 gui.FAILSAFE = False
 
 ao_output = accessible_output2.outputs.auto.Auto()
-ao_output.output("Hello Factorio!", False)
+ao_output.output("Hello Factorio!", interrupt=False)
 
 
 start_saving = str(Path(__file__).parent.joinpath("r", "shh.wav"))
@@ -44,7 +44,7 @@ def speak_interuptible_text(text):
     text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
     dprint(text)
-    ao_output.output(text, True)
+    ao_output.output(text, interrupt=True)
 
 
 def setCursor(coordstring):
@@ -128,7 +128,7 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             tweak_modified = None
         elif announce_press_e and line.endswith("Factorio initialised"):
             announce_press_e = False
-            ao_output.output("Press e to continue", True)
+            ao_output.output("Press e to continue", interrupt=True)
 
 
 def just_launch():
@@ -176,6 +176,6 @@ def launch_with_params(
 
 
 def time_to_exit():
-    ao_output.output("Goodbye Factorio", False)
+    ao_output.output("Goodbye Factorio", interrupt=False)
     time.sleep(1.5)
     raise SystemExit
