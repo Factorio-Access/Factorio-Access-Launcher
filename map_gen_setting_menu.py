@@ -118,16 +118,13 @@ data = {}
 
 def refresh_data():
     global data
+    data_loc = fa_paths.SCRIPT_OUTPUT.joinpath("data-raw-dump.json")
     try:
-        with open(
-            fa_paths.SCRIPT_OUTPUT.joinpath("data-raw-dump.json"), encoding="utf8"
-        ) as fp:
+        with data_loc.open(encoding="utf8") as fp:
             data = json.load(fp)
     except FileNotFoundError:
         launch_with_params(["--dump-data"], save_rename=False)
-        with open(
-            fa_paths.SCRIPT_OUTPUT.joinpath("data-raw-dump.json"), encoding="utf8"
-        ) as fp:
+        with data_loc.open(encoding="utf8") as fp:
             data = json.load(fp)
 
 

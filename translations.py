@@ -182,7 +182,7 @@ class translated_args(dict):
         return self[key]
 
 
-def expand(template: str, args: list[localised_str] = []):
+def expand(template: str, args: list[localised_str] = []) -> str:
     parts = template.split("__")
     return expand_r(parts, translated_args(args))
 
@@ -205,6 +205,7 @@ def expand_r(parts: list[str], targs: translated_args, in_plural=False):
             matched = False
             while remaining:
                 condition, remaining = remaining.split("=", 1)
+                assert type(remaining) == str
                 parts.insert(0, remaining)
                 temp_res, remaining = expand_r(parts, targs, True)
                 if not matched:
