@@ -5,63 +5,10 @@ import urllib.parse
 from pathlib import Path, PurePath
 from typing import Union
 import html
-from html.parser import HTMLParser
-import io
-import sys
 import re
 
 
 from translations import translate, check_lang
-
-
-class MyHTMLParser(HTMLParser):
-    def __init__(self, out: io.StringIO, *args) -> None:
-        self.output_buf = out
-        super().__init__(*args, convert_charrefs=False)
-
-    # Overridable -- finish processing of start+end tag: <tag.../>
-    def handle_startendtag(self, tag, attrs):
-        self.output_buf.write(tag)
-
-    # Overridable -- handle start tag
-    def handle_starttag(self, tag, attrs):
-        self.output_buf.write(f"<{tag}{attrs}")
-
-    # Overridable -- handle end tag
-    def handle_endtag(self, tag):
-        self.output_buf.write(tag)
-
-    # Overridable -- handle character reference
-    def handle_charref(self, name):
-        self.output_buf.write(name)
-
-    # Overridable -- handle entity reference
-    def handle_entityref(self, name):
-        self.output_buf.write(name)
-
-    # Overridable -- handle data
-    def handle_data(self, data):
-        try:
-            localised_str = json.loads(data)
-        except:
-            localised_str = data
-        else:
-            localised_str = translate(localised_str)
-        self.output_buf.write(localised_str)
-
-    # Overridable -- handle comment
-    def handle_comment(self, data):
-        pass
-
-    # Overridable -- handle declaration
-    def handle_decl(self, decl):
-        self.output_buf.write(f"<!{decl}>")
-
-    # Overridable -- handle processing instruction
-    def handle_pi(self, data):
-        raise ValueError("Can't handle processing instruction")
-
-        print("Encountered some data  :", data)
 
 
 _root = Path(__file__).parent.joinpath("web", "web_root").resolve()
@@ -76,11 +23,8 @@ def translate_json(m: re.Match[bytes]) -> bytes:
     return (">" + html.escape(translate(loc_str)) + "<").encode()
 
 
-class FA_handler(http.server.SimpleHTTPRequestHandler):
+class FA_handler(http.server.BaseHTTPRequestHandler):
     resp = json.dumps({"test": "woot"}).encode("utf8")
-
-    def __init__(self, request, client_address, server) -> None:
-        super().__init__(request, client_address, server, directory=_root)
 
     ext_map = {
         ".html": "text/html; charset=UTF-8",
