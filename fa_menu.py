@@ -42,7 +42,7 @@ def getNum():
 def select_option(options, prompt="Select an option:", one_indexed=True):
     pre_prompt = None
     while True:
-        print("\033c", end="")
+        # print("\033c", end="")
         if pre_prompt:
             tprint(pre_prompt)
         tprint(prompt)
