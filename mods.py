@@ -32,7 +32,7 @@ class mod(object):
         self.version = i["version"]
 
         re_name = f"{i['name']}(_{i['version']})?(.zip)?"
-        if not re.fullmatch(re_name, path.stem):
+        if not re.fullmatch(re_name, path.name):
             raise ValueError(f"mod path {path} does not match info {i['name']} init")
 
     @staticmethod
