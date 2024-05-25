@@ -31,6 +31,7 @@ class FA_handler(http.server.BaseHTTPRequestHandler):
         ".js": "text/javascript; charset=UTF-8",
         ".css": "text/css; charset=UTF-8",
         ".ico": "image/vnd.microsoft.icon",
+        ".woff": "font/woff",
     }
 
     def send_file(self, path: Path):
