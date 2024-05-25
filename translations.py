@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 import json
 
-from fa_arg_parse import dprint
+from fa_arg_parse import d_print
 import config
 
 localised_str = Union[str, Iterator["localised_str"]]
@@ -418,7 +418,7 @@ def get_langs():
     return lang
 
 
-def tprint(*args, **kargs):
+def t_print(*args, **kargs):
     print(*(translate(arg) for arg in args), **kargs)
 
 
@@ -462,7 +462,7 @@ def check_lang():
                         config.general.locale = code
                         return
                 else:
-                    dprint("We got a short list for langs", short_list)
+                    d_print("We got a short list for langs", short_list)
             lang_op = fa_menu.select_option(
                 langs.values(), ("gui-interface-settings.locale",)
             )

@@ -2,7 +2,7 @@ from typing import Any, Callable
 import re
 import weakref
 
-from translations import translate, localised_str, tprint
+from translations import translate, localised_str, t_print
 import fa_paths
 from fa_arg_parse import args
 
@@ -44,10 +44,10 @@ def select_option(options, prompt="Select an option:", one_indexed=True):
     while True:
         # print("\033c", end="")
         if pre_prompt:
-            tprint(pre_prompt)
-        tprint(prompt)
+            t_print(pre_prompt)
+        t_print(prompt)
         for i, val in enumerate(options):
-            tprint(f"{i + one_indexed}:", val)
+            t_print(f"{i + one_indexed}:", val)
         i = input()
         if not i.isdigit():
             if i == "debug":
@@ -200,7 +200,7 @@ back_menu_item = menu_item(("gui.cancel",), back_func, False)
 
 
 class setting_menu(menu_item):
-    __slots__ = ["myname", "desc", "default", "val", "submenu"]
+    __slots__ = ["my_name", "desc", "default", "val", "submenu"]
 
     def __init__(
         self,
@@ -209,14 +209,14 @@ class setting_menu(menu_item):
         default: Any = "",
         val: Any = "",
     ) -> None:
-        self.myname = name
+        self.my_name = name
         self.desc = desc
         self.default = default
         self.val = val
         # self.submenu = self.edit
 
     def name(self, *args):
-        return ("", self.myname, ":", self.val_to_string())
+        return ("", self.my_name, ":", self.val_to_string())
 
     def get_options(self):
         pass
@@ -229,8 +229,8 @@ class setting_menu(menu_item):
 
     def __call__(self, *args):
         while True:
-            tprint(self.get_header(*args))
-            tprint(("fa-l.current-setting", self.val_to_string()))
+            t_print(self.get_header(*args))
+            t_print(("fa-l.current-setting", self.val_to_string()))
             potential_val = input(translate(("fa-l.new-setting-prompt",)))
             if potential_val:
                 try:
@@ -297,7 +297,7 @@ class setting_menu_bool(setting_menu):
         )
 
     def name(self, *args):
-        ret = ("", self.myname, ":", self.val_to_string())
+        ret = ("", self.my_name, ":", self.val_to_string())
         if self.desc:
             ret = ret + (" ", self.desc)
         return ret
@@ -335,11 +335,11 @@ class setting_menu_options(setting_menu):
         super().__init__(name, desc, default, val)
         self.submenu = [
             (
-                subval
-                if isinstance(subval, setting_menu_option)
-                else setting_menu_option(subname, subval)
+                sub_val
+                if isinstance(sub_val, setting_menu_option)
+                else setting_menu_option(sub_name, sub_val)
             )
-            for subname, subval in submenu.items()
+            for sub_name, sub_val in submenu.items()
         ]
         for sub in self.submenu:
             sub.parent = weakref.ref(self)

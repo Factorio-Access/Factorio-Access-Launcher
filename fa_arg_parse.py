@@ -223,14 +223,14 @@ clean_args = [arg for arg in launch_args if arg != "--"]
 args, _ = parser.parse_known_args(clean_args)
 
 
-def dprint(*pargs, **kargs):
+def d_print(*pargs, **kargs):
     if args.fa_debug:
         print(*pargs, **kargs)
 
 
-dprint("We're debugging now :)")
-dprint(launch_args)
+d_print("We're debugging now :)")
+d_print(launch_args)
 if args.fa_debug:
     launch_args.remove("--fa-debug")
 
-dprint(args)
+d_print(args)

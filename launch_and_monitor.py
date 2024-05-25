@@ -13,7 +13,7 @@ import pyautogui as gui
 from playsound import playsound
 
 
-from fa_arg_parse import launch_args, args, dprint
+from fa_arg_parse import launch_args, args, d_print
 from save_management import save_game_rename
 from translations import translate
 
@@ -53,7 +53,7 @@ def start_multi_line_buffer(first_line):
 def speak_interuptible_text(text):
     text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
-    dprint(text)
+    d_print(text)
     ao_output.output(text, interrupt=True)
 
 
