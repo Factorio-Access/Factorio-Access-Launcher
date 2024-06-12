@@ -3,9 +3,11 @@ import json
 import re
 import zipfile
 import pathlib
-from urllib import parse
+from urllib import parse, error
 from collections import defaultdict
-from typing import Iterator, Union
+from typing import Iterator, Union, TypedDict
+from enum import StrEnum
+from functools import total_ordering
 
 import config
 from fa_paths import MODS, READ_DIR, FACTORIO_VERSION
@@ -15,79 +17,192 @@ from update_factorio import download, get_credentials, opener
 _mod_portal = "https://mods.factorio.com"
 
 
+class info_json(TypedDict):
+    name: str
+    version: str
+    dependencies: list[str]
+
+
+class Release(TypedDict):
+    download_url: str  # 	Path to download for a mod. starts with "/download" and does not include a full url. See #Downloading Mods
+    file_name: str  # 	The file name of the release. Always seems to follow the pattern "{name}_{version}.zip"
+    info_json: info_json  # A copy of the mod's info.json file, only contains factorio_version in short version, also contains an array of dependencies in full version
+    released_at: str  # 	String(ISO 8601)	ISO 8601 for when the mod was released.
+    version: (
+        str  # g	The version string of this mod release. Used to determine dependencies.
+    )
+    sha1: str  # 	String	The sha1 key for the file
+
+
+class PortalResult(TypedDict):
+    downloads_count: int  # Number of downloads.
+    name: str  # The mod's machine-readable ID string.
+    owner: str  # The Factorio username of the mod's author.
+    releases: list[
+        Release
+    ]  # A list of different versions of the mod available for download. See #Releases. *Only when using namelist parameter.
+    summary: str  # A shorter mod description.
+    title: str  # The mod's human-readable name.
+
+
+class Pagination(TypedDict):
+    count: int  # Total number of mods that match your specified filters.
+    links: dict  # Utility links to mod portal api requests, preserving all filters and search queries.
+    page: int  # The current page number.
+    page_count: int  # The total number of pages returned.
+    page_size: int  # The number of results per page.
+
+
+class PortalListResult(TypedDict):
+    pagination: Pagination
+    results: list[PortalResult]
+
+
 class mod_version(tuple):
     def __new__(cls, version: str):
-        return super().__new__(cls, (int(n) for n in version.split(".")))
+        ver = [0, 0, 0]
+        for i, val in enumerate(version.split(".", 2)):
+            ver[i] = int(val)
+        return super().__new__(cls, ver)
 
     def __repr__(self) -> str:
         return ".".join(str(n) for n in self)
 
 
-class dependency(object):
+class DependencyVersionRequirement(object):
     __comp_map = {
         "<": mod_version.__lt__,
         "<=": mod_version.__le__,
-        "=": mod_version.__eq__,
         ">=": mod_version.__ge__,
         ">": mod_version.__gt__,
+        "=": mod_version.__eq__,
+        "": lambda other_ver, self_ver: True,
+        "!": lambda other_ver, self_ver: False,
     }
-    __re = re.compile(r"(!|\?|\(\?\)|~|)\s*(\S+)(?:\s*([><=]+)\s*(\d+\.\d+\.\d+))?")
 
-    def __init__(self, dep: str) -> None:
+    __comp_index = {op: i for i, op in enumerate(__comp_map)}
+
+    def __init__(self, comp="", ver="0") -> None:
+        self.comp_o = self.__comp_index[comp]
+        self.comp = self.__comp_map[comp]
+        self.version = mod_version(ver)
+
+    def meets(self, other: mod_version):
+        return self.comp(other, self.version)
+
+    def combine_with(self, other):
+        if self.comp_o <= other.comp_o:
+            a, b = self, other
+        else:
+            b, a = other, self
+        if b.comp == self.__comp_map[""]:
+            return [a]
+        if b.comp == self.__comp_map["="]:
+            if a.meets(b.version):
+                return [b]
+            raise ValueError("Dependency Versions Mutually Exclusive", self, other)
+        if b.comp_o <= self.__comp_index["<="]:
+            if a.version <= b.version:
+                return [a]
+            else:
+                return [b]
+        if a.comp_o >= self.__comp_index[">="]:
+            if a.version >= b.version:
+                return [a]
+            else:
+                return [b]
+        if a.version < b.version:
+            raise ValueError("Dependency Versions Mutually Exclusive", self, other)
+        if a.version > b.version:
+            return [a, b]
+        if a.comp == self.__comp_map["<="] and b == self.__comp_map[">="]:
+            return DependencyVersionRequirement("=", str(a.version))
+        raise ValueError("Dependency Versions Mutually Exclusive", self, other)
+
+
+@total_ordering
+class DependencyType(StrEnum):
+    CONFLICT = "!"
+    HIDDEN_OPTIONAL = "(?)"
+    OPTIONAL = "?"
+    UNORDERED = "~"
+    NORMAL = ""
+
+    def __lt__(self, other):
+        return list(DependencyType).index(self) < list(DependencyType).index(self)
+
+    def __gt__(self, other):
+        return list(DependencyType).index(self) > list(DependencyType).index(self)
+
+    def __le__(self, other):
+        return list(DependencyType).index(self) <= list(DependencyType).index(self)
+
+    def __ge__(self, other):
+        return list(DependencyType).index(self) >= list(DependencyType).index(self)
+
+
+class dependency(object):
+    __types = "|".join([re.escape(t) for t in DependencyType])
+    __re = re.compile(rf"({__types})\s*(\S+)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?")
+
+    def __init__(self, dep: str = None) -> None:
+        if dep == None:
+            self.name = ""
+            self.type = DependencyType.NORMAL
+            self.comp = None
+            return
         m = self.__re.fullmatch(dep)
         if not m:
             raise ValueError(f"Unmatched mod dependency {dep}")
         self.name = m[2]
-        self.type = m[1]
+        self.type = DependencyType(m[1])
         if m[4]:
-            self.comp = self.__comp_map[m[3]]
-            self.ver = mod_version(m[4])
+            self.req = DependencyVersionRequirement(m[3], m[4])
         else:
-            self.comp = None
+            if self.type == "!":
+                self.req = DependencyVersionRequirement("!")
+            else:
+                self.req = DependencyVersionRequirement()
 
     def meets(self, other: mod_version):
-        if not self.comp:
-            return True
-        return self.comp(other, self.ver)
+        return self.req.meets(other)
 
-
-class mod_version(tuple):
-    def __new__(cls, version: str):
-        return super().__new__(cls, (int(n) for n in version.split(".")))
-
-    def __repr__(self) -> str:
-        return ".".join(str(n) for n in self)
-
-
-class dependency(object):
-    __comp_map = {
-        "<": mod_version.__lt__,
-        "<=": mod_version.__le__,
-        "=": mod_version.__eq__,
-        ">=": mod_version.__ge__,
-        ">": mod_version.__gt__,
-    }
-    __re = re.compile(r"(!|\?|\(\?\)|~|)\s*(\S+)(?:\s*([><=]+)\s*(\d+\.\d+\.\d+))?")
-
-    def __init__(self, dep: str) -> None:
-        m = self.__re.fullmatch(dep)
-        if not m:
-            raise ValueError(f"Unmatched mod dependency {dep}")
-        self.name = m[2]
-        self.type = m[1]
-        if m[4]:
-            self.comp = self.__comp_map[m[3]]
-            self.ver = mod_version(m[4])
-        else:
-            self.comp = None
-
-    def meets(self, other: mod_version):
-        if not self.comp:
-            return True
-        return self.comp(other, self.ver)
+    def __and__(self, other):
+        if self.name == "":
+            return other
+        if other.name == "":
+            return self
+        if self.name != other.name:
+            raise ValueError(
+                f"Mod names must match to combine {self.name}!={other.name}"
+            )
+        if self.type == DependencyType.CONFLICT:
+            if (
+                other.type == DependencyType.NORMAL
+                or other.type == DependencyType.UNORDERED
+            ):
+                raise ValueError(f"Dependencies incompatible", self, other)
+            return self
+        if other.type == DependencyType.CONFLICT:
+            if (
+                self.type == DependencyType.NORMAL
+                or self.type == DependencyType.UNORDERED
+            ):
+                raise ValueError(f"Dependencies incompatible", self, other)
+            return other
 
 
 class mod(object):
+    info: info_json
+
+    def __init__(self, info: info_json) -> None:
+        self.info = info
+        self.dependencies = [dependency(d) for d in info["dependencies"]]
+        self.version = mod_version(info["version"])
+        self.name = info["name"]
+
+
+class installed_mod(mod):
     def __init__(self, path: Union[zipfile.Path, pathlib.Path]) -> None:
         if path.is_file():
             if not zipfile.is_zipfile(path):
@@ -99,12 +214,9 @@ class mod(object):
         if not info_path.is_file():
             raise ValueError(f"no info file in {self.folder_path}; failed mod init")
         with info_path.open(encoding="utf8") as fp:
-            self.info = json.load(fp)
-        i = self.info
-        self.name = i["name"]
+            i: info_json = json.load(fp)
         if path.name == "core":
             i["version"] = FACTORIO_VERSION
-        self.version = mod_version(i["version"])
         re_name = f"{i['name']}(_{i['version']})?(.zip)?"
         if not re.fullmatch(re_name, path.name):
             raise ValueError(
@@ -113,6 +225,7 @@ class mod(object):
    name:{path.name}
    re:{re_name}"""
             )
+        super().__init__(i)
 
     @staticmethod
     def _iter_files_sub(
@@ -126,18 +239,24 @@ class mod(object):
             return
         part = parts[0]
         if isinstance(part, str):
-            yield from mod._iter_files_sub(parts[1:], path.joinpath(part))
+            yield from installed_mod._iter_files_sub(parts[1:], path.joinpath(part))
             return
         for path_part in path.iterdir():
             if part.fullmatch(path_part.name):
-                yield from mod._iter_files_sub(parts[1:], path_part)
+                yield from installed_mod._iter_files_sub(parts[1:], path_part)
 
     def iterate_mods_files(self, parts: list[Union[str, re.Pattern]]):
         yield from self._iter_files_sub(parts, self.folder_path)
 
-    def get_dependencies(self):
-        deps = self.info["dependencies"] if "dependencies" in self.info else []
-        return [dependency(d) for d in deps]
+
+class portal_mod(mod):
+    def __init__(self, release: Release) -> None:
+        super().__init__(release["info_json"])
+        self.release = release
+
+
+class UnresolvedModDependency(Exception):
+    pass
 
 
 class __mod_manager(object):
@@ -158,9 +277,8 @@ class __mod_manager(object):
         self.by_name_version: defaultdict[str, dict[mod_version, mod]] = defaultdict(
             dict
         )
-        self.all_mods: list[mod] = []
         for mod_path in self._iterate_over_all_mod_paths():
-            self.add_mod(mod_path)
+            self.add_installed_mod(mod_path)
 
         pre_size = len(self.dict)
         self.dict = {
@@ -194,8 +312,19 @@ class __mod_manager(object):
         self.dict[name]["version"] = version
         self.modified = True
 
+    def find_dep(self, dep: dependency):
+        if dep.type == DependencyType.CONFLICT:
+            return True
+        if dep.name not in self.by_name_version:
+            return False
+        vers = self.by_name_version[dep.name]
+        ops = [ver for ver in vers.keys() if dep.meets(ver)]
+        if ops:
+            return vers[max(ops)]
+        return False
+
     def check_dep(self, dep: dependency, do_optional=False):
-        if dep.type == "!":
+        if dep.type == DependencyType.CONFLICT:
             if dep.name in self.dict:
                 return not self.dict[dep.name]["enabled"]
             return True
@@ -237,7 +366,7 @@ class __mod_manager(object):
 
     def install_mod(self, dep: dependency):
         with opener.open(f"{_mod_portal}/api/mods/{dep.name}") as fp:
-            info = json.load(fp)
+            info: PortalResult = json.load(fp)
         ops = [r for r in info["releases"] if dep.meets(mod_version(r["version"]))]
         if not ops:
             raise ValueError(f"No mods on portal matching dependency:{dep}")
@@ -248,19 +377,77 @@ class __mod_manager(object):
         url = _mod_portal + release["download_url"] + "?" + parse.urlencode(cred)
         new_path = MODS.joinpath(release["file_name"])
         download(url, new_path)
-        self.add_mod(new_path)
+        self.add_installed_mod(new_path)
 
-    def add_mod(self, mod_path):
+    def add_installed_mod(self, mod_path):
         try:
-            m = mod(mod_path)
+            m = installed_mod(mod_path)
         except Exception as e:
             d_print(e)
             return
-        self.all_mods.append(m)
         self.by_name_version[m.name][m.version] = m  # TODO: check duplicates?
         if m.name not in self.dict and m.name != "core":
             self.dict[m.name] = {"name": m.name, "enabled": self.new_enabled}
             self.modified = True
+
+    def add_info_for_mods(self, mod_names: list[str]):
+        args = {"namelist": ",".join(mod_names)}
+        encoded_args = parse.urlencode(args)
+        with opener.open(f"{_mod_portal}/api/mods/?{encoded_args}") as fp:
+            info: PortalListResult = json.load(fp)
+        for r in info["results"]:
+            self.add_info_for_mod(r)
+
+    def add_info_for_mod(self, result: PortalResult):
+        for release in result["releases"]:
+            self.add_info_for_release(release)
+
+    def add_info_for_release(self, release: Release):
+        m = portal_mod(release)
+        self.by_name_version[m.name][m.version] = m
+
+    def collect_dependencies(self, mod: mod, already_collected: set[dependency] = None):
+        if already_collected == None:
+            already_collected = set()
+        new_dep = set(mod.dependencies)
+        new_dep -= already_collected
+
+    def expand_dependencies(self, deps: set[dependency]):
+        collected: set[dependency] = set()
+        progress = True
+        connection_issues = False
+        while progress:
+            expanding = deps
+            deps: set[dependency] = set()
+            progress = False
+            while expanding:
+                dep = expanding.pop()
+                if (
+                    dep.type == DependencyType.HIDDEN_OPTIONAL
+                    or dep.type == DependencyType.OPTIONAL
+                    or dep.type == DependencyType.CONFLICT
+                ):
+                    progress == True
+                    collected.add(dep)
+                    continue
+                m = self.find_dep(dep)
+                if m is False:
+                    deps.add(dep)
+                    continue
+                new_deps = set(m.dependencies)
+                new_deps -= collected
+                new_deps -= deps
+                expanding |= new_deps
+            if not deps:
+                break
+            self.add_info_for_mods([d.name for d in deps])
+        if deps:
+            raise UnresolvedModDependency(deps)
+        return collected
+
+    @classmethod
+    def combine_dependencies(self, deps):
+        all = defaultdict(dependency)
 
     fancy = re.compile(r"[*.?()\[\]]")
 
@@ -308,6 +495,18 @@ mod_manager = __mod_manager()
 
 
 if __name__ == "__main__":
+    test = [
+        DependencyType.CONFLICT,
+        DependencyType.HIDDEN_OPTIONAL,
+        DependencyType.CONFLICT,
+        DependencyType.NORMAL,
+    ]
+    s_test = list(sorted(test))
+    print(test, s_test)
+    test.sort(key=lambda x: list(DependencyType).index(x))
+    print(test)
+    print(DependencyType.NORMAL <= DependencyType.OPTIONAL)
+    print(list(DependencyType))
     print(dependency("! stop >= 3.4.5").meets(mod_version("3.4.5")))
     with mod_manager:
         pass
