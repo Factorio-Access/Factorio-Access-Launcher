@@ -7,7 +7,7 @@ from urllib import parse, error
 from collections import defaultdict
 from typing import Iterator, Union, TypedDict
 from enum import StrEnum
-from functools import total_ordering
+from functools import reduce
 
 import config
 from fa_paths import MODS, READ_DIR, FACTORIO_VERSION
@@ -40,7 +40,7 @@ class PortalResult(TypedDict):
     owner: str  # The Factorio username of the mod's author.
     releases: list[
         Release
-    ]  # A list of different versions of the mod available for download. See #Releases. *Only when using namelist parameter.
+    ]  # A list of different versions of the mod available for download.
     summary: str  # A shorter mod description.
     title: str  # The mod's human-readable name.
 
@@ -69,58 +69,10 @@ class mod_version(tuple):
         return ".".join(str(n) for n in self)
 
 
-class DependencyVersionRequirement(object):
-    __comp_map = {
-        "<": mod_version.__lt__,
-        "<=": mod_version.__le__,
-        ">=": mod_version.__ge__,
-        ">": mod_version.__gt__,
-        "=": mod_version.__eq__,
-        "": lambda other_ver, self_ver: True,
-        "!": lambda other_ver, self_ver: False,
-    }
-
-    __comp_index = {op: i for i, op in enumerate(__comp_map)}
-
-    def __init__(self, comp="", ver="0") -> None:
-        self.comp_o = self.__comp_index[comp]
-        self.comp = self.__comp_map[comp]
-        self.version = mod_version(ver)
-
-    def meets(self, other: mod_version):
-        return self.comp(other, self.version)
-
-    def combine_with(self, other):
-        if self.comp_o <= other.comp_o:
-            a, b = self, other
-        else:
-            b, a = other, self
-        if b.comp == self.__comp_map[""]:
-            return [a]
-        if b.comp == self.__comp_map["="]:
-            if a.meets(b.version):
-                return [b]
-            raise ValueError("Dependency Versions Mutually Exclusive", self, other)
-        if b.comp_o <= self.__comp_index["<="]:
-            if a.version <= b.version:
-                return [a]
-            else:
-                return [b]
-        if a.comp_o >= self.__comp_index[">="]:
-            if a.version >= b.version:
-                return [a]
-            else:
-                return [b]
-        if a.version < b.version:
-            raise ValueError("Dependency Versions Mutually Exclusive", self, other)
-        if a.version > b.version:
-            return [a, b]
-        if a.comp == self.__comp_map["<="] and b == self.__comp_map[">="]:
-            return DependencyVersionRequirement("=", str(a.version))
-        raise ValueError("Dependency Versions Mutually Exclusive", self, other)
+MIN_MOD_VERSION = mod_version("0")
+MAX_MOD_VERSION = mod_version("65535.65535.65535")
 
 
-@total_ordering
 class DependencyType(StrEnum):
     CONFLICT = "!"
     HIDDEN_OPTIONAL = "(?)"
@@ -129,67 +81,122 @@ class DependencyType(StrEnum):
     NORMAL = ""
 
     def __lt__(self, other):
-        return list(DependencyType).index(self) < list(DependencyType).index(self)
+        return list(DependencyType).index(self) < list(DependencyType).index(other)
 
     def __gt__(self, other):
-        return list(DependencyType).index(self) > list(DependencyType).index(self)
+        return list(DependencyType).index(self) > list(DependencyType).index(other)
 
     def __le__(self, other):
-        return list(DependencyType).index(self) <= list(DependencyType).index(self)
+        return list(DependencyType).index(self) <= list(DependencyType).index(other)
 
     def __ge__(self, other):
-        return list(DependencyType).index(self) >= list(DependencyType).index(self)
+        return list(DependencyType).index(self) >= list(DependencyType).index(other)
+
+
+ver_comp = tuple[mod_version, int]
+
+
+class IncompatibleDependencies(ValueError):
+    pass
 
 
 class dependency(object):
     __types = "|".join([re.escape(t) for t in DependencyType])
     __re = re.compile(rf"({__types})\s*(\S+)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?")
 
-    def __init__(self, dep: str = None) -> None:
-        if dep == None:
-            self.name = ""
-            self.type = DependencyType.NORMAL
-            self.comp = None
-            return
-        m = self.__re.fullmatch(dep)
+    def __init__(
+        self, type: DependencyType, name: str, min_ver: ver_comp, max_ver: ver_comp
+    ):
+        self.type = type
+        self.name = name
+        self.min = min_ver
+        self.max = max_ver
+
+    @classmethod
+    def from_str(cls, dep: str):
+        m = cls.__re.fullmatch(dep)
         if not m:
             raise ValueError(f"Unmatched mod dependency {dep}")
-        self.name = m[2]
-        self.type = DependencyType(m[1])
-        if m[4]:
-            self.req = DependencyVersionRequirement(m[3], m[4])
+        name = m[2]
+        type = DependencyType(m[1])
+        # the second values of the tuples allow for < and > to be handled with <= and >= so we don't need branching
+        min = (MIN_MOD_VERSION, 0)
+        max = (MAX_MOD_VERSION, 0)
+        if type == "!":
+            max = (MIN_MOD_VERSION, -1)
+        elif not m[4]:
+            pass
         else:
-            if self.type == "!":
-                self.req = DependencyVersionRequirement("!")
-            else:
-                self.req = DependencyVersionRequirement()
+            ver = mod_version(m[4])
+            match m[3]:
+                case "<":
+                    max = (ver, -1)
+                case "<=":
+                    max = (ver, 0)
+                case "<":
+                    min = (ver, 1)
+                case "<=":
+                    min = (ver, 0)
+                case "=":
+                    min = max = (ver, 0)
+        return cls(type, name, min, max)
 
     def meets(self, other: mod_version):
-        return self.req.meets(other)
+        return self.min <= (other, 0) <= self.max
 
-    def __and__(self, other):
-        if self.name == "":
-            return other
-        if other.name == "":
+    def __lt__(self, other):
+        order = list(DependencyType)
+        return order.index(self.type) < order.index(other.type)
+
+    def __add__(self, other):
+        if not other:
             return self
+        assert isinstance(other, dependency)
         if self.name != other.name:
-            raise ValueError(
-                f"Mod names must match to combine {self.name}!={other.name}"
-            )
-        if self.type == DependencyType.CONFLICT:
-            if (
-                other.type == DependencyType.NORMAL
-                or other.type == DependencyType.UNORDERED
-            ):
-                raise ValueError(f"Dependencies incompatible", self, other)
+            raise ValueError(f"Mod names must match {self.name}!={other.name}")
+        a, b = sorted([self, other])
+        if a.type == DependencyType.CONFLICT:
+            if b.type >= DependencyType.UNORDERED:
+                raise IncompatibleDependencies(
+                    f"Dependencies incompatible", self, other
+                )
+            return a
+        # at this point neither is a conflict
+        n_type = max(a.type, b.type)
+        n_min = max(a.min, b.min)
+        n_max = min(a.max, b.max)
+        if n_min < n_max:
+            if b.type <= DependencyType.OPTIONAL:
+                return dependency(
+                    DependencyType.CONFLICT,
+                    a.name,
+                    (MIN_MOD_VERSION, 0),
+                    (MIN_MOD_VERSION, -1),
+                )
+            raise IncompatibleDependencies(f"Dependencies incompatible", self, other)
+        return dependency(n_type, a.name, n_min, n_max)
+
+
+class Dependencies(dict):
+    def __init__(self, deps=None):
+        super().__init__(self)
+        if deps:
+            self += deps
+        pass
+
+    def __iadd__(self, deps):
+        if isinstance(deps, dependency):
+            if deps.name in self:
+                self[deps.name] += deps
+            else:
+                self[deps.name] = deps
             return self
-        if other.type == DependencyType.CONFLICT:
-            if (
-                self.type == DependencyType.NORMAL
-                or self.type == DependencyType.UNORDERED
-            ):
-                raise ValueError(f"Dependencies incompatible", self, other)
-            return other
+        if isinstance(deps, str):
+            self += dependency.from_str(deps)
+            return self
+        for dep in deps:
+            self += dep
+        return self
 
 
 class mod(object):
@@ -197,7 +204,7 @@ class mod(object):
 
     def __init__(self, info: info_json) -> None:
         self.info = info
-        self.dependencies = [dependency(d) for d in info["dependencies"]]
+        self.dependencies = Dependencies(info["dependencies"])
         self.version = mod_version(info["version"])
         self.name = info["name"]
 
@@ -406,12 +413,6 @@ class __mod_manager(object):
         m = portal_mod(release)
         self.by_name_version[m.name][m.version] = m
 
-    def collect_dependencies(self, mod: mod, already_collected: set[dependency] = None):
-        if already_collected == None:
-            already_collected = set()
-        new_dep = set(mod.dependencies)
-        new_dep -= already_collected
-
     def expand_dependencies(self, deps: set[dependency]):
         collected: set[dependency] = set()
         progress = True
@@ -422,11 +423,7 @@ class __mod_manager(object):
             progress = False
             while expanding:
                 dep = expanding.pop()
-                if (
-                    dep.type == DependencyType.HIDDEN_OPTIONAL
-                    or dep.type == DependencyType.OPTIONAL
-                    or dep.type == DependencyType.CONFLICT
-                ):
+                if dep.type <= DependencyType.OPTIONAL:
                     progress == True
                     collected.add(dep)
                     continue
@@ -443,11 +440,7 @@ class __mod_manager(object):
             self.add_info_for_mods([d.name for d in deps])
         if deps:
             raise UnresolvedModDependency(deps)
-        return collected
-
-    @classmethod
-    def combine_dependencies(self, deps):
-        all = defaultdict(dependency)
+        return Dependencies(collected)
 
     fancy = re.compile(r"[*.?()\[\]]")
 
@@ -507,6 +500,6 @@ if __name__ == "__main__":
     print(test)
     print(DependencyType.NORMAL <= DependencyType.OPTIONAL)
     print(list(DependencyType))
-    print(dependency("! stop >= 3.4.5").meets(mod_version("3.4.5")))
+    print(dependency.from_str("! stop >= 3.4.5").meets(mod_version("3.4.5")))
     with mod_manager:
         pass
