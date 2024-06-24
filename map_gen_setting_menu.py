@@ -3,7 +3,6 @@ from typing import Any, Callable
 import weakref
 
 import fa_paths
-import os
 import fa_menu
 from translations import localised_str
 from launch_and_monitor import launch_with_params, launch
@@ -136,7 +135,7 @@ for name, exp in data["noise-expression"].items():
     if "intended_property" in exp and exp["intended_property"] == "elevation":
         map_types[("noise-expression." + name,)] = name
 
-mgsj = {  # Map Gen Settings Json file
+mgs_json = {  # Map Gen Settings Json file
     "terrain_segmentation": menu_setting_inverse_float(
         ("gui-map-generator.scale",), ("gui-map-generator.terrain-scale-description",)
     ),
@@ -411,7 +410,7 @@ msj = {  # Map Settings Json
     "max_failed_behavior_count": 3,
 }
 
-json_files = {"basic_settings": mgsj, "advanced_settings": msj}
+json_files = {"basic_settings": mgs_json, "advanced_settings": msj}
 
 
 selected_preset = None
@@ -424,25 +423,25 @@ def get_presets(*args):
         for name, preset in preset_group.items():
             if name == "type" or name == "name":
                 continue
-            tname = ("map-gen-preset-name." + name,)
+            t_name = ("map-gen-preset-name." + name,)
             if args and args[-1] == preset:
-                return tname
+                return t_name
             preset["name"] = name
             presets.append(
-                (preset["order"] if "order" in preset else "", tname, preset)
+                (preset["order"] if "order" in preset else "", t_name, preset)
             )
     presets.sort()
     if selected_preset is None:
         select_preset(presets[0][2])
     for i, p in enumerate(presets):
         if p[2] == selected_preset:
-            tname = p[1]
+            t_name = p[1]
             if check_vals(p[2], json_files) > 0:
                 add = ("gui-map-generator.custom",)
             else:
                 add = ("fa-l.selected",)
-            tname = ("", tname, add)
-            presets[i] = (p[0], tname, p[2])
+            t_name = ("", t_name, add)
+            presets[i] = (p[0], t_name, p[2])
     return {p[1]: p[2] for p in presets}
 
 
@@ -474,9 +473,9 @@ class SettingEncoder(json.JSONEncoder):
 
 
 def launch_new(*args):
-    mgsp = fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json")
-    msp = fa_paths.SCRIPT_OUTPUT.joinpath("map.json")
-    files = {"basic_settings": mgsp, "advanced_settings": msp}
+    mgs_path = fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json")
+    ms_path = fa_paths.SCRIPT_OUTPUT.joinpath("map.json")
+    files = {"basic_settings": mgs_path, "advanced_settings": ms_path}
     for sub, path in files.items():
         with open(path, "w", encoding="utf-8") as fp:
             json.dump(
@@ -486,9 +485,9 @@ def launch_new(*args):
     launch_with_params(
         [
             "--map-gen-settings",
-            str(mgsp),
+            str(mgs_path),
             "--map-settings",
-            str(msp),
+            str(ms_path),
             "--create",
             str(save),
         ],
@@ -499,13 +498,13 @@ def launch_new(*args):
 
 
 menu = {
-    "seed": mgsj["seed"],
+    "seed": mgs_json["seed"],
     ("gui-map-generator.resources-tab-title",): {},
     ("gui-map-generator.terrain-tab-title",): {
-        "map_type": mgsj["property_expression_names"]["elevation"],
+        "map_type": mgs_json["property_expression_names"]["elevation"],
         "Water": autoplace_enable_disable_menu(
             ("gui-map-generator.water",),
-            {"Scale": mgsj["terrain_segmentation"], "Coverage": mgsj["water"]},
+            {"Scale": mgs_json["terrain_segmentation"], "Coverage": mgs_json["water"]},
             ("size.only-starting-area",),
         ),
     },
@@ -518,8 +517,8 @@ menu = {
             False,
         ),
         ("gui-map-generator.map-size-group-tile",): {
-            "Width": mgsj["width"],
-            "Height": mgsj["height"],
+            "Width": mgs_json["width"],
+            "Height": mgs_json["height"],
         },
         ("gui-map-generator.recipes-difficulty-group-tile",): {
             "Difficulty": msj["difficulty_settings"]["recipe_difficulty"],
@@ -618,36 +617,38 @@ for name, control in data["autoplace-control"].items():
     else:
         my_menu = fa_menu.menu_item(name, submenu)
     parent[control["name"]] = my_menu
-    mgsj["autoplace_controls"][control["name"]] = submenu
+    mgs_json["autoplace_controls"][control["name"]] = submenu
 
 menu[("gui-map-generator.terrain-tab-title",)].update(
     {
-        "Cliffs": enable_disable_menu(
+        "Cliffs": autoplace_enable_disable_menu(
             ("gui-map-generator.cliffs",),
             {
-                "Frequency": mgsj["cliff_settings"]["cliff_elevation_interval"],
-                "Conitnuity": mgsj["cliff_settings"]["richness"],
+                "Frequency": mgs_json["cliff_settings"]["cliff_elevation_interval"],
+                "Continuity": mgs_json["cliff_settings"]["richness"],
             },
         ),
         "Moisture": fa_menu.menu_item(
             ("gui-map-generator.moisture",),
             {
-                "Scale": mgsj["property_expression_names"][
+                "Scale": mgs_json["property_expression_names"][
                     "control-setting:moisture:frequency:multiplier"
                 ],
-                "Bias": mgsj["property_expression_names"][
+                "Bias": mgs_json["property_expression_names"][
                     "control-setting:moisture:bias"
                 ],
             },
             ("gui-map-generator.moisture-description",),
         ),
-        "Terain type": fa_menu.menu_item(
+        "Terrain type": fa_menu.menu_item(
             ("gui-map-generator.aux",),
             {
-                "Scale": mgsj["property_expression_names"][
+                "Scale": mgs_json["property_expression_names"][
                     "control-setting:aux:frequency:multiplier"
                 ],
-                "Bias": mgsj["property_expression_names"]["control-setting:aux:bias"],
+                "Bias": mgs_json["property_expression_names"][
+                    "control-setting:aux:bias"
+                ],
             },
             ("gui-map-generator.aux-description",),
         ),
@@ -656,12 +657,12 @@ menu[("gui-map-generator.terrain-tab-title",)].update(
 
 menu[("gui-map-generator.enemy-tab-title",)].update(
     {
-        "Peaceful mode": mgsj["peaceful_mode"],
-        "Starting area size": mgsj["starting_area"],
+        "Peaceful mode": mgs_json["peaceful_mode"],
+        "Starting area size": mgs_json["starting_area"],
         "Enemy Expansion": enable_disable_menu(
             ("gui-map-generator.enemy-expansion-group-tile",),
             {
-                "Maximum expanstion distance": msj["enemy_expansion"][
+                "Maximum expansion distance": msj["enemy_expansion"][
                     "max_expansion_distance"
                 ],
                 "Minimum group size": msj["enemy_expansion"]["settler_group_min_size"],
@@ -681,7 +682,7 @@ menu[("gui-map-generator.enemy-tab-title",)].update(
     }
 )
 
-mgsj["cliff_settings"]["enabled"] = menu[("gui-map-generator.terrain-tab-title",)][
+mgs_json["cliff_settings"]["enabled"] = menu[("gui-map-generator.terrain-tab-title",)][
     "Cliffs"
 ].submenu[1]
 msj["enemy_expansion"]["enabled"] = menu[("gui-map-generator.enemy-tab-title",)][
