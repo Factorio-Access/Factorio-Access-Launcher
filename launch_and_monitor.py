@@ -37,6 +37,7 @@ maybe_key = re.compile(r'(?<=[\s"]).(?=[\s"])')
 
 def translate_key_name(m: re.Match):
     key = m[0]
+    # exception needed for [ because localization cfg files can't use [ as a key since it indicates start of new section.
     if key == "[":
         key = "left-bracket"
     return translate(("?", ("control-keys." + key,), m[0]))
@@ -177,6 +178,10 @@ def launch_with_params(
         os.utime(tweak_modified, (start_time, start_time))
         tweak_modified = (tweak_modified, old_time)
     params = launch_args + params
+    if "--version" in launch_args or "-v" in launch_args:
+        proc = subprocess.Popen(params, stdout=sys.stdout.buffer)
+        proc.wait()
+        return 5
     try:
         print("Launching")
         proc = subprocess.Popen(params, stdout=subprocess.PIPE, stdin=sys.stdin.buffer)
