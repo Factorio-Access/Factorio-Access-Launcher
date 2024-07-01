@@ -3,40 +3,52 @@ import sys
 import shutil
 from pathlib import Path
 
-venv = "venv"
-
-venv_python = os.path.join(".", venv)
-
-if sys.platform == "win32":
-    venv_python += "\Scripts\python.exe"
-else:
-    venv_python += "/bin/python3"
-
-
 linux_hidden_modules = [
-    "espeak",
-    "python_espeak-0.5.egg-info",
-    "speechd_config",
-    "speechd",
+    "espeak",  # cspell:disable-line
+    "python_espeak-0.5.egg-info",  # cspell:disable-line
+    "speechd_config",  # cspell:disable-line
+    "speechd",  # cspell:disable-line
 ]
-system_packages = "/usr/lib/python3/dist-packages/"
-hidden_imports = []
 
-if not os.path.isdir("./" + venv):
-    print('"' + sys.executable + '" -m venv ' + venv)
-    os.system('"' + sys.executable + '" -m venv ' + venv)
-    print(venv_python)
-    os.system(venv_python + " -m pip install -r requirements.txt pyinstaller")
-    if sys.platform == "linux":
-        full_paths = " ".join([system_packages + mod for mod in linux_hidden_modules])
-        copy_cmd = (
-            "cp -r " + full_paths + " ./" + venv + "/lib/python3.*/site-packages/"
-        )
-        print(copy_cmd)
-        if os.system(copy_cmd):
-            raise RuntimeError()
+if sys.base_prefix == sys.prefix:  # not in venv
+    # raise ValueError("Must be run from venv.. Will fix to auto venv soon")
+
+    venv = Path(".", "venv")
+
+    if sys.platform == "win32":
+        venv_python = venv.joinpath("Scripts", "python.exe")
+    else:
+        venv_python = venv.joinpath("bin", "python3")
+
+    if not venv.is_dir():
+        cmd = f'"{sys.executable}" -m venv {venv}'
+        os.system(cmd)
+        # cspell:disable-next-line
+        cmd = f"{venv_python} -m pip install -r requirements.txt pyinstaller"
+        os.system(cmd)
+        if sys.platform == "linux":
+            import site
+
+            system_packages = site.getsitepackages()
+            full_paths = " ".join(
+                [system_packages + mod for mod in linux_hidden_modules]
+            )
+            copy_cmd = (
+                "cp -r " + full_paths + " ./" + venv + "/lib/python3.*/site-packages/"
+            )
+            print(copy_cmd)
+            if os.system(copy_cmd):
+                raise RuntimeError()
+    cmd = f"{venv_python} {__file__}"
+    os.system(cmd)
+    raise SystemExit()
+
+import PyInstaller.__main__
+
+hidden_imports = []
 if sys.platform == "linux":
     hidden_imports += linux_hidden_modules
+
 
 locale_copy_error = None
 try:
@@ -53,19 +65,36 @@ try:
 except Exception as e:
     locale_copy_error = e
 
-if os.path.isfile("launcher.spec"):
-    os.system(venv_python + " -m PyInstaller launcher.spec")
+do_gui = "--gui" in sys.argv
+
+name = "launcher"
+
+if do_gui:
+    name += "_no_console"
+
+spec = Path(name + ".spec")
+
+if spec.is_file():
+    args = [str(spec)]
+    # os.system(venv_python + " -m PyInstaller launcher.spec")
 else:
-    hi = "".join([" --hidden-import=" + imp for imp in hidden_imports])
+    args = [
+        "--onefile",  # cspell:disable-line
+        "main.py",
+        "-n",
+        name,
+        "--add-data=./r:./r",
+    ]
+    if do_gui:
+        args.append("--noconsole")  # cspell:disable-line
+    for imp in hidden_imports:
+        args.append("--hidden-import=" + imp)
     excludes = "FixTk tcl tk _tkinter tkinter Tkinter PIL".split(" ")
-    ex = "".join([" --exclude-module " + m for m in excludes])
-    os.system(
-        venv_python
-        + " -m PyInstaller --onefile"
-        + hi
-        + ' main.py -n launcher --add-data="./r:./r"'
-        + ex
-    )
+    for m in excludes:
+        args.append("--exclude-module")
+        args.append(m)
+PyInstaller.__main__.run(args)
+
 if locale_copy_error:
     print(locale_copy_error)
-    print("WARNING: failed to copy locale files")
+    print("warn: no locale files. If you're not developing. This is fine to ignore.")
