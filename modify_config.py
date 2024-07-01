@@ -83,8 +83,7 @@ How would you like to proceed?"""
                     try:
                         current_val = config.current_conf.get_setting(cat, setting)
                     except config.Config_Missing as e:
-                        print(e)
-                        continue
+                        current_val = "unknown"
                     if current_val == change[0]:
                         continue
                     if approve_type == 0:
