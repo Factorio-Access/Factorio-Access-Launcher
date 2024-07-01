@@ -188,14 +188,8 @@ else:
         )
         if not fa_menu.getAffirmation():
             raise SystemExit
-        print("Creating Config, this will take while.")
-        factorio_process = subprocess.Popen(
-            [BIN, "--disable-audio"], stdout=subprocess.PIPE
-        )
-        for b_line in factorio_process.stdout:
-            line = b_line.decode().strip()
-            if line.endswith("Factorio initialized"):
-                factorio_process.terminate()
+        f_args = [BIN, "--start-server-load-scenario", "Fake"]
+        subprocess.run(f_args, stdout=subprocess.DEVNULL)
         CONFIG = get_config()
         if not CONFIG:
             input(
