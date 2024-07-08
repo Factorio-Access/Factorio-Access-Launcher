@@ -244,6 +244,8 @@ class installed_mod(mod):
             if path.is_file():
                 yield path
             return
+        if not path.is_dir():
+            return
         part = parts[0]
         if isinstance(part, str):
             yield from installed_mod._iter_files_sub(parts[1:], path.joinpath(part))

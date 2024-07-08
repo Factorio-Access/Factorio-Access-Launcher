@@ -279,6 +279,8 @@ def mod_re_files_sub(parts: list[str], path: Union[zipfile.Path, Path]):
         if path.is_file():
             yield path
         return
+    if not path.is_dir():
+        return
     part = parts[0]
     if not fancy.search(part):
         yield from mod_re_files_sub(parts[1:], path.joinpath(part))
