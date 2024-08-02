@@ -30,11 +30,19 @@ if sys.base_prefix == sys.prefix:  # not in venv
             import site
 
             system_packages = site.getsitepackages()
-            full_paths = " ".join(
-                [system_packages + mod for mod in linux_hidden_modules]
-            )
+            full_paths = []
+            for mod in linux_hidden_modules:
+                for base in system_packages:
+                    test = Path(base).joinpath(mod)
+                    if test.exists():
+                        full_paths.append(str(test))
+
             copy_cmd = (
-                "cp -r " + full_paths + " ./" + venv + "/lib/python3.*/site-packages/"
+                "cp -r "
+                + " ".join(full_paths)
+                + " "
+                + str(venv)
+                + "/lib/python3.*/site-packages/"
             )
             print(copy_cmd)
             if os.system(copy_cmd):

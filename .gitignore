@@ -22,3 +22,4 @@ config.ini
 scenarios/**
 script-output/**
 temp/**
+built_version.py
