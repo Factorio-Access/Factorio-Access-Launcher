@@ -34,7 +34,7 @@ def get_changes_from_fp(fp):
 def get_all_changes(after="AA"):
     all_changes = {}
     for cfg_path in translations.iterate_over_mod_files(
-        CHANGESET_PATH + "/.*\.ini", re.compile("FactorioAccess.*")
+        CHANGESET_PATH + r"/.*\.ini", re.compile("FactorioAccess.*")
     ):
         version = cfg_path.name[:2]
         if version <= after:
