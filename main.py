@@ -21,6 +21,7 @@ from map_gen_setting_menu import sub_preset
 from translations import check_lang
 from fa_scenarios import get_scenarios, pre_launch_scenario
 from fa_mod_menu import mod_menu
+from version import version
 
 os.chdir(fa_paths.MY_CONFIG_DIR)
 
@@ -53,7 +54,15 @@ menu = {
         },
         ("gui-menu.connect-to-address",): launch_and_monitor.connect_to_address_menu,
     },
-    "mods": mod_menu,
+    ("gui-menu.mods",): mod_menu,
+    ("gui-menu.about",): {
+        "Factorio": {
+            "_desc": fa_paths.FACTORIO_VERSION,
+        },
+        "Launcher": {
+            "_desc": f"Factorio Access Launcher Version {version.tag}\nCommit:{version.commit}"
+        },
+    },
     ("gui.exit",): launch_and_monitor.time_to_exit,
 }
 

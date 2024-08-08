@@ -11,8 +11,6 @@ linux_hidden_modules = [
 ]
 
 if sys.base_prefix == sys.prefix:  # not in venv
-    # raise ValueError("Must be run from venv.. Will fix to auto venv soon")
-
     venv = Path(".", "venv")
 
     if sys.platform == "win32":
@@ -23,7 +21,6 @@ if sys.base_prefix == sys.prefix:  # not in venv
     if not venv.is_dir():
         cmd = f'"{sys.executable}" -m venv {venv}'
         os.system(cmd)
-        # cspell:disable-next-line
         cmd = f"{venv_python} -m pip install -r requirements.txt pyinstaller"
         os.system(cmd)
         if sys.platform == "linux":
@@ -47,10 +44,11 @@ if sys.base_prefix == sys.prefix:  # not in venv
             print(copy_cmd)
             if os.system(copy_cmd):
                 raise RuntimeError()
-    cmd = f"{venv_python} {__file__}"
+    cmd = [str(venv_python), __file__]
     os.system(cmd)
     raise SystemExit()
 
+from version_freeze import frozen, pyinstaller_version_txt
 import PyInstaller.__main__
 
 hidden_imports = []
@@ -84,7 +82,6 @@ spec = Path(name + ".spec")
 
 if spec.is_file():
     args = [str(spec)]
-    # os.system(venv_python + " -m PyInstaller launcher.spec")
 else:
     args = [
         "--onefile",  # cspell:disable-line
@@ -92,6 +89,8 @@ else:
         "-n",
         name,
         "--add-data=./r:./r",
+        "--version-file",
+        str(pyinstaller_version_txt),
     ]
     if do_gui:
         args.append("--noconsole")  # cspell:disable-line
@@ -101,8 +100,11 @@ else:
     for m in excludes:
         args.append("--exclude-module")
         args.append(m)
-PyInstaller.__main__.run(args)
+
+
+with frozen():
+    PyInstaller.__main__.run(args)
 
 if locale_copy_error:
     print(locale_copy_error)
-    print("warn: no locale files. If you're not developing. This is fine to ignore.")
+    print("warn: no locale files. If you're not developing, this is fine to ignore.")
