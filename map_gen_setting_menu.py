@@ -15,9 +15,9 @@ class enable_disable_menu(fa_menu.menu_item):
         submenu: dict,
         desc: localised_str | None = None,
     ) -> None:
-        enabler = enable_disable_submenu(("gui-map-generator.enabled",))
-        enabler.parent = weakref.ref(self)
-        my_submenu = {"enabled": enabler}
+        self.enabler = enable_disable_submenu(("gui-map-generator.enabled",))
+        self.enabler.parent = weakref.ref(self)
+        my_submenu = {"enabled": self.enabler}
         my_submenu.update(submenu)
         self.my_name = name
         super().__init__(self.name, my_submenu, desc, True)
@@ -31,10 +31,16 @@ class enable_disable_menu(fa_menu.menu_item):
         return self.my_name
 
     def remake_submenu(self):
-        if self.submenu[1].val:
+        if "set_others" in self.enabler.__dict__:
+            self.enabler.val = self.full_submenu[-1].val != 0
+        if self.enabler.val:
             self.submenu = self.full_submenu
         else:
             self.submenu = self.submenu[:2]
+
+    def __call__(self, *args):
+        self.remake_submenu()
+        return super().__call__(*args)
 
 
 class enable_disable_submenu(fa_menu.setting_menu_bool):
@@ -43,10 +49,10 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
         parent = self.parent()
         if "set_others" in self.__dict__:
             if not self.val:
-                for sub in parent.submenu[2:]:
+                for sub in parent.full_submenu[2:]:
                     sub.val = 0
             else:
-                for sub in parent.submenu[2:]:
+                for sub in parent.full_submenu[2:]:
                     sub.val = sub.default
         parent.remake_submenu()
         return 0
