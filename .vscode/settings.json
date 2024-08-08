@@ -4,9 +4,15 @@
         "editor.formatOnSave": true
     },
     "cSpell.words": [
+        "autoplace",
+        "cloudfare",
+        "cooldown",
         "excepthook",
         "Factorio",
         "localised",
+        "neighbouring",
+        "pyinstaller",
+        "referer",
         "steamapps",
         "userdata"
     ],

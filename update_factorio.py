@@ -44,9 +44,9 @@ class NoRedirection_for_get_token_e(urllib.request.HTTPErrorProcessor):
 class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
         if req.full_url == "https://www.factorio.com/get-token":
-            infourl = urllib.response.addinfourl(fp, headers, req.get_full_url())
-            infourl.status = code
-            return infourl
+            info_url = urllib.response.addinfourl(fp, headers, req.get_full_url())
+            info_url.status = code
+            return info_url
         return super().http_error_302(req, fp, code, msg, headers)
 
 
@@ -57,6 +57,7 @@ opener = urllib.request.build_opener(
         debuglevel=0
     ),  # change to 1 for testing 0 for production
 )
+# cSpell:words cloudfare addheaders KHTML
 # cloudfare rejects the default user agent
 opener.addheaders = [
     (
@@ -76,7 +77,7 @@ def prompt_login():
     return {"username": username, "password": password}
 
 
-def service_token_promt():
+def service_token_prompt():
     username = ""
     while not re.fullmatch(r"[\w.-]+", username):
         username = input("Factorio Username:")
@@ -92,7 +93,7 @@ def service_token_promt():
             '2. Once logged in and on your profile page, Click the link with the text "reveal".'
         )
         print(
-            "3. Once clicked, your token string will be just before the link that will have disapeared. The token consists of a string of 30 numbers and letters between a and f. The text after the token starts with an i."
+            "3. Once clicked, your token string will be just before the link that will have disappeared. The token consists of a string of 30 numbers and letters between a and f. The text after the token starts with an i."
         )
         token = input(
             "4. Enter your token here, or l to to to open the page for you, or n to skip for now."
@@ -103,7 +104,7 @@ def service_token_promt():
             break
         if re.fullmatch(r"[\da-f]{30}", token):
             break
-        if re.fullmatch(r"[Ll](aunch)?", token):
+        if re.fullmatch(r"[Ll](aunch)?", token):  # cSpell:disable-line
             webbrowser.open("https://factorio.com/profile")
             continue
         print(
@@ -199,7 +200,7 @@ def download(url, filename):
     with open(filename, "wb") as fp, opener.open(url) as dl:
         # print(f"saving {url} to {filename}")
         length = dl.getheader("content-length")
-        buffsize = 4096
+        buff_size = 4096
 
         if length:
             length = int(length)
@@ -210,7 +211,7 @@ def download(url, filename):
         last_percent = -1
         last_reported = time.time()
         while True:
-            buffer = dl.read(buffsize)
+            buffer = dl.read(buff_size)
             if not buffer:
                 break
             fp.write(buffer)
@@ -227,11 +228,11 @@ def download(url, filename):
 
 def delete_dir_if_exists(dirname):
     if os.path.exists(dirname):
-        print("deleteing " + dirname)
+        print("deleting " + dirname)
         rmtree(dirname)
 
 
-def overwrite_factorio_intall_from_new_zip(filename):
+def overwrite_factorio_install_from_new_zip(filename):
     delete_dir_if_exists(FACTORIO_INSTALL_PATH + "bin")
     delete_dir_if_exists(FACTORIO_INSTALL_PATH + "data")
     delete_dir_if_exists(FACTORIO_INSTALL_PATH + "doc-html")
@@ -261,7 +262,7 @@ def install():
         f"https://www.factorio.com/get-download/{version}/alpha/{download_package}",
         filename,
     )
-    overwrite_factorio_intall_from_new_zip(filename)
+    overwrite_factorio_install_from_new_zip(filename)
 
 
 def set_player_data(player):
@@ -286,7 +287,7 @@ def get_credentials(quiet=False, reset=False):
     if reset:
         player["service-username"] = ""
     if not player["service-username"] or not player["service-token"]:
-        log_res = service_token_promt()  # api_log_in()
+        log_res = service_token_prompt()  # api_log_in()
         if not log_res:
             print("Not logged in")
             return None
@@ -322,16 +323,16 @@ def check_for_updates(credentials, connection, current_version):
     if resp.status != 200:
         print("error: " + resp.status + " " + resp.reason)
         return None
-    availble = json.load(resp)
-    if not availble:
+    available = json.load(resp)
+    if not available:
         print("couldn't get any updates")
         return None
-    if current_version["package"] not in availble:
-        print("no available verions match package. Versions are:")
-        for ver in availble.keys():
+    if current_version["package"] not in available:
+        print("no available versions match package. Versions are:")
+        for ver in available.keys():
             print("\t", ver)
         return None
-    versions = availble[current_version["package"]]
+    versions = available[current_version["package"]]
     upgrade_list = []
     version = current_version["from"]
     for upgrade in versions:
@@ -361,14 +362,14 @@ def update_filename(current_version, update):
     )
 
 
-def prep_update(credentials, current_version, update_canidates):
+def prep_update(credentials, current_version, update_candidates):
     os.makedirs(TEMP, exist_ok=True)
     params = credentials.copy()
     params["package"] = current_version["package"]
     params["apiVersion"] = 2
     params["isTarget"] = "false"
-    for i, update in enumerate(update_canidates):
-        if i + 1 == len(update_canidates):
+    for i, update in enumerate(update_candidates):
+        if i + 1 == len(update_candidates):
             params["isTarget"] = "true"
         this_params = params | update
         print("Downloading " + update["to"])
@@ -382,16 +383,17 @@ def prep_update(credentials, current_version, update_canidates):
 
 
 def process_exists():
+    # cSpell:disable-next-line
     call = "TASKLIST", "/FI", "imagename eq Factorio.exe"
     if subprocess.check_output(call).splitlines()[3:]:
         return True
 
 
-def execute_update(current_version, update_canidates):
+def execute_update(current_version, update_candidates):
     applying = re.compile(r"Applying update .*-(\d+\.\d+\.\d+)-update")
-    print(current_version, update_canidates)
+    print(current_version, update_candidates)
     params = [BIN]
-    for update in update_canidates:
+    for update in update_candidates:
         file = os.path.abspath(update_filename(current_version, update))
         params.append("--apply-update")
         params.append(file)
@@ -410,8 +412,8 @@ def execute_update(current_version, update_canidates):
                 print("--", line.decode(), end="")
 
 
-def cleanup_update(current_version, update_canidates):
-    for update in update_canidates:
+def cleanup_update(current_version, update_candidates):
+    for update in update_candidates:
         file = os.path.abspath(update_filename(current_version, update))
         os.remove(file)
 
@@ -425,18 +427,18 @@ def do_update(confirm=True):
         return False
     print(f"Version: {current_version['from']}")
     connection = http.client.HTTPSConnection("updater.factorio.com")
-    update_canidates = check_for_updates(credentials, connection, current_version)
+    update_candidates = check_for_updates(credentials, connection, current_version)
     connection.close()
-    if not update_canidates:
+    if not update_candidates:
         print("no updates available")
         return False
     if confirm:
-        input("update to " + update_canidates[-1]["to"] + "? Enter to continue.")
+        input("update to " + update_candidates[-1]["to"] + "? Enter to continue.")
     else:
-        print("updating to " + update_canidates[-1]["to"])
-    prep_update(credentials, current_version, update_canidates)
-    execute_update(current_version, update_canidates)
-    cleanup_update(current_version, update_canidates)
+        print("updating to " + update_candidates[-1]["to"])
+    prep_update(credentials, current_version, update_candidates)
+    execute_update(current_version, update_candidates)
+    cleanup_update(current_version, update_candidates)
     print("all-done")
 
 
