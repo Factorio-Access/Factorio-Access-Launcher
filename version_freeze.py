@@ -21,7 +21,7 @@ class frozen(object):
 {version=} 
 """
             )
-        ver = tuple([int(i) for i in version.tag.split(".")] + [0])
+        ver = tuple([int(i) for i in version.tag.split(".")])
         with pyinstaller_version_txt.open("w", encoding="utf8") as fp:
             fp.write(
                 f"""\

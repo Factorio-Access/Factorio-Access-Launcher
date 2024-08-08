@@ -19,7 +19,7 @@ else:
     dirty = False
 commit = ver_info.pop()
 commits_since_ref = ver_info.pop()
-tag = "-".join(ver_info)
+tag = "-".join(ver_info) + "." + str(commits_since_ref)
 
 if commits_since_ref != "0":
     cmd = cmd[:4] + "--all --long".split(" ")
