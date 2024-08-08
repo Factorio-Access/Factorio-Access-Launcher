@@ -73,6 +73,11 @@ def back_func(*args):
     return 1
 
 
+def placeholder(*args):
+    input("Feature under development, press enter to return.")
+    return 0
+
+
 def do_menu(branch, name, zero_item=("Back", 0)):
     if callable(branch):
         return branch()
@@ -126,17 +131,15 @@ class menu_item(object):
         self.desc = desc
         if isinstance(submenu, dict):
             arr_sub = []
-            next_desc = None
             for sub_name, sub in submenu.items():
 
                 if isinstance(sub, menu_item):
                     arr_sub.append(sub)
                     continue
                 if isinstance(sub_name, str) and sub_name.startswith("_desc"):
-                    next_desc = sub
+                    self.desc = sub
                     continue
-                arr_sub.append(menu_item(sub_name, sub, next_desc))
-                next_desc = None
+                arr_sub.append(menu_item(sub_name, sub))
             submenu = arr_sub
         self.submenu = submenu
         if not callable(self.submenu) and add_back:
