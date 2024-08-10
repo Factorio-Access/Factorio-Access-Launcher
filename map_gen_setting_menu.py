@@ -700,8 +700,11 @@ msj["enemy_evolution"]["enabled"] = menu[("gui-map-generator.enemy-tab-title",)]
 
 
 sub_preset = {
-    "_desc_for_presets": get_preset_desc,
-    get_presets: {select_preset_name: select_preset, ("gui-map-generator.next",): menu},
+    get_presets: {
+        "_desc": get_preset_desc,
+        select_preset_name: select_preset,
+        ("gui-map-generator.next",): menu,
+    },
 }
 
 
