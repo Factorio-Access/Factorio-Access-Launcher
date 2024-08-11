@@ -10,7 +10,7 @@ linux_hidden_modules = [
     "speechd",  # cspell:disable-line
 ]
 
-if sys.base_prefix == sys.prefix:  # not in venv
+if sys.base_prefix == sys.prefix and "GITHUB_RUN_ID" not in os.environ:  # not in venv
     venv = Path(".", "venv")
 
     if sys.platform == "win32":
@@ -44,7 +44,7 @@ if sys.base_prefix == sys.prefix:  # not in venv
             print(copy_cmd)
             if os.system(copy_cmd):
                 raise RuntimeError()
-    cmd = [str(venv_python), __file__]
+    cmd = f"{venv_python} {__file__}"
     os.system(cmd)
     raise SystemExit()
 
