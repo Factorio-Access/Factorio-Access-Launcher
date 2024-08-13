@@ -278,8 +278,11 @@ class __mod_manager(object):
 
     def __enter__(self) -> None:
         assert self.dict == None, "Already in a with statement"
-        with open(self.MOD_LIST_FILE, "r", encoding="utf8") as fp:
-            data = json.load(fp)
+        try:
+            with open(self.MOD_LIST_FILE, "r", encoding="utf8") as fp:
+                data = json.load(fp)
+        except FileNotFoundError:
+            data = {"mods": []}
         self.dict = {m["name"]: m for m in data["mods"]}
 
         self.modified = False
