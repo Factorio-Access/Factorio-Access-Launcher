@@ -116,6 +116,126 @@ def do_menu(branch, name, zero_item=("Back", 0)):
 back_menu_item = None
 
 
+class Menu(object):
+    def __init__(
+        self,
+        title: localised_str,
+        items: list["Menu"],
+        desc: localised_str = None,
+        add_back=True,
+    ):
+        self._title = title
+        self.items = items.copy()
+        self._desc = desc
+        self.add_back = add_back
+        if add_back:
+            self.items.insert(0, back_item)
+        pass
+
+    def get_items(self, *args):
+        return {self._title: ()}
+
+    def get_title(self, *args):
+        return self._title
+
+    def get_desc(self, *args):
+        return self._desc
+
+    def get_header(self, *args):
+        ret = self.get_title(*args)
+        desc = self.get_desc(*args)
+        if desc is not None:
+            ret = ("", ret, "\n", desc)
+        return ret
+
+    def __call__(self, *args):
+        while True:
+            options = {}
+            for submenu in self.items:
+                sub_options = submenu.get_items(*args)
+                for sub_name, sub_arg in sub_options.items():
+                    options[sub_name] = (submenu, sub_arg)
+            keys = list(options)
+            opts = [translate(key) for key in keys]
+            selected_menu, arg = options[
+                keys[
+                    select_option(
+                        opts,
+                        prompt=translate(self.get_header(*args)),
+                        one_indexed=not self.add_back,
+                    )
+                ]
+            ]
+            ret = selected_menu(*(arg + args))
+            if ret > 0 and self.add_back:
+                return ret - 1
+
+
+class Menu_function_leaf(Menu):
+    def __init__(self, call: Callable, title=localised_str, back_levels=1):
+        self.call = call
+        self.back_levels = back_levels
+        self._title = title
+
+    def __call__(self, *args: Any) -> Any:
+        self.call(*args)
+        return self.back_levels
+
+
+class VariableMenuMixIn(object):
+    def get_items(self, *args):
+        mapping = self._title(*args)
+        self.last_reverse_map = {val: name for name, val in mapping.items()}
+        return {name: (val,) for name, val in mapping.items()}
+
+    def get_title(self, my_arg, *args):
+        return self.last_reverse_map[my_arg]
+
+    def get_desc(self, my_arg, *args):
+        desc = self._desc
+        if callable(desc):
+            desc = desc(my_arg)
+        return desc
+
+
+back_item = Menu_function_leaf(back_func, ("gui.cancel",))
+
+
+class Menu_var(VariableMenuMixIn, Menu):
+    pass
+
+
+class Menu_var_leaf(VariableMenuMixIn, Menu_function_leaf):
+    pass
+
+
+def parse_menu_dict(menu: dict):
+    subs = []
+    desc = None
+    for t, sub in menu.items():
+        if t == "_desc":
+            desc = sub
+            continue
+        if isinstance(sub, Menu):
+            subs.append(sub)
+            continue
+        subs.append(new_menu(t, sub, False))
+    return subs, desc
+
+
+def new_menu(title: localised_str, menu: dict | Callable, top_level=True):
+    if isinstance(menu, dict):
+        subs, desc = parse_menu_dict(menu)
+        if callable(title):
+            return Menu_var(title, subs, desc, not top_level)
+        return Menu(title, subs, desc, not top_level)
+    if callable(menu):
+        if callable(title):
+            return Menu_var_leaf(menu, title)
+        return Menu_function_leaf(menu, title)
+    raise ValueError("Unexpected menu item:", menu)
+
+
 class menu_item(object):
     __slots__ = ["name", "submenu", "desc", "add_back"]
 

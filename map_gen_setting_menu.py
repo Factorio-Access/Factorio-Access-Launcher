@@ -8,6 +8,33 @@ from translations import localised_str
 from launch_and_monitor import launch_with_params, launch
 
 
+class j_mix(object):
+    def __init__(self, obj: dict, path: tuple[str], *args, **kwargs) -> None:
+        self.obj = obj
+        self.path = path
+        self.path_t = path
+        super().__init__(*args, **kwargs)
+        pass
+
+    @property
+    def val(self):
+        ret = self.obj
+        for p in self.path:
+            ret = ret[p]
+        return ret
+
+    @val.setter
+    def val(self, new_val):
+        ret = self.obj
+        for p in self.path:
+            ret = ret[p]
+        return ret
+
+    def config(self, *args):
+        args = list(args)
+        self.path = tuple((args.pop() if p.startswith("_") else p for p in self.path_t))
+
+
 class enable_disable_menu(fa_menu.menu_item):
     def __init__(
         self,
@@ -688,9 +715,6 @@ menu[("gui-map-generator.enemy-tab-title",)].update(
     }
 )
 
-mgs_json["cliff_settings"]["enabled"] = menu[("gui-map-generator.terrain-tab-title",)][
-    "Cliffs"
-].submenu[1]
 msj["enemy_expansion"]["enabled"] = menu[("gui-map-generator.enemy-tab-title",)][
     "Enemy Expansion"
 ].submenu[1]
@@ -750,3 +774,72 @@ def set_vals(preset, obj):
             subobj.val = preset[name]
         else:
             subobj.val = subobj.default
+
+
+class preset_menu(fa_menu.menu_item):
+    def __init__(self):
+        self.add_back = True
+        self.desc = ("fa-l.map-setting-preset-description",)
+        self.submenu = []
+        super().__init__(name, submenu, desc, add_back)
+
+    def populate(self, prototype_data):
+        self.presets = []
+        for preset_group in prototype_data["map-gen-presets"].values():
+            for name, preset in preset_group.items():
+                if name == "type" or name == "name":
+                    continue
+                order = preset["order"] if "order" in preset else ""
+                t_name = ("map-gen-preset-name." + name,)
+                preset["name"] = name
+                self.presets.append((order, t_name, preset))
+        self.presets.sort()
+        if self.selected_preset is None:
+            self.select_preset(self.presets[0][2])
+
+
+class map_settings_menu_gen(object):
+    def __init__(self) -> None:
+        self.presets = {}
+        self.extra_terrain = {}
+        self.resources = {}
+        self.selected_preset: dict | None = None
+        self.json_file_data = self.default_json_files()
+        self.gen_menu_and_overwrite_json_file_data()
+
+    def populate(self, prototype_data):
+        self.populate_presets(prototype_data)
+
+    def populate_presets(self, prototype_data):
+        pass
+
+    def get_preset_menu_list(self):
+        ret = {}
+        for p in self.presets:
+            if p[2] == selected_preset:
+                t_name = p[1]
+                if self.check_vals(p[2], json_files) > 0:
+                    add = ("gui-map-generator.custom",)
+                else:
+                    add = ("fa-l.selected",)
+                t_name = ("", t_name, add)
+                p = (p[0], t_name, p[2])
+            ret[p[1]] = p[2]
+        return ret
+
+    def select_preset(self, preset):
+        self.selected_preset = preset
+        set_vals(preset, self.json_file_data)
+        set_defaults(preset, self.json_file_data)
+        return 0
+
+    def default_json_files(self):
+        data = fa_paths.READ_DIR.joinpath("data")
+        regular = data.joinpath("map-settings.example.json")
+        gen = data.joinpath("map-gen-settings.example.json")
+        ret = {}
+        with regular.open(encoding="utf8") as fp:
+            ret["advanced_settings"] = json.load(fp)  # to match preset keys
+        with gen.open(encoding="utf8") as fp:
+            ret["basic_settings"] = json.load(fp)  # to match preset keys
+        return ret
