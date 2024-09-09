@@ -35,31 +35,28 @@ class j_mix(object):
         self.path = tuple((args.pop() if p.startswith("_") else p for p in self.path_t))
 
 
-class enable_disable_menu(fa_menu.menu_item):
+class enable_disable_menu(fa_menu.Menu):
     def __init__(
         self,
         name: localised_str | Callable[..., Any] | dict,
         submenu: dict,
         desc: localised_str | None = None,
     ) -> None:
-        self.enabler = enable_disable_submenu(("gui-map-generator.enabled",))
-        self.enabler.parent = weakref.ref(self)
-        my_submenu = {"enabled": self.enabler}
-        my_submenu.update(submenu)
-        self.my_name = name
-        super().__init__(self.name, my_submenu, desc, True)
-        self.full_submenu = self.submenu
+        self.enabler = enable_disable_submenu(self)
+        rest = submenu
+        if not isinstance(submenu, list):
+            rest, _ = fa_menu.parse_menu_dict(submenu)
+        super().__init__(name, [self.enabler] + rest, desc, True)
+        self.full_submenu = self.items
         self.remake_submenu()
 
-    def name(self, *args):
-        return ("", self.my_name, ": ", self.submenu[1].val_to_string())
+    def get_items(self, *args):
+        return {("", self._title, ": ", self.enabler.val_to_string(*args)): ()}
 
-    def get_menu_name(self, *args):
-        return self.my_name
+    def got_toggled(self, *args):
+        pass
 
     def remake_submenu(self):
-        if "set_others" in self.enabler.__dict__:
-            self.enabler.val = self.full_submenu[-1].val != 0
         if self.enabler.val:
             self.submenu = self.full_submenu
         else:
@@ -71,33 +68,40 @@ class enable_disable_menu(fa_menu.menu_item):
 
 
 class enable_disable_submenu(fa_menu.setting_menu_bool):
+    def __init__(
+        self,
+        parent: enable_disable_menu,
+        desc: localised_str | None = None,
+        default=True,
+        val=True,
+    ) -> None:
+        self.parent = weakref.ref(parent)
+        super().__init__(("gui-map-generator.enabled",), desc, default, val)
+
     def __call__(self, *args):
         super().__call__(*args)
-        parent = self.parent()
-        if "set_others" in self.__dict__:
-            if not self.val:
-                for sub in parent.full_submenu[2:]:
-                    sub.val = 0
-            else:
-                for sub in parent.full_submenu[2:]:
-                    sub.val = sub.default
-        parent.remake_submenu()
+        self.parent().remake_submenu()
         return 0
 
 
 class autoplace_enable_disable_menu(enable_disable_menu):
-    def __init__(
-        self,
-        name: localised_str | Callable[..., Any] | dict,
-        submenu: dict,
-        desc: localised_str | None = None,
-    ) -> None:
-        super().__init__(name, submenu, desc)
-        self.submenu[1].set_others = True
+    def got_toggled(self, *args):
+        if not self.enabler.val:
+            for sub in self.full_submenu[2:]:
+                sub.val = 0
+        else:
+            for sub in self.full_submenu[2:]:
+                sub.val = sub.default
+        return super().got_toggled(*args)
+
+    def remake_submenu(self):
+        # hack for refreshes
+        self.enabler.val = self.full_submenu[-1].val != 0
+        return super().remake_submenu()
 
 
 class menu_setting_inverse_float(fa_menu.setting_menu_float):
-    def val_to_string(self):
+    def val_to_string(self, *args):
         if self.val == 0:
             self.val = 1.0
         return str(1.0 / self.val)
@@ -107,7 +111,7 @@ class menu_setting_inverse_float(fa_menu.setting_menu_float):
 
 
 class menu_setting_cliff_freq(fa_menu.setting_menu_float):
-    def val_to_string(self):
+    def val_to_string(self, *args):
         if self.val == 0:
             self.val = 1.0
         return str(40.0 / self.val)
@@ -117,7 +121,7 @@ class menu_setting_cliff_freq(fa_menu.setting_menu_float):
 
 
 class menu_setting_evo(fa_menu.setting_menu_float):
-    def val_to_string(self):
+    def val_to_string(self, *args):
         return str(int(self.val * 1e7 + 0.5))
 
     def input_to_val(self, inp: str):
@@ -125,7 +129,7 @@ class menu_setting_evo(fa_menu.setting_menu_float):
 
 
 class menu_setting_ticks_to_min(fa_menu.setting_menu_int):
-    def val_to_string(self):
+    def val_to_string(self, *args):
         return f"{self.val/3600:.2f}"
 
     def input_to_val(self, inp: str):
@@ -133,7 +137,7 @@ class menu_setting_ticks_to_min(fa_menu.setting_menu_int):
 
 
 class menu_seed(fa_menu.setting_menu_int):
-    def val_to_string(self):
+    def val_to_string(self, *args):
         if self.val is None:
             return ("gui-map-generator.randomize-map-seed",)
         return f"{self.val}"
@@ -475,7 +479,7 @@ def get_presets(*args):
                 add = ("fa-l.selected",)
             t_name = ("", t_name, add)
             presets[i] = (p[0], t_name, p[2])
-    return {p[1]: p[2] for p in presets}
+    return {p[1]: (p[2],) for p in presets}
 
 
 def select_preset(preset):
@@ -488,8 +492,10 @@ def select_preset(preset):
 def select_preset_name(preset):
     diffs = check_vals(preset, json_files)
     if diffs > 0:
-        return ("gui-map-generator.reset-to-preset", diffs)
-    return ("gui-map-generator.reset-to-preset-disabled",)
+        ret = ("gui-map-generator.reset-to-preset", diffs)
+    else:
+        ret = ("gui-map-generator.reset-to-preset-disabled",)
+    return {ret: ()}
 
 
 def get_preset_desc(*args):
@@ -661,30 +667,22 @@ menu[("gui-map-generator.terrain-tab-title",)].update(
                 "Continuity": mgs_json["cliff_settings"]["richness"],
             },
         ),
-        "Moisture": fa_menu.menu_item(
-            ("gui-map-generator.moisture",),
-            {
-                "Scale": mgs_json["property_expression_names"][
-                    "control-setting:moisture:frequency:multiplier"
-                ],
-                "Bias": mgs_json["property_expression_names"][
-                    "control-setting:moisture:bias"
-                ],
-            },
-            ("gui-map-generator.moisture-description",),
-        ),
-        "Terrain type": fa_menu.menu_item(
-            ("gui-map-generator.aux",),
-            {
-                "Scale": mgs_json["property_expression_names"][
-                    "control-setting:aux:frequency:multiplier"
-                ],
-                "Bias": mgs_json["property_expression_names"][
-                    "control-setting:aux:bias"
-                ],
-            },
-            ("gui-map-generator.aux-description",),
-        ),
+        ("gui-map-generator.moisture",): {
+            "_desc": ("gui-map-generator.moisture-description",),
+            "Scale": mgs_json["property_expression_names"][
+                "control-setting:moisture:frequency:multiplier"
+            ],
+            "Bias": mgs_json["property_expression_names"][
+                "control-setting:moisture:bias"
+            ],
+        },
+        ("gui-map-generator.aux",): {
+            "_desc": ("gui-map-generator.aux-description",),
+            "Scale": mgs_json["property_expression_names"][
+                "control-setting:aux:frequency:multiplier"
+            ],
+            "Bias": mgs_json["property_expression_names"]["control-setting:aux:bias"],
+        },
     }
 )
 
@@ -776,7 +774,7 @@ def set_vals(preset, obj):
             subobj.val = subobj.default
 
 
-class preset_menu(fa_menu.menu_item):
+class preset_menu(fa_menu.Menu):
     def __init__(self):
         self.add_back = True
         self.desc = ("fa-l.map-setting-preset-description",)

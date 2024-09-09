@@ -1,5 +1,6 @@
 import re
-from collections import defaultdict, namedtuple
+from collections import defaultdict
+from typing import NamedTuple
 import json
 
 import fa_paths
@@ -7,11 +8,16 @@ import translations
 from launch_and_monitor import launch_with_params
 import fa_menu
 
-Scenario = namedtuple("Scenario", "order start_key name description")
+
+class Scenario(NamedTuple):
+    order: str
+    start_key: str
+    name: translations.localised_str
+    description: translations.localised_str
 
 
 def get_scenario_from_path(path):
-    with open(path, encoding="utf8") as fp:
+    with path.open(encoding="utf8") as fp:
         json_desc = json.load(fp)
     parts = translations.get_mod_path_parts(path)
     key = parts[0] + "/" + parts[2]
@@ -53,7 +59,7 @@ def get_scenarios(m_scenario=None):
         if scenario:
             scenarios.append(scenario)
     scenarios.sort()
-    return {s.name: s for s in scenarios}
+    return {s.name: (s,) for s in scenarios}
 
 
 def launch_scenario(scenario: Scenario):
@@ -62,17 +68,17 @@ def launch_scenario(scenario: Scenario):
     )
 
 
-def scenario_name(*args):
-    return args[-1].name
+def scenario_name(preset, *args):
+    return preset.name
 
 
-def scenario_desc(*args):
-    return args[-1].description
+def scenario_desc(preset, *args):
+    return preset.description
 
 
-pre_launch_scenario = fa_menu.menu_item(
-    get_scenarios, {("gui-new-game.play",): launch_scenario}, scenario_desc
-)
+pre_launch_scenario = {
+    get_scenarios: {"_desc": scenario_desc, ("gui-new-game.play",): launch_scenario},
+}
 
 if __name__ == "__main__":
     print(get_scenarios())

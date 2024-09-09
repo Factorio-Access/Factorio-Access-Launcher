@@ -6,7 +6,7 @@ import re
 import config
 import update_factorio
 import fa_paths
-from fa_menu import do_menu
+import fa_menu
 import launch_and_monitor
 
 __ACCESS_LIST_PATH: Final[str] = os.path.join(
@@ -67,7 +67,6 @@ def remove_friend(friend: str):
         fp.seek(0)
         fp.truncate()
         json.dump(list(friends), fp, indent=2)
-    return 0
 
 
 def multiplayer_join(game_id):
@@ -153,21 +152,18 @@ def run_func(func):
 def get_username_menu():
     try:
         player = update_factorio.get_player_data()
-        return "Username: " + player["service-username"]
     except:
-        return False
+        player = {"service-username": "None"}
+    return {"Username: " + player["service-username"]: ()}
 
 
 def get_friends_menu():
-    return {f: f for f in get_friend_list()}
+    return {f: (f,) for f in get_friend_list()}
 
 
-def specific_friend_menu(friend: str):
-    def s_remove_friend(f=friend):
-        remove_friend(f)
-        return 1
-
-    return do_menu({"Remove " + friend: s_remove_friend}, "Friend " + friend)
+class specific_friend_menu(fa_menu.Menu_var_leaf):
+    def get_items(self, my_arg, *args):
+        return {"Remove " + my_arg: ()}
 
 
 def add_friend_menu():
@@ -179,6 +175,12 @@ def add_friend_menu():
         print(
             "Factorio usernames must only include letters, numbers, periods, and dashs."
         )
+
+
+friend_list = {
+    "Add": add_friend_menu,
+    get_friends_menu: {"Remove": specific_friend_menu(remove_friend, "TBD")},
+}
 
 
 def username_menu():

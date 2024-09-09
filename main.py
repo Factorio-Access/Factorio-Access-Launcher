@@ -31,7 +31,7 @@ menu = {
     ("gui-menu.single-player-menu",): {
         ("gui-menu.new-game",): {
             ("gui-new-game.main-game",): sub_preset,
-            ("gui-new-game.mod-scenarios",): {get_scenarios: pre_launch_scenario},
+            ("gui-new-game.mod-scenarios",): pre_launch_scenario,
         },
         ("gui-menu.load-game",): {
             save_management.get_menu_saved_games: launch_and_monitor.launch,
@@ -44,10 +44,7 @@ menu = {
             save_management.get_menu_saved_games: multiplayer.multiplayer_host,
         },
         ("gui-menu.browse-public-games",): {
-            "Friend List": {
-                "Add": multiplayer.add_friend_menu,
-                multiplayer.get_friends_menu: multiplayer.specific_friend_menu,
-            },
+            "Friend List": multiplayer.friend_list,
             "List Games With Friends": {
                 multiplayer.games_with_friends_menu: multiplayer.multiplayer_join
             },
@@ -73,6 +70,5 @@ modify_config.do_config_check()
 if args.launch:
     launch_and_monitor.launch_with_params([], save_rename=False)
 else:
-    my_main_menu = menu_item(("gui-menu.main-menu",), menu, None, False)
-    my_main_menu()
-    # do_menu(menu,"Main Menu",False)
+    main_menu = new_menu(("gui-menu.main-menu",), menu)
+    main_menu()
