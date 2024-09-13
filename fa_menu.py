@@ -255,8 +255,8 @@ class setting_menu_int(setting_menu):
     ) -> None:
         super().__init__(title, desc, default, val)
 
-    def input_to_val(self, inp: str):
-        self.val = int(inp)
+    def input_to_val(self, inp: str, *args):
+        return int(inp)
 
 
 class setting_menu_float(setting_menu):
@@ -269,8 +269,8 @@ class setting_menu_float(setting_menu):
     ) -> None:
         super().__init__(title, desc, default, val)
 
-    def input_to_val(self, inp: str):
-        self.val = float(inp)
+    def input_to_val(self, inp: str, *args):
+        return float(inp)
 
 
 class setting_menu_bool(setting_menu):

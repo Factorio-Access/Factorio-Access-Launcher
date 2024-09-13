@@ -12,27 +12,27 @@ class j_mix(object):
     def __init__(self, obj: dict, path: tuple[str], *args, **kwargs) -> None:
         self.obj = obj
         self.path = path
-        self.path_t = path
         super().__init__(*args, **kwargs)
-        pass
 
-    @property
-    def val(self):
-        ret = self.obj
-        for p in self.path:
-            ret = ret[p]
-        return ret
+    def val_to_string(self, *args):
+        l_args = list(args)
+        item = self.obj
+        for key in self.path:
+            if key == "_arg":
+                key = l_args.pop(0)
+            item = item[key]
+        self.val = item
+        return super().val_to_string(*l_args)
 
-    @val.setter
-    def val(self, new_val):
-        ret = self.obj
-        for p in self.path:
-            ret = ret[p]
-        return ret
-
-    def config(self, *args):
-        args = list(args)
-        self.path = tuple((args.pop() if p.startswith("_") else p for p in self.path_t))
+    def save_val(self, val, *args):
+        l_args = list(args)
+        item = self.obj
+        for key in self.path[:-1]:
+            if key == "_arg":
+                key = l_args.pop(0)
+            prev_item = item
+            item = item[key]
+        prev_item[key] = val
 
 
 class enable_disable_menu(fa_menu.Menu):
@@ -106,8 +106,8 @@ class menu_setting_inverse_float(fa_menu.setting_menu_float):
             self.val = 1.0
         return str(1.0 / self.val)
 
-    def input_to_val(self, inp: str):
-        self.val = 1.0 / float(inp)
+    def input_to_val(self, inp: str, *args):
+        return 1.0 / float(inp)
 
 
 class menu_setting_cliff_freq(fa_menu.setting_menu_float):
@@ -116,24 +116,24 @@ class menu_setting_cliff_freq(fa_menu.setting_menu_float):
             self.val = 1.0
         return str(40.0 / self.val)
 
-    def input_to_val(self, inp: str):
-        self.val = 40.0 / float(inp)
+    def input_to_val(self, inp: str, *args):
+        return 40.0 / float(inp)
 
 
 class menu_setting_evo(fa_menu.setting_menu_float):
     def val_to_string(self, *args):
         return str(int(self.val * 1e7 + 0.5))
 
-    def input_to_val(self, inp: str):
-        self.val = float(inp) * 1e-7
+    def input_to_val(self, inp: str, *args):
+        return float(inp) * 1e-7
 
 
 class menu_setting_ticks_to_min(fa_menu.setting_menu_int):
     def val_to_string(self, *args):
         return f"{self.val/3600:.2f}"
 
-    def input_to_val(self, inp: str):
-        self.val = int(float(inp) * 3600)
+    def input_to_val(self, inp: str, *args):
+        return int(float(inp) * 3600)
 
 
 class menu_seed(fa_menu.setting_menu_int):
@@ -142,11 +142,13 @@ class menu_seed(fa_menu.setting_menu_int):
             return ("gui-map-generator.randomize-map-seed",)
         return f"{self.val}"
 
-    def input_to_val(self, inp: str):
+    def input_to_val(self, inp: str, *args):
+        ret = None
         try:
-            self.val = int(inp)
+            ret = int(inp)
         except:
-            self.val = None
+            pass
+        return ret
 
 
 data = {}
@@ -776,10 +778,8 @@ def set_vals(preset, obj):
 
 class preset_menu(fa_menu.Menu):
     def __init__(self):
-        self.add_back = True
-        self.desc = ("fa-l.map-setting-preset-description",)
         self.submenu = []
-        super().__init__(name, submenu, desc, add_back)
+        super().__init__(name, submenu, ("fa-l.map-setting-preset-description",), True)
 
     def populate(self, prototype_data):
         self.presets = []
