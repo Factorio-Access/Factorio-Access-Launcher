@@ -25,9 +25,10 @@ def save_time(file):
 
 def get_sorted_saves():
     try:
-        l = os.listdir(SAVES)
-        l.sort(reverse=True, key=save_time)
-        return l
+        all_files = os.listdir(SAVES)
+        zip_files = [f for f in all_files if f.lower().endswith('.zip')]
+        zip_files.sort(reverse=True, key=save_time)
+        return zip_files
     except:
         return []
 
