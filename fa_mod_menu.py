@@ -10,6 +10,9 @@ class _mod_menu(fa_menu.Menu):
 
 
 class enable_disable_submenu(fa_menu.setting_menu_bool):
+    def __init__(self):
+        super().__init__(title=("gui-map-generator.enabled",))
+
     def get_names(self, *args):
         self.val = mod_manager.dict[args[-1]]["enabled"]
         return super().get_names(*args)
@@ -30,28 +33,20 @@ def get_names(*args):
 
 
 def get_mod_list():
-    return {
-        (
-            "",
-            name,
-            " (",
-            (
-                ("gui-map-generator.enabled",)
-                if data["enabled"]
-                else ("gui-mod-info.status-disabled",)
-            ),
-            ")",
-        ): name
-        for name, data in mod_manager.dict.items()
-    }
+    ret = {}
+    for name, data in mod_manager.dict.items():
+        if data["enabled"]:
+            status = ("gui-map-generator.enabled",)
+        else:
+            status = ("gui-mod-info.status-disabled",)
+        display_name = ("", name, " (", status, ")")
+        ret[display_name] = (name,)
+    return ret
 
 
-enable_menu_setting = enable_disable_submenu(
-    ("gui-map-generator.enabled",), None, True, True
-)
 mod_menu = _mod_menu(
     ("gui-menu.mods",),
-    fa_menu.parse_menu_dict({get_names: {"enabled": enable_menu_setting}})[0],
+    fa_menu.parse_menu_dict({get_names: {"enabled": enable_disable_submenu()}})[0],
 )
 
 
