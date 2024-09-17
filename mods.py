@@ -206,6 +206,8 @@ class mod(object):
 
     def __init__(self, info: info_json) -> None:
         self.info = info
+        if "dependencies" not in info:
+            info["dependencies"] = []
         self.dependencies = Dependencies(info["dependencies"])
         self.version = mod_version(info["version"])
         self.name = info["name"]
