@@ -102,7 +102,9 @@ class IncompatibleDependencies(ValueError):
 
 class dependency(object):
     __types = "|".join([re.escape(t) for t in DependencyType])
-    __re = re.compile(rf"({__types})\s*(\S+)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?")
+    __re = re.compile(
+        rf"({__types})\s*([-\w ]+?)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?"
+    )
 
     def __init__(
         self, type: DependencyType, name: str, min_ver: ver_comp, max_ver: ver_comp
