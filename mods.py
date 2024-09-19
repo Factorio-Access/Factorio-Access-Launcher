@@ -1,8 +1,8 @@
 from collections.abc import Iterable
 import json
 import re
-import zipfile
-import pathlib
+from zipfile import is_zipfile, Path as zPath
+from pathlib import Path
 from urllib import parse, error
 from collections import defaultdict
 from typing import Iterator, Union, TypedDict
@@ -15,6 +15,8 @@ from fa_arg_parse import d_print
 from update_factorio import download, get_credentials, opener
 
 _mod_portal = "https://mods.factorio.com"
+
+dual_path = zPath | Path
 
 
 class info_json(TypedDict):
@@ -102,9 +104,8 @@ class IncompatibleDependencies(ValueError):
 
 class dependency(object):
     __types = "|".join([re.escape(t) for t in DependencyType])
-    __re = re.compile(
-        rf"({__types})\s*([-\w ]+?)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?"
-    )
+    __re_raw = rf"({__types})\s*([-\w ]+?)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?"
+    __re = re.compile(__re_raw)
 
     def __init__(
         self, type: DependencyType, name: str, min_ver: ver_comp, max_ver: ver_comp
@@ -122,11 +123,14 @@ class dependency(object):
         name = m[2]
         type = DependencyType(m[1])
         # the second values of the tuples allow for < and > to be handled with <= and >= so we don't need branching
+        # start with the full range
         min = (MIN_MOD_VERSION, 0)
         max = (MAX_MOD_VERSION, 0)
-        if type == "!":
+        # and then narrow as specified
+        if type == DependencyType.CONFLICT:
             max = (MIN_MOD_VERSION, -1)
         elif not m[4]:
+            # no version restriction
             pass
         else:
             ver = mod_version(m[4])
@@ -144,6 +148,7 @@ class dependency(object):
         return cls(type, name, min, max)
 
     def meets(self, other: mod_version):
+        # works because of how we set up min and max as tuples
         return self.min <= (other, 0) <= self.max
 
     def __lt__(self, other):
@@ -159,16 +164,17 @@ class dependency(object):
         a, b = sorted([self, other])
         if a.type == DependencyType.CONFLICT:
             if b.type >= DependencyType.UNORDERED:
-                raise IncompatibleDependencies(
-                    f"Dependencies incompatible", self, other
-                )
+                raise IncompatibleDependencies(self, other)
             return a
         # at this point neither is a conflict
-        n_type = max(a.type, b.type)
-        n_min = max(a.min, b.min)
-        n_max = min(a.max, b.max)
-        if n_min < n_max:
+        new_type = max(a.type, b.type)
+        new_min = max(a.min, b.min)
+        new_max = min(a.max, b.max)
+        if new_min < new_max:
+            # they have mutually exclusive compatible ranges
             if b.type <= DependencyType.OPTIONAL:
+                # both are optional so the mod isn't required
+                # therefore this mod is actually conflicting
                 return dependency(
                     DependencyType.CONFLICT,
                     a.name,
@@ -176,10 +182,15 @@ class dependency(object):
                     (MIN_MOD_VERSION, -1),
                 )
             raise IncompatibleDependencies(f"Dependencies incompatible", self, other)
-        return dependency(n_type, a.name, n_min, n_max)
+        return dependency(new_type, a.name, new_min, new_max)
 
 
 class Dependencies(dict):
+    """A collection of dependencies that are all compatible.
+    Attempting to add incompatible dependencies raises an error.
+    dependencies can be added individually or from an iterable.
+    The dependencies to add can be instances or strings."""
+
     def __init__(self, deps=None):
         super().__init__(self)
         if deps:
@@ -207,18 +218,18 @@ class mod(object):
     def __init__(self, info: info_json) -> None:
         self.info = info
         if "dependencies" not in info:
-            info["dependencies"] = []
+            info["dependencies"] = ["base"]
         self.dependencies = Dependencies(info["dependencies"])
         self.version = mod_version(info["version"])
         self.name = info["name"]
 
 
 class installed_mod(mod):
-    def __init__(self, path: Union[zipfile.Path, pathlib.Path]) -> None:
+    def __init__(self, path: dual_path) -> None:
         if path.is_file():
-            if not zipfile.is_zipfile(path):
+            if not is_zipfile(path):
                 raise ValueError(f"non zip file {path} failed mod init")
-            self.folder_path = next(zipfile.Path(path).iterdir())
+            self.folder_path = next(zPath(path).iterdir())
         else:
             self.folder_path = path
         info_path = self.folder_path.joinpath("info.json")
@@ -239,9 +250,7 @@ class installed_mod(mod):
         super().__init__(i)
 
     @staticmethod
-    def _iter_files_sub(
-        parts: list[Union[str, re.Pattern]], path: Union[zipfile.Path, pathlib.Path]
-    ):
+    def _iter_files_sub(parts: list[str | re.Pattern], path: dual_path):
         if not path.exists():
             return
         if not parts:
@@ -453,20 +462,20 @@ class __mod_manager(object):
 
     fancy = re.compile(r"[*.?()\[\]]")
 
-    def get_mod_path_parts(self, path: Union[zipfile.Path, pathlib.Path]):
-        if isinstance(path, pathlib.Path):
+    def get_mod_path_parts(self, path: dual_path):
+        if isinstance(path, Path):
             try:
                 return path.relative_to(MODS).parts
             except:
                 pass
             return path.relative_to(READ_DIR).parts
         parts = []
-        while isinstance(path.parent, zipfile.Path):
+        while isinstance(path.parent, zPath):
             parts.append(path.name)
             path = path.parent
         return tuple(parts[::-1])
 
-    def _iterate_over_all_mod_paths(self) -> Iterator[pathlib.Path]:
+    def _iterate_over_all_mod_paths(self) -> Iterator[Path]:
         for base_core in ["core", "base"]:
             yield READ_DIR.joinpath(base_core)
         yield from MODS.iterdir()
@@ -484,7 +493,7 @@ class __mod_manager(object):
 
     def iter_mod_files(
         self, inner_re_path: str, require_enabled=True, mod_filter: re.Pattern = None
-    ) -> Iterator[Union[zipfile.Path, pathlib.Path]]:
+    ) -> Iterator[dual_path]:
         parts = inner_re_path.split("/")
         parts = [
             part if not self.fancy.search(part) else re.compile(part) for part in parts
