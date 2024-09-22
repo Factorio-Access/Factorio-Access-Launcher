@@ -7,7 +7,7 @@ from urllib import parse, error
 from collections import defaultdict
 from typing import Iterator, Union, TypedDict
 from enum import StrEnum
-from functools import reduce
+import traceback
 
 import config
 from fa_paths import MODS, READ_DIR, FACTORIO_VERSION
@@ -17,6 +17,14 @@ from update_factorio import download, get_credentials, opener
 _mod_portal = "https://mods.factorio.com"
 
 dual_path = zPath | Path
+
+
+class NotAModPath(ValueError):
+    pass
+
+
+class UnresolvedModDependency(Exception):
+    pass
 
 
 class info_json(TypedDict):
@@ -228,13 +236,13 @@ class installed_mod(mod):
     def __init__(self, path: dual_path) -> None:
         if path.is_file():
             if not is_zipfile(path):
-                raise ValueError(f"non zip file {path} failed mod init")
+                raise NotAModPath(path)
             self.folder_path = next(zPath(path).iterdir())
         else:
             self.folder_path = path
         info_path = self.folder_path.joinpath("info.json")
         if not info_path.is_file():
-            raise ValueError(f"no info file in {self.folder_path}; failed mod init")
+            raise NotAModPath(self.folder_path)
         with info_path.open(encoding="utf8") as fp:
             i: info_json = json.load(fp)
         if path.name == "core":
@@ -277,10 +285,6 @@ class portal_mod(mod):
         self.release = release
 
 
-class UnresolvedModDependency(Exception):
-    pass
-
-
 class __mod_manager(object):
     MOD_LIST_FILE = MODS.joinpath("mod-list.json")
 
@@ -303,7 +307,12 @@ class __mod_manager(object):
             dict
         )
         for mod_path in self._iterate_over_all_mod_paths():
-            self.add_installed_mod(mod_path)
+            try:
+                self.add_installed_mod(mod_path)
+            except NotAModPath:
+                pass
+            except Exception:
+                traceback.print_exc()
 
         pre_size = len(self.dict)
         self.dict = {
@@ -405,11 +414,7 @@ class __mod_manager(object):
         self.add_installed_mod(new_path)
 
     def add_installed_mod(self, mod_path):
-        try:
-            m = installed_mod(mod_path)
-        except Exception as e:
-            d_print(e)
-            return
+        m = installed_mod(mod_path)
         self.by_name_version[m.name][m.version] = m  # TODO: check duplicates?
         if m.name not in self.dict and m.name != "core":
             self.dict[m.name] = {"name": m.name, "enabled": self.new_enabled}
@@ -476,13 +481,12 @@ class __mod_manager(object):
         return tuple(parts[::-1])
 
     def _iterate_over_all_mod_paths(self) -> Iterator[Path]:
-        for base_core in ["core", "base"]:
-            yield READ_DIR.joinpath(base_core)
-        yield from MODS.iterdir()
+        for folders_with_mods in [READ_DIR, MODS]:
+            yield from folders_with_mods.iterdir()
 
     def iter_mods(
         self, require_enabled=True, mod_filter: re.Pattern = None
-    ) -> Iterator[mod]:
+    ) -> Iterator[installed_mod]:
         for m in self.dict.values():
             if m["enabled"] or not require_enabled:
                 name = m["name"]

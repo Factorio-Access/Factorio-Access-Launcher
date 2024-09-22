@@ -13,16 +13,16 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
     def __init__(self):
         super().__init__(title=("gui-map-generator.enabled",))
 
-    def get_names(self, *args):
+    def val_to_string(self, *args):
         self.val = mod_manager.dict[args[-1]]["enabled"]
-        return super().get_names(*args)
+        return super().val_to_string(*args)
 
-    def __call__(self, *args):
-        super().__call__(*args)
+    def set_val(self, val, mod, *args):
+        super().set_val(val, mod, *args)
         if self.val:
-            mod_manager.enable(args[0])
+            mod_manager.enable(mod)
         else:
-            mod_manager.disable(args[0])
+            mod_manager.disable(mod)
         return 0
 
 
