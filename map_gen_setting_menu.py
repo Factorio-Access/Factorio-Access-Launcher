@@ -513,6 +513,18 @@ class SettingEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
+def launch_new_game_from_params(params):
+    new_save = str(fa_paths.SAVES.joinpath("_autosave-new.zip").absolute())
+    params += ["--create", new_save]
+    launch_with_params(params, save_rename=False)
+    return launch(new_save)
+
+
+def launch_new_preset(preset, *args):
+    p = preset["name"]
+    return launch_new_game_from_params(["--preset", p])
+
+
 def launch_new(*args):
     mgs_path = fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json")
     ms_path = fa_paths.SCRIPT_OUTPUT.joinpath("map.json")
@@ -522,23 +534,13 @@ def launch_new(*args):
             json.dump(
                 json_files[sub], fp, ensure_ascii=False, indent=2, cls=SettingEncoder
             )
-    save = fa_paths.SAVES.joinpath("_autosave-new.zip").absolute()
-    launch_with_params(
-        [
-            "--map-gen-settings",
-            str(mgs_path),
-            "--map-settings",
-            str(ms_path),
-            "--create",
-            str(save),
-        ],
-        save_rename=False,
+    return launch_new_game_from_params(
+        ["--map-gen-settings", str(mgs_path), "--map-settings", str(ms_path)]
     )
-    launch(save)
-    return 20
 
 
 menu = {
+    select_preset_name: select_preset,
     "seed": mgs_json["seed"],
     ("gui-map-generator.resources-tab-title",): {},
     ("gui-map-generator.terrain-tab-title",): {
@@ -726,8 +728,8 @@ msj["enemy_evolution"]["enabled"] = menu[("gui-map-generator.enemy-tab-title",)]
 sub_preset = {
     get_presets: {
         "_desc": get_preset_desc,
-        select_preset_name: select_preset,
-        ("gui-map-generator.next",): menu,
+        ("gui-map-generator.play",): launch_new_preset,
+        ("fa-l.customize",): menu,
     },
 }
 
