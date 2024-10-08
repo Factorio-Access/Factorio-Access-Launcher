@@ -6,7 +6,7 @@ import json
 import fa_paths
 import translations
 from launch_and_monitor import launch_with_params
-import fa_menu
+from mods import mod_manager
 
 
 class Scenario(NamedTuple):
@@ -19,7 +19,7 @@ class Scenario(NamedTuple):
 def get_scenario_from_path(path):
     with path.open(encoding="utf8") as fp:
         json_desc = json.load(fp)
-    parts = translations.get_mod_path_parts(path)
+    parts = mod_manager.get_mod_path_parts(path)
     key = parts[0] + "/" + parts[2]
     locale = path.parent.joinpath("locale")
     if not locale:
@@ -52,12 +52,13 @@ def get_scenarios(m_scenario=None):
     if m_scenario:
         return m_scenario.name
     scenarios = []
-    for path in translations.iterate_over_mod_files(
-        "scenarios/.*/description.json", re.compile(r"FactorioAccess.*")
-    ):
-        scenario = get_scenario_from_path(path)
-        if scenario:
-            scenarios.append(scenario)
+    with mod_manager:
+        for path in mod_manager.iter_mod_files(
+            "scenarios/.*/description.json", True, re.compile(r"FactorioAccess.*")
+        ):
+            scenario = get_scenario_from_path(path)
+            if scenario:
+                scenarios.append(scenario)
     scenarios.sort()
     return {s.name: (s,) for s in scenarios}
 

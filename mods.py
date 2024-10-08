@@ -510,18 +510,6 @@ mod_manager = __mod_manager()
 
 
 if __name__ == "__main__":
-    test = [
-        DependencyType.CONFLICT,
-        DependencyType.HIDDEN_OPTIONAL,
-        DependencyType.CONFLICT,
-        DependencyType.NORMAL,
-    ]
-    s_test = list(sorted(test))
-    print(test, s_test)
-    test.sort(key=lambda x: list(DependencyType).index(x))
-    print(test)
-    print(DependencyType.NORMAL <= DependencyType.OPTIONAL)
-    print(list(DependencyType))
     print(dependency.from_str("! stop >= 3.4.5").meets(mod_version("3.4.5")))
     with mod_manager:
         pass

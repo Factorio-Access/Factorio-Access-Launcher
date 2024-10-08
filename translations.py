@@ -258,54 +258,6 @@ def get_mod_path_parts(path: Union[zipfile.Path, Path]):
     return tuple(parts[::-1])
 
 
-def iterate_over_mods(re_filter: re.Pattern[str] = None) -> Iterator[Path]:
-    import fa_paths
-
-    if re_filter:
-        for mod_path in iterate_over_mods():
-            if re_filter.fullmatch(mod_path.name):
-                yield mod_path
-        return
-    base_path = fa_paths.READ_DIR
-    for base_core in ["core", "base"]:
-        yield base_path.joinpath(base_core)
-    yield from fa_paths.MODS.iterdir()
-
-
-def mod_re_files_sub(parts: list[str], path: Union[zipfile.Path, Path]):
-    if not path.exists():
-        return
-    if not parts:
-        if path.is_file():
-            yield path
-        return
-    if not path.is_dir():
-        return
-    part = parts[0]
-    if not fancy.search(part):
-        yield from mod_re_files_sub(parts[1:], path.joinpath(part))
-        return
-    myre = re.compile(part)
-    for path_part in path.iterdir():
-        if myre.fullmatch(path_part.name):
-            yield from mod_re_files_sub(parts[1:], path_part)
-
-
-def iterate_over_this_mods_files(parts: list[str], mod_path: Path):
-    if mod_path.is_file():
-        if not zipfile.is_zipfile(mod_path):
-            return
-        mod_path = zipfile.Path(mod_path)
-        mod_path = next(mod_path.iterdir())
-    yield from mod_re_files_sub(parts, mod_path)
-
-
-def iterate_over_mod_files(inner_re_path: str, mod_filter: re.Pattern[str] = None):
-    parts = inner_re_path.split("/")
-    for mod in iterate_over_mods(mod_filter):
-        yield from iterate_over_this_mods_files(parts, mod)
-
-
 def read_cfg(fp: Iterable[str], conf=False, ret=defaultdict(dict)):
     name = ""
     while True:

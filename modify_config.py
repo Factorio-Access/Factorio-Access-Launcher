@@ -7,12 +7,14 @@ import fa_paths
 import translations
 import config
 from fa_menu import select_option
+from mods import mod_manager
 
-MOD_NAME = "FactorioAccess"
-CHANGESET_PATH = "config_changes"
+CHANGESET_PATH = r"config_changes/.*\.ini"
 
 config_re = re.compile(r"^([\w-]+)=(.*)")
 comment_re = re.compile(r"^;")
+
+our_mod_filter = re.compile(fa_paths.MOD_NAME)
 
 
 def get_changes_from_fp(fp):
@@ -33,18 +35,18 @@ def get_changes_from_fp(fp):
 
 def get_all_changes(after="AA"):
     all_changes = {}
-    for cfg_path in translations.iterate_over_mod_files(
-        CHANGESET_PATH + r"/.*\.ini", re.compile("FactorioAccess.*")
-    ):
-        version = cfg_path.name[:2]
-        if version <= after:
-            continue
-        if not re.fullmatch("[A-Z]{2}", version):
-            raise ValueError(
-                "configureation change sets must begin with the next two capital letters"
-            )
-        with cfg_path.open(encoding="utf8") as fp:
-            all_changes[version] = get_changes_from_fp(fp)
+    with mod_manager:
+        mod_iter = mod_manager.iter_mod_files(CHANGESET_PATH, True, our_mod_filter)
+        for cfg_path in mod_iter:
+            version = cfg_path.name[:2]
+            if version <= after:
+                continue
+            if not re.fullmatch("[A-Z]{2}", version):
+                raise ValueError(
+                    "configuration change sets must begin with the next two capital letters"
+                )
+            with cfg_path.open(encoding="utf8") as fp:
+                all_changes[version] = get_changes_from_fp(fp)
     return all_changes
 
 
@@ -53,19 +55,17 @@ def do_config_check():
         current = ""
         try:
             for i in ["1", "2"]:
-                current += config.current_conf.get_setting(
-                    "controls", f"access-config-version{i}-DO-NOT-EDIT"
-                )
+                setting_string = f"access-config-version{i}-DO-NOT-EDIT"
+                current += config.current_conf.get_setting("controls", setting_string)
         except config.Config_Missing:
             current = "AA"
-        if current == "Co":
-            current = (
-                "AE"  # to correct for an issue with a config file being baddly named.
-            )
+        if current == "Ch":
+            # to correct for an issue with a config file being badly named.
+            current = "AE"
         change_sets = get_all_changes(after=current)
         if not change_sets:
             return
-        p = """There are changes that the Factorio Access mod recommends making to your cofiguration file that have not yet been applied.
+        p = """There are changes that the Factorio Access mod recommends making to your configuration file that have not yet been applied.
 These can be applied interactively or all at once.
 How would you like to proceed?"""
         ops = [
