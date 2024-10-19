@@ -26,7 +26,7 @@ def save_time(file):
 def get_sorted_saves():
     try:
         all_files = os.listdir(SAVES)
-        zip_files = [f for f in all_files if f.lower().endswith('.zip')]
+        zip_files = [f for f in all_files if f.lower().endswith(".zip")]
         zip_files.sort(reverse=True, key=save_time)
         return zip_files
     except:
@@ -36,7 +36,7 @@ def get_sorted_saves():
 def get_menu_saved_games():
     games = get_sorted_saves()
     return {
-        save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago": save
+        save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago": (save,)
         for save in games
     }
 
