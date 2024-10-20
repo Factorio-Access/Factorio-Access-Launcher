@@ -182,7 +182,15 @@ class translated_args(dict):
         return self[key]
 
 
+plural_compat = re.compile(r"__plural_for_parameter_(\d+)_{")
+
+
+def plural_compat_replacer(m: re.Match):
+    return "__plural_for_parameter__" + m[1] + "__{"
+
+
 def expand(template: str, args: list[localised_str] = []) -> str:
+    template = plural_compat.sub(plural_compat_replacer, template)
     parts = template.split("__")
     return expand_r(parts, translated_args(args))
 
@@ -196,10 +204,10 @@ def expand_r(parts: list[str], targs: translated_args, in_plural=False):
             mrf = repalecement_functions[p]
             args = [parts.pop(0) for _ in range(mrf[0])]
             ret += mrf[1](*args)
-        elif "plural_for_parameter_" in p:
-            sub_parts = p.split("_", 4)
-            my_num = targs[sub_parts[3]]
-            remaining = sub_parts[4]
+        elif p == "plural_for_parameter":
+            arg_num = parts.pop(0)
+            my_num = targs[arg_num]
+            remaining = parts.pop(0)
             assert remaining[0] == "{", "Unexpected start of plural. Expected {"
             remaining = remaining[1:]
             matched = False

@@ -658,7 +658,7 @@ for name, control in data["autoplace-control"].items():
     if "can_be_disabled" not in control or control["can_be_disabled"]:
         my_menu = autoplace_enable_disable_menu(name, submenu)
     else:
-        my_menu = fa_menu.menu_item(name, submenu)
+        my_menu = fa_menu.Menu(name, *fa_menu.parse_menu_dict(submenu))
     parent[control["name"]] = my_menu
     mgs_json["autoplace_controls"][control["name"]] = submenu
 

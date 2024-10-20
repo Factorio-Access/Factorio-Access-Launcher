@@ -10,6 +10,9 @@ launcher.exe
 /mods/**
 
 #facotrio files
+bin
+data
+doc-html
 *.dat
 /saves/**
 .lock
