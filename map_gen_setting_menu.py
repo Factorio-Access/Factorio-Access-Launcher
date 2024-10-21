@@ -27,7 +27,7 @@ class j_mix(object):
     def save_val(self, val, *args):
         l_args = list(args)
         item = self.obj
-        for key in self.path[:-1]:
+        for key in self.path:
             if key == "_arg":
                 key = l_args.pop(0)
             prev_item = item
@@ -58,9 +58,9 @@ class enable_disable_menu(fa_menu.Menu):
 
     def remake_submenu(self):
         if self.enabler.val:
-            self.submenu = self.full_submenu
+            self.items = self.full_submenu
         else:
-            self.submenu = self.submenu[:2]
+            self.items = self.items[:2]
 
     def __call__(self, *args):
         self.remake_submenu()
@@ -80,11 +80,15 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
 
     def __call__(self, *args):
         super().__call__(*args)
+        self.parent().got_toggled(*args)
         self.parent().remake_submenu()
         return 0
 
 
 class autoplace_enable_disable_menu(enable_disable_menu):
+    """This is used because when on autoplace control is disabled
+    the subitems are just set to zero."""
+
     def got_toggled(self, *args):
         if not self.enabler.val:
             for sub in self.full_submenu[2:]:
@@ -525,7 +529,7 @@ def launch_new_preset(preset, *args):
     return launch_new_game_from_params(["--preset", p])
 
 
-def launch_new(*args):
+def launch_new_custom(*args):
     mgs_path = fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json")
     ms_path = fa_paths.SCRIPT_OUTPUT.joinpath("map.json")
     files = {"basic_settings": mgs_path, "advanced_settings": ms_path}
@@ -546,18 +550,21 @@ menu = {
     ("gui-map-generator.terrain-tab-title",): {
         "map_type": mgs_json["property_expression_names"]["elevation"],
         "Water": autoplace_enable_disable_menu(
-            ("gui-map-generator.water",),
-            {"Scale": mgs_json["terrain_segmentation"], "Coverage": mgs_json["water"]},
-            ("size.only-starting-area",),
+            name=("gui-map-generator.water",),
+            submenu={
+                "Scale": mgs_json["terrain_segmentation"],
+                "Coverage": mgs_json["water"],
+            },
+            desc=("size.only-starting-area",),
         ),
     },
     ("gui-map-generator.enemy-tab-title",): {},
     ("gui-map-generator.advanced-tab-title",): {
         "Record replay information": fa_menu.setting_menu_bool(
-            ("gui-map-generator.enable-replay",),
-            ("gui-map-generator.enable-replay-description",),
-            False,
-            False,
+            title=("gui-map-generator.enable-replay",),
+            desc=("gui-map-generator.enable-replay-description",),
+            default=False,
+            val=False,
         ),
         ("gui-map-generator.map-size-group-tile",): {
             "Width": mgs_json["width"],
@@ -589,12 +596,12 @@ menu = {
             },
         ),
     },
-    ("gui-map-generator.play",): launch_new,
+    ("gui-map-generator.play",): launch_new_custom,
 }
 
 msj["pollution"]["enabled"] = menu[("gui-map-generator.advanced-tab-title",)][
     ("gui-map-generator.pollution",)
-].submenu[1]
+].items[1]
 
 
 for name, control in data["autoplace-control"].items():
@@ -719,10 +726,10 @@ menu[("gui-map-generator.enemy-tab-title",)].update(
 
 msj["enemy_expansion"]["enabled"] = menu[("gui-map-generator.enemy-tab-title",)][
     "Enemy Expansion"
-].submenu[1]
+].items[1]
 msj["enemy_evolution"]["enabled"] = menu[("gui-map-generator.enemy-tab-title",)][
     "Evolution"
-].submenu[1]
+].items[1]
 
 
 sub_preset = {
