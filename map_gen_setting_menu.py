@@ -511,7 +511,7 @@ def get_preset_desc(*args):
 
 class SettingEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, fa_menu.menu_item):
+        if isinstance(obj, fa_menu.Menu):
             return obj.val
         # Let the base class default method raise the TypeError
         return super().default(obj)
@@ -786,8 +786,9 @@ def set_vals(preset, obj):
 
 
 class preset_menu(fa_menu.Menu):
-    def __init__(self):
-        self.submenu = []
+    def __init__(self, triple_obj):
+        self.t: dict = triple_obj
+        submenu = []
         super().__init__(name, submenu, ("fa-l.map-setting-preset-description",), True)
 
     def populate(self, prototype_data):
@@ -803,6 +804,9 @@ class preset_menu(fa_menu.Menu):
         self.presets.sort()
         if self.selected_preset is None:
             self.select_preset(self.presets[0][2])
+
+    def select_preset(self, preset):
+        self.t["preset"]
 
 
 class map_settings_menu_gen(object):
