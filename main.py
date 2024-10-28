@@ -39,7 +39,7 @@ menu = {
     },
     ("gui-menu.multi-player-menu",): {
         multiplayer.get_username_menu: multiplayer.username_menu,
-        "Host Settings": {multiplayer.get_host_settings_menu: multiplayer.run_func},
+        "Host Settings": multiplayer.host_settings_menu(),
         ("gui-menu.host-saved-game",): {
             save_management.get_menu_saved_games: multiplayer.multiplayer_host,
         },

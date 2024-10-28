@@ -9,9 +9,7 @@ import fa_paths
 import fa_menu
 import launch_and_monitor
 
-__ACCESS_LIST_PATH: Final[str] = os.path.join(
-    fa_paths.WRITE_DIR, "server-whitelist.json"
-)
+__ACCESS_LIST_PATH = fa_paths.WRITE_DIR.joinpath("server-whitelist.json")
 
 
 def get_game_list():
@@ -41,14 +39,14 @@ def get_filtered_game_list():
 
 def get_friend_list():
     try:
-        with open(__ACCESS_LIST_PATH) as fp:
+        with __ACCESS_LIST_PATH.open(encoding="utf8") as fp:
             return json.load(fp)
     except:
         return []
 
 
 def add_friend(friend: str):
-    with open(__ACCESS_LIST_PATH, "a+", newline="") as fp:
+    with __ACCESS_LIST_PATH.open("a+", encoding="utf8", newline="") as fp:
         fp.seek(0)
         try:
             friends: list[str] = json.load(fp)
@@ -61,7 +59,7 @@ def add_friend(friend: str):
 
 
 def remove_friend(friend: str):
-    with open(__ACCESS_LIST_PATH, "r+", newline="") as fp:
+    with __ACCESS_LIST_PATH.open("r+", encoding="utf8", newline="") as fp:
         friends = set(json.load(fp))
         friends.remove(friend)
         fp.seek(0)
@@ -111,42 +109,42 @@ def multiplayer_host(game):
     )
 
 
-def add_toggle_setting(menu, setting, header):
-    name = header + ": "
-    t_setting = ("multiplayer-lobby", setting)
-    current = config.current_conf.get_setting(*t_setting)
-    if current == "true":
-        name += "Yes"
+class config_toggle(fa_menu.setting_menu_bool):
+    def __init__(self, setting: tuple, title) -> None:
+        self.setting = setting
+        super().__init__(title)
 
-        def toggle():
-            with config.current_conf:
-                config.current_conf.set_setting(*t_setting, "false")
-            return 0
+    def get_items(self, *args):
+        return {(self._title, self.val_to_string(*args)): ()}
 
-    else:
-        name += "No"
+    def val_to_string(self, *args):
+        self.val = config.current_conf.get_setting(*self.setting) == "true"
+        return super().val_to_string(*args)
 
-        def toggle():
-            with config.current_conf:
-                config.current_conf.set_setting(*t_setting, "true")
-            return 0
-
-    menu[name] = toggle
+    def set_val(self, val, *args):
+        val_str = "true" if val else "false"
+        config.current_conf.set_setting(*self.setting, val_str)
+        return super().set_val(val, *args)
 
 
-def get_host_settings_menu():
-    with config.current_conf:
-        menu = {}
-        add_toggle_setting(menu, "visibility-public", "Publicly Advertised")
-        add_toggle_setting(menu, "visibility-lan", "LAN Advertised")
-        add_toggle_setting(menu, "visibility-steam", "Steam Advertised")
-        add_toggle_setting(menu, "enable-whitelist", "Friends Only")
-        add_toggle_setting(menu, "verify-user-identity", "Verify user")
-        return menu
+class host_settings_menu(fa_menu.Menu):
+    def __init__(self):
+        setting_data = {
+            "visibility-public": "config-output.visibility-public",
+            "visibility-lan": "config-output.visibility-lan",
+            "visibility-steam": "config-output.visibility-steam",
+            "enable-whitelist": "fa-l.access-list-enabled",
+            "verify-user-identity": "config-output.verify-user-identity",
+        }
+        items = []
+        for key, name in setting_data.items():
+            setting_key = ("multiplayer-lobby", key)
+            items.append(config_toggle(setting_key, name))
+        super().__init__(title=("gui-multiplayer-lobby.title",), items=items)
 
-
-def run_func(func):
-    return func()
+    def __call__(self, *args):
+        with config.current_conf:
+            return super().__call__(*args)
 
 
 def get_username_menu():
