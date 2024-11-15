@@ -1,5 +1,9 @@
 import json
 import os
+from dataclasses import dataclass
+from enum import StrEnum, auto
+from typing import Any, Iterable
+
 from fa_paths import SCRIPT_OUTPUT, MODS
 from launch_and_monitor import launch_with_params
 
@@ -14,6 +18,44 @@ cached_fields = {
 }
 
 
+class MissingData(ValueError):
+    pass
+
+
+@dataclass(kw_only=True)
+class PrototypeBase:
+    type: str
+    name: str
+    order: str = ""
+    localised_name: Any = None
+    localised_description: Any = None
+    factoriopedia_description: Any = None
+    subgroup: str | None = None
+    hidden: bool = False
+    hidden_in_factoriopedia: bool = False
+    parameter: bool = False
+    factoriopedia_simulation: Any = None
+
+
+@dataclass(kw_only=True)
+class Prototype(PrototypeBase):
+    factoriopedia_alternative = None
+
+
+class autoplace_category(StrEnum):
+    resource = auto()
+    terrain = auto()
+    cliff = auto()
+    enemy = auto()
+
+
+@dataclass(kw_only=True)
+class AutoplaceControl(Prototype):
+    category: autoplace_category
+    richness: bool = False
+    can_be_disabled: bool = True
+
+
 # copies by reference
 def extract_fields(template, data):
     if template is True:
@@ -22,15 +64,23 @@ def extract_fields(template, data):
     for name, sub_template in template.items():
         if name == "*":
             for data_name, sub_data in data.items():
-                ret[data_name] = extract_fields(sub_template, sub_data)
+                try:
+                    ret[data_name] = extract_fields(sub_template, sub_data)
+                except MissingData:
+                    pass
         else:
-            ret[name] = extract_fields(sub_template, data[name])
+            if name in data:
+                ret[name] = extract_fields(sub_template, data[name])
+            else:
+                raise MissingData()
     return ret
 
 
 def refresh_file_data():
+    out_path = SCRIPT_OUTPUT.joinpath("data-raw-dump.json")
+    out_path.unlink(missing_ok=True)
     launch_with_params(["--dump-data"], save_rename=False)
-    with SCRIPT_OUTPUT.joinpath("data-raw-dump.json").open(encoding="utf8") as fp:
+    with out_path.open(encoding="utf8") as fp:
         full_data = json.load(fp)
     selected_data = extract_fields(cached_fields, full_data)
     with CACHE.open("w", encoding="utf8") as fp:
@@ -66,3 +116,11 @@ def get_prototype_data():
         local_cache = refresh_file_data()
     local_cache_time = by_time
     return local_cache
+
+
+if __name__ == "__main__":
+    data = get_prototype_data()
+    print(json.dumps(data, indent=3))
+    for n, p in data["autoplace-control"].items():
+        temp = AutoplaceControl(**p)
+        print(temp)

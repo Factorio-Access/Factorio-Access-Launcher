@@ -1,38 +1,99 @@
 import json
 from typing import Any, Callable
 import weakref
+from copy import deepcopy
+import collections.abc
 
 import fa_paths
 import fa_menu
 from translations import localised_str
 from launch_and_monitor import launch_with_params, launch
+import prototype_data
+
+BASIC = "basic_settings"
+ADVANCED = "advanced_settings"
+
+AUTO = "autoplace_controls"
+
+DEFAULT_DATA_PATHS = {
+    BASIC: fa_paths.READ_DIR.joinpath("map-gen-settings.example.json"),
+    ADVANCED: fa_paths.READ_DIR.joinpath("map-settings.example.json"),
+}
+FLAGS = {
+    BASIC: "--map-gen-settings",
+    ADVANCED: "--map-settings",
+}
+JSON_OUTPUT_PATHS = {
+    BASIC: fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json"),
+    ADVANCED: fa_paths.SCRIPT_OUTPUT.joinpath("map.json"),
+}
 
 
-class j_mix(object):
-    def __init__(self, obj: dict, path: tuple[str], *args, **kwargs) -> None:
-        self.obj = obj
-        self.path = path
-        super().__init__(*args, **kwargs)
+def update(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
-    def val_to_string(self, *args):
-        l_args = list(args)
-        item = self.obj
-        for key in self.path:
-            if key == "_arg":
-                key = l_args.pop(0)
+
+class json_map_settings(object):
+    def __init__(self):
+        self.defaults = {}
+        for name, path in DEFAULT_DATA_PATHS.items():
+            with path.open(encoding="utf8") as fp:
+                self.defaults[name] = json.load(fp)
+        self.load_preset({})
+
+    def load_preset(self, preset):
+        self.preset = update(deepcopy(self.defaults), preset)
+        self.current = deepcopy(self.preset)
+
+    def get(self, key_path):
+        item = self.current
+        for key in key_path:
             item = item[key]
-        self.val = item
-        return super().val_to_string(*l_args)
+        return item
 
-    def save_val(self, val, *args):
-        l_args = list(args)
-        item = self.obj
-        for key in self.path:
-            if key == "_arg":
-                key = l_args.pop(0)
+    def set(self, key_path, val):
+        item = self.current
+        for key in key_path:
             prev_item = item
             item = item[key]
         prev_item[key] = val
+
+    def reset_to_preset(self):
+        self.current = deepcopy(self.preset)
+
+    def save(self):
+        for k, v in self.current:
+            with JSON_OUTPUT_PATHS[k].open("w", encoding="utf8") as fp:
+                json.dump(v, fp, indent=2)
+
+
+settings = json_map_settings()
+
+
+class j_mix(object):
+    def __init__(self, *args, path: tuple[str], settings=settings, **kwargs) -> None:
+        self.settings = settings
+        self.path = path[::-1]
+        super().__init__(*args, **kwargs)
+
+    def make_key(self, l_args: list):
+        return tuple(l_args.pop(0)["name"] if i == "_arg" else i for i in self.path)[
+            ::-1
+        ]
+
+    def val_to_string(self, *args):
+        l_args = list(args)
+        k = self.make_key(l_args)
+        self.val = self.settings.get(k)
+        return super().val_to_string(*l_args)
+
+    def save_val(self, val, *args):
+        self.settings.set(self.make_key(list(args)), val)
 
 
 class enable_disable_menu(fa_menu.Menu):
@@ -102,6 +163,32 @@ class autoplace_enable_disable_menu(enable_disable_menu):
         # hack for refreshes
         self.enabler.val = self.full_submenu[-1].val != 0
         return super().remake_submenu()
+
+
+class autoplace_menu(fa_menu.Menu_var):
+    resource = prototype_data.autoplace_category.resource
+
+    def __init__(
+        self,
+        autoplace_finder: Callable,
+        submenu: list,
+    ) -> None:
+        self.enabler = enable_disable_submenu(self)
+        super().__init__(autoplace_finder, [self.enabler] + submenu)
+        self.full_submenu = self.items
+
+    def get_title(self, spec: prototype_data.AutoplaceControl, *args):
+        return spec.localised_name
+
+    def __call__(self, spec: prototype_data.AutoplaceControl, *args):
+        start = 1
+        if spec.can_be_disabled:
+            start = 0
+        end = len(self.full_submenu)
+        if spec.type == self.resource and not spec.richness:
+            end -= 1
+        self.items = self.full_submenu[start:end]
+        return super().__call__(spec, *args)
 
 
 class menu_setting_inverse_float(fa_menu.setting_menu_float):
@@ -606,11 +693,9 @@ msj["pollution"]["enabled"] = menu[("gui-map-generator.advanced-tab-title",)][
 
 for name, control in data["autoplace-control"].items():
     submenu = {}
-    name = (
-        control["localised_name"]
-        if "localised_name" in control
-        else ("autoplace-control-names." + control["name"],)
-    )
+    if "localised_name" not in control:
+        control["localised_name"] = "autoplace-control-names." + control["name"]
+    name = (control["localised_name"],)
     if control["category"] == "resource":
         parent = menu[("gui-map-generator.resources-tab-title",)]
         submenu["frequency"] = fa_menu.setting_menu_float(
@@ -854,3 +939,63 @@ class map_settings_menu_gen(object):
         with gen.open(encoding="utf8") as fp:
             ret["basic_settings"] = json.load(fp)  # to match preset keys
         return ret
+
+
+def tuple_localised_string(data):
+    if isinstance(data, str):
+        return data
+    return tuple(tuple_localised_string(sub_data) for sub_data in data)
+
+
+def get_autoplace(cat: prototype_data.autoplace_category):
+    data = prototype_data.get_prototype_data()
+    specs: list[prototype_data.AutoplaceControl] = []
+    for spec_dict in data["autoplace-control"].values():
+        spec = prototype_data.AutoplaceControl(**spec_dict)
+        if spec.category == cat:
+            specs.append(spec)
+    specs.sort(key=lambda spec: spec.order)
+    return {tuple_localised_string(spec.localised_name): (spec,) for spec in specs}
+
+
+def get_resources():
+    return get_autoplace(prototype_data.autoplace_category.resource)
+
+
+class j_float(j_mix, fa_menu.setting_menu_float):
+    pass
+
+
+test_menu = {
+    "expanded_resources": autoplace_menu(
+        get_resources,
+        [
+            j_float(
+                title=("gui-map-generator.frequency",),
+                desc=("gui-map-generator.resource-frequency-description",),
+                default=1,
+                val=1,
+                path=(BASIC, AUTO, "_arg", "frequency"),
+            ),
+            j_float(
+                ("gui-map-generator.size",),
+                ("gui-map-generator.resource-size-description",),
+                1,
+                1,
+                path=(BASIC, AUTO, "_arg", "size"),
+            ),
+            j_float(
+                ("gui-map-generator.richness",),
+                ("gui-map-generator.resource-richness-description",),
+                1,
+                1,
+                path=(BASIC, AUTO, "_arg", "richness"),
+            ),
+        ],
+    )
+}
+
+
+m = fa_menu.new_menu("test", test_menu, False)
+m()
+settings.save()
