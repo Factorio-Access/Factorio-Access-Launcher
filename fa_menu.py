@@ -234,7 +234,7 @@ class setting_menu(Menu):
                 except:
                     print("Invalid value")
                     continue
-                self.set_val(val)
+                self.set_val(val, *args)
             return 0
 
 

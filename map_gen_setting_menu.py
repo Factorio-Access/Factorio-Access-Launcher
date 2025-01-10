@@ -82,9 +82,7 @@ class j_mix(object):
         super().__init__(*args, **kwargs)
 
     def make_key(self, l_args: list):
-        return tuple(l_args.pop(0)["name"] if i == "_arg" else i for i in self.path)[
-            ::-1
-        ]
+        return tuple(l_args.pop(0).name if i == "_arg" else i for i in self.path)[::-1]
 
     def val_to_string(self, *args):
         l_args = list(args)
@@ -92,7 +90,7 @@ class j_mix(object):
         self.val = self.settings.get(k)
         return super().val_to_string(*l_args)
 
-    def save_val(self, val, *args):
+    def set_val(self, val, *args):
         self.settings.set(self.make_key(list(args)), val)
 
 
@@ -180,14 +178,30 @@ class autoplace_menu(fa_menu.Menu_var):
     def get_title(self, spec: prototype_data.AutoplaceControl, *args):
         return spec.localised_name
 
-    def __call__(self, spec: prototype_data.AutoplaceControl, *args):
+    def refresh_items(self, spec: prototype_data.AutoplaceControl):
         start = 1
         if spec.can_be_disabled:
             start = 0
+            if not self.enabler.val:
+                self.items = [self.enabler]
+                return
         end = len(self.full_submenu)
         if spec.type == self.resource and not spec.richness:
             end -= 1
         self.items = self.full_submenu[start:end]
+
+    def got_toggled(self, spec: prototype_data.AutoplaceControl, *args):
+        if not self.enabler.val:
+            for sub in self.full_submenu[2:]:
+                sub.val = 0
+        else:
+            for sub in self.full_submenu[2:]:
+                sub.val = sub.default
+        self.refresh_items(spec)
+        return super().got_toggled(*args)
+
+    def __call__(self, spec: prototype_data.AutoplaceControl, *args):
+        self.refresh_items(spec)
         return super().__call__(spec, *args)
 
 
