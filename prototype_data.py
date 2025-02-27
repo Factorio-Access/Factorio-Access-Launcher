@@ -12,7 +12,7 @@ MOD_INFO = MODS.joinpath("mod-list.json")
 MOD_SETTINGS = MODS.joinpath("mod-settings.dat")
 
 cached_fields = {
-    "noise-expression": {"*": {"intended_property": True}},
+    "noise-expression": {"*": {"name": True, "intended_property": True}},
     "map-gen-presets": True,
     "autoplace-control": True,
 }
@@ -54,6 +54,12 @@ class AutoplaceControl(Prototype):
     category: autoplace_category
     richness: bool = False
     can_be_disabled: bool = True
+
+
+@dataclass(kw_only=True)
+class NamedNoiseExpression:
+    name: str
+    intended_property: str = ""
 
 
 # copies by reference
@@ -123,4 +129,7 @@ if __name__ == "__main__":
     print(json.dumps(data, indent=3))
     for n, p in data["autoplace-control"].items():
         temp = AutoplaceControl(**p)
+        print(temp)
+    for n, p in data["noise-expression"].items():
+        temp = NamedNoiseExpression(**p)
         print(temp)
