@@ -962,13 +962,7 @@ def tuple_localised_string(data):
 
 
 def get_autoplace(cat: prototype_data.autoplace_category):
-    data = prototype_data.get_prototype_data()
-    specs: list[prototype_data.AutoplaceControl] = []
-    for spec_dict in data["autoplace-control"].values():
-        spec = prototype_data.AutoplaceControl(**spec_dict)
-        if spec.category == cat:
-            specs.append(spec)
-    specs.sort(key=lambda spec: spec.order)
+    specs = prototype_data.autoplace_controls(cat)
     return {tuple_localised_string(spec.localised_name): (spec,) for spec in specs}
 
 
@@ -1008,8 +1002,3 @@ test_menu = {
         ],
     )
 }
-
-
-m = fa_menu.new_menu("test", test_menu, False)
-m()
-settings.save()

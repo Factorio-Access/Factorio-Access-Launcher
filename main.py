@@ -17,7 +17,7 @@ import modify_config
 import launch_and_monitor
 import save_management
 from fa_arg_parse import args
-from map_gen_setting_menu import sub_preset
+from map_gen_setting_menu import sub_preset, test_menu
 from translations import check_lang
 from fa_scenarios import get_scenarios, pre_launch_scenario
 from fa_mod_menu import mod_menu
@@ -70,5 +70,8 @@ modify_config.do_config_check()
 if args.launch:
     launch_and_monitor.launch_with_params([], save_rename=False)
 else:
+    m = new_menu("test", test_menu, False)
+    m()
+
     main_menu = new_menu(("gui-menu.main-menu",), menu)
     main_menu()

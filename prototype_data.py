@@ -12,7 +12,16 @@ MOD_INFO = MODS.joinpath("mod-list.json")
 MOD_SETTINGS = MODS.joinpath("mod-settings.dat")
 
 cached_fields = {
-    "noise-expression": {"*": {"name": True, "intended_property": True}},
+    "noise-expression": {
+        "*": {
+            "type": True,
+            "name": True,
+            "intended_property": True,
+            "order": False,
+            "localised_name": False,
+            "localised_description": False,
+        }
+    },
     "map-gen-presets": True,
     "autoplace-control": True,
 }
@@ -48,6 +57,15 @@ class autoplace_category(StrEnum):
     cliff = auto()
     enemy = auto()
 
+    def __post_init__(self):
+        if not self.localised_name:
+            self.localised_name = ("gui-map-generator." + self.name,)
+        if not self.localised_description:
+            self.localised_description = (
+                "?",
+                "gui-map-generator." + self.name + "-description",
+            )
+
 
 @dataclass(kw_only=True)
 class AutoplaceControl(Prototype):
@@ -57,14 +75,13 @@ class AutoplaceControl(Prototype):
 
 
 @dataclass(kw_only=True)
-class NamedNoiseExpression:
-    name: str
+class NamedNoiseExpression(Prototype):
     intended_property: str = ""
 
 
 # copies by reference
 def extract_fields(template, data):
-    if template is True:
+    if template is True or template is False:
         return data
     ret = {}
     for name, sub_template in template.items():
@@ -77,7 +94,7 @@ def extract_fields(template, data):
         else:
             if name in data:
                 ret[name] = extract_fields(sub_template, data[name])
-            else:
+            elif sub_template:
                 raise MissingData()
     return ret
 
@@ -122,6 +139,17 @@ def get_prototype_data():
         local_cache = refresh_file_data()
     local_cache_time = by_time
     return local_cache
+
+
+def autoplace_controls(cat: autoplace_category):
+    data = get_prototype_data()
+    specs: list[AutoplaceControl] = []
+    for spec_dict in data["autoplace-control"].values():
+        spec = AutoplaceControl(**spec_dict)
+        if spec.category == cat:
+            specs.append(spec)
+    specs.sort(key=lambda spec: spec.order)
+    return specs
 
 
 if __name__ == "__main__":
