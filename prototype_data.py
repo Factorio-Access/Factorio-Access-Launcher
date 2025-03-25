@@ -3,6 +3,7 @@ import os
 from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Any, Iterable
+from collections import defaultdict
 
 from fa_paths import SCRIPT_OUTPUT, MODS
 from launch_and_monitor import launch_with_params
@@ -148,8 +149,26 @@ def autoplace_controls(cat: autoplace_category):
         spec = AutoplaceControl(**spec_dict)
         if spec.category == cat:
             specs.append(spec)
-    specs.sort(key=lambda spec: spec.order)
+    specs.sort(key=order_key)
     return specs
+
+
+def order_key(p: PrototypeBase):
+    return p.order
+
+
+def dropdown_expressions():
+    data = get_prototype_data()
+    dropdowns = defaultdict(list[NamedNoiseExpression])
+    for exp in data["noise-expression"].values():
+        expr = NamedNoiseExpression(exp)
+        dropdowns[expr.intended_property].append(expr)
+    filtered = {}
+    for property, expressions in dropdowns.items():
+        if len(expressions) < 2:
+            continue
+        filtered[property] = sorted(expressions, key=order_key)
+    return filtered
 
 
 if __name__ == "__main__":

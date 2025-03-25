@@ -67,7 +67,7 @@ class json_map_settings(object):
         self.current = deepcopy(self.preset)
 
     def save(self):
-        for k, v in self.current:
+        for k, v in self.current.items():
             with JSON_OUTPUT_PATHS[k].open("w", encoding="utf8") as fp:
                 json.dump(v, fp, indent=2)
 
@@ -145,7 +145,7 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
 
 
 class autoplace_enable_disable_menu(enable_disable_menu):
-    """This is used because when on autoplace control is disabled
+    """This is used because when an autoplace control is disabled
     the subitems are just set to zero."""
 
     def got_toggled(self, *args):
