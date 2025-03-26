@@ -76,6 +76,7 @@ if not BIN.is_file():
         exe_map = {
             WIN: [
                 "./bin/x64/factorio.exe",
+                "../bin/x64/factorio.exe",
                 r"%ProgramFiles%\Factorio\bin\x64\factorio.exe",
                 r"%ProgramFiles(x86)%\Steam\steamapps\common\Factorio\bin\x64\factorio.exe",
             ],
@@ -85,6 +86,7 @@ if not BIN.is_file():
             ],
             LIN: [
                 "./bin/x64/factorio",
+                "../bin/x64/factorio",
                 r"~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio",
                 r"~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio",
             ],
