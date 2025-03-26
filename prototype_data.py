@@ -58,9 +58,16 @@ class autoplace_category(StrEnum):
     cliff = auto()
     enemy = auto()
 
+
+@dataclass(kw_only=True)
+class AutoplaceControl(Prototype):
+    category: autoplace_category
+    richness: bool = False
+    can_be_disabled: bool = True
+
     def __post_init__(self):
         if not self.localised_name:
-            self.localised_name = ("gui-map-generator." + self.name,)
+            self.localised_name = ("autoplace-control-names." + self.name,)
         if not self.localised_description:
             self.localised_description = (
                 "?",
@@ -69,15 +76,17 @@ class autoplace_category(StrEnum):
 
 
 @dataclass(kw_only=True)
-class AutoplaceControl(Prototype):
-    category: autoplace_category
-    richness: bool = False
-    can_be_disabled: bool = True
-
-
-@dataclass(kw_only=True)
 class NamedNoiseExpression(Prototype):
     intended_property: str = ""
+
+    def __post_init__(self):
+        if not self.localised_name:
+            self.localised_name = ("gui-map-generator." + self.name,)
+        if not self.localised_description:
+            self.localised_description = (
+                "?",
+                "gui-map-generator." + self.name + "-description",
+            )
 
 
 # copies by reference

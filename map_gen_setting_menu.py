@@ -179,16 +179,16 @@ class autoplace_menu(fa_menu.Menu_var):
         return spec.localised_name
 
     def refresh_items(self, spec: prototype_data.AutoplaceControl):
-        start = 1
+        start = 2
         if spec.can_be_disabled:
-            start = 0
+            start = 1
             if not self.enabler.val:
-                self.items = [self.enabler]
+                self.items = [self.full_submenu[0], self.enabler]
                 return
         end = len(self.full_submenu)
         if spec.type == self.resource and not spec.richness:
             end -= 1
-        self.items = self.full_submenu[start:end]
+        self.items = [self.full_submenu[0]] + self.full_submenu[start:end]
 
     def got_toggled(self, spec: prototype_data.AutoplaceControl, *args):
         if not self.enabler.val:
@@ -198,7 +198,10 @@ class autoplace_menu(fa_menu.Menu_var):
             for sub in self.full_submenu[2:]:
                 sub.val = sub.default
         self.refresh_items(spec)
-        return super().got_toggled(*args)
+        # return super().got_toggled(*args)
+
+    def remake_submenu(self):
+        pass
 
     def __call__(self, spec: prototype_data.AutoplaceControl, *args):
         self.refresh_items(spec)
