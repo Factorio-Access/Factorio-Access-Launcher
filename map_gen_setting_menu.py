@@ -970,11 +970,15 @@ def get_resources():
     return get_autoplace(prototype_data.autoplace_category.resource)
 
 
+def get_terrain():
+    return get_autoplace(prototype_data.autoplace_category.terrain)
+
+
 class j_float(j_mix, fa_menu.setting_menu_float):
     pass
 
 
-test_menu = {
+resource_menu = {
     "expanded_resources": autoplace_menu(
         get_resources,
         [
@@ -1001,4 +1005,31 @@ test_menu = {
             ),
         ],
     )
+}
+
+terrain_menu = {
+    "expanded_autoplace": autoplace_menu(
+        get_terrain,
+        [
+            j_float(
+                title=("gui-map-generator.frequency",),
+                desc=("gui-map-generator.resource-frequency-description",),
+                default=1,
+                val=1,
+                path=(BASIC, AUTO, "_arg", "frequency"),
+            ),
+            j_float(
+                ("gui-map-generator.size",),
+                ("gui-map-generator.resource-size-description",),
+                1,
+                1,
+                path=(BASIC, AUTO, "_arg", "size"),
+            ),
+        ],
+    )
+}
+
+test_menu = {
+    "res": resource_menu,
+    "terrain": terrain_menu,
 }
