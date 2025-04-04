@@ -25,6 +25,15 @@ cached_fields = {
     },
     "map-gen-presets": True,
     "autoplace-control": True,
+    "planet": {
+        "*": {
+            "name": True,
+            "map_gen_settings": True,
+            "order": False,
+            "localised_name": False,
+            "localised_description": False,
+        },
+    },
 }
 
 
@@ -136,7 +145,14 @@ local_cache_time = 0
 def get_prototype_data():
     global local_cache
     global local_cache_time
-    by_time = max([os.path.getmtime(p) for p in [MOD_INFO, MOD_SETTINGS]])
+    by_time = 0
+    for p in [MOD_INFO, MOD_SETTINGS]:
+        try:
+            p_time = os.path.getmtime(p)
+        except FileNotFoundError:
+            continue
+        if p_time > by_time:
+            by_time = p_time
     if local_cache_time >= by_time:
         return local_cache
     local_cache = None
