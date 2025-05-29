@@ -1,6 +1,6 @@
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum, auto
 from typing import Any, Iterable
 from collections import defaultdict
@@ -28,7 +28,12 @@ cached_fields = {
     "planet": {
         "*": {
             "name": True,
-            "map_gen_settings": True,
+            "map_gen_settings": {
+                "cliff_settings": True,
+                "autoplace_controls": True,
+                "moisture_climate_control": False,
+                "aux_climate_control": False,
+            },
             "order": False,
             "localised_name": False,
             "localised_description": False,
@@ -73,6 +78,8 @@ class AutoplaceControl(Prototype):
     category: autoplace_category
     richness: bool = False
     can_be_disabled: bool = True
+    related_to_fight_achievements: bool = False
+    planets: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.localised_name:
@@ -126,7 +133,7 @@ def refresh_file_data():
         full_data = json.load(fp)
     selected_data = extract_fields(cached_fields, full_data)
     with CACHE.open("w", encoding="utf8") as fp:
-        json.dump(selected_data, fp)
+        json.dump(selected_data, fp, indent=2)
     return selected_data
 
 
@@ -167,19 +174,39 @@ def get_prototype_data():
     return local_cache
 
 
+def order_key_dict(d: dict):
+    return d["order"]
+
+
+def order_key(p: PrototypeBase):
+    return p.order
+
+
 def autoplace_controls(cat: autoplace_category):
     data = get_prototype_data()
+    planets_per_autoplace = defaultdict(list)
+    for planet in sorted(data["planet"].values(), key=order_key_dict):
+        for control in planet["map_gen_settings"]["autoplace_controls"].keys():
+            planets_per_autoplace[control].append(planet["name"])
+
     specs: list[AutoplaceControl] = []
     for spec_dict in data["autoplace-control"].values():
         spec = AutoplaceControl(**spec_dict)
+        spec.planets = planets_per_autoplace[spec.name]
         if spec.category == cat:
             specs.append(spec)
     specs.sort(key=order_key)
     return specs
 
 
-def order_key(p: PrototypeBase):
-    return p.order
+def get_planets_for(control: str):
+    return (
+        planet["name"]
+        for planet in sorted(
+            get_prototype_data()["planet"].values(), key=order_key_dict
+        )
+        if planet["map_gen_settings"].get(f"{control}_climate_control", False)
+    )
 
 
 def dropdown_expressions():
@@ -197,11 +224,10 @@ def dropdown_expressions():
 
 
 if __name__ == "__main__":
+    for cat in autoplace_category:
+        for c in autoplace_controls(cat):
+            print(c)
     data = get_prototype_data()
-    print(json.dumps(data, indent=3))
-    for n, p in data["autoplace-control"].items():
-        temp = AutoplaceControl(**p)
-        print(temp)
     for n, p in data["noise-expression"].items():
         temp = NamedNoiseExpression(**p)
         print(temp)

@@ -14,6 +14,7 @@ BASIC = "basic_settings"
 ADVANCED = "advanced_settings"
 
 AUTO = "autoplace_controls"
+PROPERTY_EXPRESSION_NAMES = "property_expression_names"
 
 DEFAULT_DATA_PATHS = {
     BASIC: fa_paths.READ_DIR.joinpath("map-gen-settings.example.json"),
@@ -44,6 +45,14 @@ class json_map_settings(object):
         for name, path in DEFAULT_DATA_PATHS.items():
             with path.open(encoding="utf8") as fp:
                 self.defaults[name] = json.load(fp)
+        autoplace = {}
+        for c in prototype_data.autoplace_category:
+            for a in prototype_data.autoplace_controls(c):
+                default = {"frequency": 1, "size": 1}
+                if a.richness:
+                    default["richness"] = 1
+                autoplace[a.name] = default
+        self.defaults[BASIC][AUTO] = autoplace
         self.load_preset({})
 
     def load_preset(self, preset):
@@ -557,7 +566,7 @@ msj = {  # Map Settings Json
     "max_failed_behavior_count": 3,
 }
 
-json_files = {"basic_settings": mgs_json, "advanced_settings": msj}
+json_files = {BASIC: mgs_json, ADVANCED: msj}
 
 
 selected_preset = None
@@ -636,7 +645,7 @@ def launch_new_preset(preset, *args):
 def launch_new_custom(*args):
     mgs_path = fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json")
     ms_path = fa_paths.SCRIPT_OUTPUT.joinpath("map.json")
-    files = {"basic_settings": mgs_path, "advanced_settings": ms_path}
+    files = {BASIC: mgs_path, ADVANCED: ms_path}
     for sub, path in files.items():
         with open(path, "w", encoding="utf-8") as fp:
             json.dump(
@@ -952,9 +961,9 @@ class map_settings_menu_gen(object):
         gen = data.joinpath("map-gen-settings.example.json")
         ret = {}
         with regular.open(encoding="utf8") as fp:
-            ret["advanced_settings"] = json.load(fp)  # to match preset keys
+            ret[ADVANCED] = json.load(fp)  # to match preset keys
         with gen.open(encoding="utf8") as fp:
-            ret["basic_settings"] = json.load(fp)  # to match preset keys
+            ret[BASIC] = json.load(fp)  # to match preset keys
         return ret
 
 
@@ -977,6 +986,44 @@ def get_terrain():
     return get_autoplace(prototype_data.autoplace_category.terrain)
 
 
+def get_cliffs():
+    return get_autoplace(prototype_data.autoplace_category.cliff)
+
+
+def get_enemy():
+    return get_autoplace(prototype_data.autoplace_category.enemy)
+
+
+def make_hard_coded_terrain(control: str):
+    desc = (f"gui-map-generator.{control}-description",)
+    planet_list = ()
+    for planet in prototype_data.get_planets_for(control):
+        planet_list += ((f"space-location-name.{planet}",), ", ")
+    if len(planet_list):
+        desc = ("", desc, "\n", ("gui-map-generator.appears-on",), " ")
+        desc += planet_list[:-1]
+    return fa_menu.Menu(
+        title=(f"gui-map-generator.{control}",),
+        desc=desc,
+        items=[
+            j_float(
+                title=("gui-map-generator.scale",),
+                desc=("gui-map-generator.terrain-scale-description"),
+                default=1,
+                val=1,
+                path=(BASIC, PROPERTY_EXPRESSION_NAMES, f"control:{control}:frequency"),
+            ),
+            j_float(
+                title=("gui-map-generator.bias",),
+                desc=("gui-map-generator.terrain-bias-description"),
+                default=0,
+                val=0,
+                path=(BASIC, PROPERTY_EXPRESSION_NAMES, f"control:{control}:bias"),
+            ),
+        ],
+    )
+
+
 class j_float(j_mix, fa_menu.setting_menu_float):
     pass
 
@@ -988,51 +1035,95 @@ resource_menu = {
             j_float(
                 title=("gui-map-generator.frequency",),
                 desc=("gui-map-generator.resource-frequency-description",),
-                default=1,
-                val=1,
                 path=(BASIC, AUTO, "_arg", "frequency"),
             ),
             j_float(
-                ("gui-map-generator.size",),
-                ("gui-map-generator.resource-size-description",),
-                1,
-                1,
+                title=("gui-map-generator.size",),
+                desc=("gui-map-generator.resource-size-description",),
                 path=(BASIC, AUTO, "_arg", "size"),
             ),
             j_float(
-                ("gui-map-generator.richness",),
-                ("gui-map-generator.resource-richness-description",),
-                1,
-                1,
+                title=("gui-map-generator.richness",),
+                desc=("gui-map-generator.resource-richness-description",),
                 path=(BASIC, AUTO, "_arg", "richness"),
             ),
         ],
     )
 }
 
+expanding_autoplace_terrain = autoplace_menu(
+    get_terrain,
+    [
+        j_float(
+            title=("gui-map-generator.frequency",),
+            desc=("gui-map-generator.resource-frequency-description",),
+            default=1,
+            val=1,
+            path=(BASIC, AUTO, "_arg", "frequency"),
+        ),
+        j_float(
+            title=("gui-map-generator.size",),
+            desc=("gui-map-generator.resource-size-description",),
+            default=1,
+            val=1,
+            path=(BASIC, AUTO, "_arg", "size"),
+        ),
+    ],
+)
+expanding_cliffs = autoplace_menu(
+    get_cliffs,
+    [
+        j_float(
+            title=("gui-map-generator.cliff-frequency",),
+            desc=("gui-map-generator.cliff-frequency-description",),
+            default=1,
+            val=1,
+            path=(BASIC, AUTO, "_arg", "frequency"),
+        ),
+        j_float(
+            title=("gui-map-generator.cliff-continuity",),
+            desc=("gui-map-generator.cliff-continuity-description",),
+            default=1,
+            val=1,
+            path=(BASIC, AUTO, "_arg", "size"),
+        ),
+    ],
+)
+
+
 terrain_menu = {
-    "expanded_autoplace": autoplace_menu(
-        get_terrain,
-        [
-            j_float(
-                title=("gui-map-generator.frequency",),
-                desc=("gui-map-generator.resource-frequency-description",),
-                default=1,
-                val=1,
-                path=(BASIC, AUTO, "_arg", "frequency"),
-            ),
-            j_float(
-                ("gui-map-generator.size",),
-                ("gui-map-generator.resource-size-description",),
-                1,
-                1,
-                path=(BASIC, AUTO, "_arg", "size"),
-            ),
-        ],
-    )
+    "expanded_autoplace": expanding_autoplace_terrain,
+    "expanded_cliffs": expanding_cliffs,
+    "moisture": make_hard_coded_terrain("moisture"),
+    "aux": make_hard_coded_terrain("aux"),
+}
+
+expanding_enemy_menu = autoplace_menu(
+    get_enemy,
+    [
+        j_float(
+            title=("gui-map-generator.frequency",),
+            desc=("gui-map-generator.enemy-frequency-description",),
+            default=1,
+            val=1,
+            path=(BASIC, AUTO, "_arg", "frequency"),
+        ),
+        j_float(
+            title=("gui-map-generator.size",),
+            desc=("gui-map-generator.enemy-size-description",),
+            default=1,
+            val=1,
+            path=(BASIC, AUTO, "_arg", "size"),
+        ),
+    ],
+)
+
+enemy_menu = {
+    "expanded_autoplace": expanding_enemy_menu,
 }
 
 test_menu = {
     "res": resource_menu,
     "terrain": terrain_menu,
+    "enemy": enemy_menu,
 }
