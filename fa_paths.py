@@ -22,7 +22,7 @@ LIN = "linux"
 
 WRITE_DATA_MAP = {
     MAC: "~/Library/Application Support/factorio",
-    WIN: "%appdata%\Factorio",
+    WIN: R"%appdata%\Factorio",
     LIN: "~/.factorio",
 }
 
@@ -50,7 +50,7 @@ if steam:
             )
     _account_id = str(((1 << 32) - 1) & int(_steam_id))
     steam_write_folder = _steam_path.joinpath("userdata", _account_id, _game, "remote")
-    steam_write_folder = steam_write_folder.absolute()
+    steam_write_folder = steam_write_folder.resolve()
     d_print(steam_write_folder)
 
 _check_end = "factorio"
@@ -109,7 +109,7 @@ if not BIN.is_file():
         print('"' + os.path.abspath(MY_BIN) + '" %command%')
         input("press enter to exit")
         raise SystemExit
-launch_args.insert(0, BIN)
+launch_args.insert(0, str(BIN))
 
 _FACTORIO_VERSION_output = subprocess.check_output([BIN, "--version"]).decode()
 _factorio_version_match = re.search(
@@ -138,47 +138,37 @@ if sys.platform == MAC:
     )
 
 
-def process(path):
+def process(path: str):
     for k, v in factorio_replacements.items():
         path = path.replace(k, v)
-    path = os.path.abspath(path)
-    return path
+    return Path(path).resolve()
 
 
 if args.config:
-    try:
-        fp = open(args.config)
-    except FileNotFoundError:
+    CONFIG = Path(args.config)
+    if not CONFIG.is_file():
         print(f"could not find config file:{args.config}")
         input("press enter to exit...")
         raise SystemExit
-    CONFIG = args.config
 else:
-
     config_path = "config/config.ini"
-    configs = [MY_CONFIG_DIR.joinpath(config_path)]
+    configs = [MY_CONFIG_DIR / config_path]
     # try to append another config path from config-path.cfg
     try:
-        fp = open(
-            process("__PATH__executable__/../../config-path.cfg"), encoding="utf8"
-        )
+        fp = process("__PATH__executable__/../../config-path.cfg").open(encoding="utf8")
     except FileNotFoundError:
-        configs.append(
-            process(os.path.join("__PATH__system-write-data__", config_path))
-        )
+        configs.append(process("__PATH__system-write-data__") / config_path)
     else:
         with fp:
             for line in fp:
                 match = re.match(r"config-path=(.*)", line)
                 if match:
-                    configs.append(os.path.join(process(match.group(1)), "config.ini"))
+                    configs.append(process(match[1]) / "config.ini")
                     break
-
-    CONFIG = None
 
     def get_config():
         for path in configs:
-            if os.path.isfile(path):
+            if path.is_file():
                 return path
 
     CONFIG = get_config()
@@ -199,18 +189,25 @@ else:
             )
             raise SystemExit
     launch_args.append("-c")
-    launch_args.append(CONFIG)
+    launch_args.append(str(CONFIG))
 d_print(f"CONFIG={CONFIG}")
-WRITE_DIR: Path | None = None
-READ_DIR: Path | None = None
-with open(CONFIG, encoding="utf8") as fp:
-    for line in fp:
-        if match := re.match(r"write-data=(.*)", line):
-            WRITE_DIR = Path(process(match[1]))
-        if match := re.match(r"read-data=(.*)", line):
-            READ_DIR = Path(process(match[1]))
-        if WRITE_DIR and READ_DIR:
-            break
+
+
+def _read_write_dirs(config: Path):
+    WRITE_DIR: Path | None = None
+    READ_DIR: Path | None = None
+    with config.open(encoding="utf8") as fp:
+        for line in fp:
+            if match := re.match(r"write-data=(.*)", line):
+                WRITE_DIR = Path(process(match[1]))
+            if match := re.match(r"read-data=(.*)", line):
+                READ_DIR = Path(process(match[1]))
+            if WRITE_DIR and READ_DIR:
+                return READ_DIR, WRITE_DIR
+    raise Exception("Unable to find factorio write directory")
+
+
+READ_DIR, WRITE_DIR = _read_write_dirs(CONFIG)
 if not WRITE_DIR or not WRITE_DIR.is_dir():
     d_print(f"bad write dir:[{WRITE_DIR}]")
     raise Exception("Unable to find factorio write directory")
@@ -230,6 +227,8 @@ if not MODS.is_dir():
         print("Mod Directory cannot be a file.")
         input("Press Enter to exit...")
         raise SystemExit
+    import fa_menu
+
     print(f"The mod folder {MODS} does not exist. Would you like to create it?")
     if not fa_menu.getAffirmation():
         raise SystemExit

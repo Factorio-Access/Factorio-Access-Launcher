@@ -1,7 +1,7 @@
 import re
 from typing import Iterable, Union
 from collections import defaultdict, UserDict
-from collections.abc import Iterator
+from collections.abc import Sequence
 import os
 import zipfile
 from pathlib import Path
@@ -10,7 +10,7 @@ import json
 from fa_arg_parse import d_print
 import config
 
-localised_str = Union[str, Iterator["localised_str"]]
+localised_str = Union[str, Sequence["localised_str"]]
 
 
 def get_control(name: str) -> list[str]:
@@ -126,7 +126,7 @@ replacements = {
     "__TILE__name__": t_tile,
     "__FLUID__name__": t_fluid,
 }
-repalecement_functions = {}
+replacement_functions = {}
 for replace, r_with in replacements.items():
     key, *args = [p for p in replace.split("__") if p]
     if type(r_with) == dict:
@@ -134,11 +134,15 @@ for replace, r_with in replacements.items():
             r_with = lambda n, d=r_with: do_special(d, n)
         else:
             r_with = lambda d=r_with: do_special(d)
-    repalecement_functions[key] = (len(args), r_with)
+    replacement_functions[key] = (len(args), r_with)
 
 
 def do_special(special, n=0):
     return translate(special[input_type], n)
+
+
+class MissingTranslation(LookupError):
+    pass
 
 
 def translate(l_str: localised_str, n=0, error=False):
@@ -148,13 +152,16 @@ def translate(l_str: localised_str, n=0, error=False):
         key, *args = l_str
     except:
         return str(l_str)
+    if not isinstance(key, str):
+        raise ValueError("localised string key must be a string, but got:", key)
     if key == "":
         return "".join((translate(arg) for arg in args))
     if key == "?":
         for attempt in args:
-            res = translate(attempt, error=True)
-            if res is not None:
-                return res
+            try:
+                return translate(attempt, error=True)
+            except MissingTranslation:
+                pass
         return translate(args[-1])
     try:
         cat, key = key.split(".", 1)
@@ -164,7 +171,7 @@ def translate(l_str: localised_str, n=0, error=False):
         key = re.sub(r"\bn\b", str(n), key)
     if key not in translation_table[cat]:
         if error:
-            return None
+            raise MissingTranslation(cat, key)
         return f'Unknown key: "{cat}.{key}"'
     return expand(translation_table[cat][key], args)
 
@@ -195,18 +202,18 @@ def expand(template: str, args: list[localised_str] = []) -> str:
     return expand_r(parts, translated_args(args))
 
 
-def expand_r(parts: list[str], targs: translated_args, in_plural=False):
+def expand_r(parts: list[str], t_args: translated_args, in_plural=False):
     ret = ""
     stray__ = False
     while parts:
         p = parts.pop(0)
-        if p in repalecement_functions:
-            mrf = repalecement_functions[p]
+        if p in replacement_functions:
+            mrf = replacement_functions[p]
             args = [parts.pop(0) for _ in range(mrf[0])]
             ret += mrf[1](*args)
         elif p == "plural_for_parameter":
             arg_num = parts.pop(0)
-            my_num = targs[arg_num]
+            my_num = t_args[arg_num]
             remaining = parts.pop(0)
             assert remaining[0] == "{", "Unexpected start of plural. Expected {"
             remaining = remaining[1:]
@@ -215,7 +222,7 @@ def expand_r(parts: list[str], targs: translated_args, in_plural=False):
                 condition, remaining = remaining.split("=", 1)
                 assert type(remaining) == str
                 parts.insert(0, remaining)
-                temp_res, remaining = expand_r(parts, targs, True)
+                temp_res, remaining = expand_r(parts, t_args, True)
                 if not matched:
                     matched = True
                     for cond in condition.split(","):
@@ -232,7 +239,7 @@ def expand_r(parts: list[str], targs: translated_args, in_plural=False):
                     if matched:
                         ret += temp_res
         elif p.isdigit():
-            ret += targs[p]
+            ret += t_args[p]
         else:
             if "|" in p or "}" in p and in_plural:
                 p, add_back = re.split(r"}|\|", p, 1)
@@ -303,9 +310,9 @@ check_cats = {
 def check_config_locale():
     import fa_paths
 
-    with open(os.path.join(fa_paths.READ_DIR, "core/locale/en/core.cfg")) as fp:
+    with (fa_paths.READ_DIR / "core/locale/en/core.cfg").open(encoding="utf8") as fp:
         translations = read_cfg(fp)
-    with open(os.path.join(fa_paths.CONFIG)) as fp:
+    with fa_paths.CONFIG.open(encoding="utf8") as fp:
         config = read_cfg(fp, conf=True)
     cross_cats = defaultdict(lambda: defaultdict(list))
     for cat, confs in config.items():

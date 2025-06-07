@@ -235,9 +235,9 @@ class mod(object):
 class installed_mod(mod):
     def __init__(self, path: dual_path) -> None:
         if path.is_file():
-            if not is_zipfile(path):
+            if not is_zipfile(str(path)):
                 raise NotAModPath(path)
-            self.folder_path = next(zPath(path).iterdir())
+            self.folder_path = next(zPath(str(path)).iterdir())
         else:
             self.folder_path = path
         info_path = self.folder_path.joinpath("info.json")

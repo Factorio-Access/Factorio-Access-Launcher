@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum, auto
 from typing import Any, Iterable
 from collections import defaultdict
+from copy import deepcopy
 
 from fa_paths import SCRIPT_OUTPUT, MODS
 from launch_and_monitor import launch_with_params
@@ -97,12 +98,30 @@ class NamedNoiseExpression(Prototype):
 
     def __post_init__(self):
         if not self.localised_name:
-            self.localised_name = ("gui-map-generator." + self.name,)
+            self.localised_name = ("noise-expression." + self.name,)
         if not self.localised_description:
             self.localised_description = (
                 "?",
                 "gui-map-generator." + self.name + "-description",
             )
+
+
+@dataclass(kw_only=True)
+class MapGenSettings(PrototypeBase):
+    pass
+
+
+@dataclass(kw_only=True)
+class AdvancedMapGenSettings(PrototypeBase):
+    pass
+
+
+@dataclass(kw_only=True)
+class MapGenPreset:
+    name: str
+    order: str
+    default: bool = False
+    overlay: dict
 
 
 # copies by reference
@@ -209,11 +228,11 @@ def get_planets_for(control: str):
     )
 
 
-def dropdown_expressions():
+def dropdown_expressions() -> dict[str, list[NamedNoiseExpression]]:
     data = get_prototype_data()
     dropdowns = defaultdict(list[NamedNoiseExpression])
     for exp in data["noise-expression"].values():
-        expr = NamedNoiseExpression(exp)
+        expr = NamedNoiseExpression(**exp)
         dropdowns[expr.intended_property].append(expr)
     filtered = {}
     for property, expressions in dropdowns.items():
@@ -223,11 +242,33 @@ def dropdown_expressions():
     return filtered
 
 
+def get_presets() -> list[MapGenPreset]:
+    raw_presets = get_prototype_data()["map-gen-presets"]["default"]
+    presets = []
+    for name, augmented_overlay in raw_presets.items():
+        if name in ["type", "name"]:
+            continue
+        order = augmented_overlay.get("order", "")
+        default = augmented_overlay.get("default", False)
+        overlay = {}
+        for sub_name in ["basic_settings", "advanced_settings"]:
+            if sub_name in augmented_overlay:
+                overlay[sub_name] = deepcopy(augmented_overlay[sub_name])
+        presets.append(
+            MapGenPreset(name=name, order=order, default=default, overlay=overlay)
+        )
+    presets.sort(key=order_key)
+    return presets
+
+
 if __name__ == "__main__":
     for cat in autoplace_category:
         for c in autoplace_controls(cat):
-            print(c)
+            pass
+            # print(c)
     data = get_prototype_data()
     for n, p in data["noise-expression"].items():
         temp = NamedNoiseExpression(**p)
-        print(temp)
+        # print(temp)
+    # print(get_presets())
+    print(dropdown_expressions())

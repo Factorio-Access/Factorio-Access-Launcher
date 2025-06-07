@@ -23,7 +23,6 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
             mod_manager.enable(mod)
         else:
             mod_manager.disable(mod)
-        return 0
 
 
 def get_names(*args):
@@ -33,14 +32,14 @@ def get_names(*args):
 
 
 def get_mod_list():
-    ret = {}
+    ret = []
     for name, data in mod_manager.dict.items():
         if data["enabled"]:
             status = ("gui-map-generator.enabled",)
         else:
             status = ("gui-mod-info.status-disabled",)
         display_name = ("", name, " (", status, ")")
-        ret[display_name] = (name,)
+        ret.append((display_name, name))
     return ret
 
 

@@ -110,12 +110,9 @@ def multiplayer_host(game):
 
 
 class config_toggle(fa_menu.setting_menu_bool):
-    def __init__(self, setting: tuple, title) -> None:
+    def __init__(self, setting: tuple[str, str], title) -> None:
         self.setting = setting
         super().__init__(title)
-
-    def get_items(self, *args):
-        return {(self._title, self.val_to_string(*args)): ()}
 
     def val_to_string(self, *args):
         self.val = config.current_conf.get_setting(*self.setting) == "true"
@@ -152,32 +149,32 @@ def get_username_menu():
         player = update_factorio.get_player_data()
     except:
         player = {"service-username": "None"}
-    return {"Username: " + player["service-username"]: ()}
+    return [("Username: " + player["service-username"],)]
 
 
 def get_friends_menu():
-    return {f: (f,) for f in get_friend_list()}
+    return [(f, f) for f in get_friend_list()]
 
 
-class specific_friend_menu(fa_menu.Menu_var_leaf):
+class specific_friend_menu(fa_menu.Menu_function_leaf):
     def get_items(self, my_arg, *args):
-        return {"Remove " + my_arg: ()}
+        return [("Remove " + my_arg,)]
 
 
 def add_friend_menu():
     while True:
-        friend = input("Enter the factorio playername to add:\n")
+        friend = input("Enter the factorio player name to add:\n")
         if re.fullmatch(r"[\w.-]+", friend):
             add_friend(friend)
             return 0
         print(
-            "Factorio usernames must only include letters, numbers, periods, and dashs."
+            "Factorio usernames must only include letters, numbers, periods, and dashes."
         )
 
 
 friend_list = {
     "Add": add_friend_menu,
-    get_friends_menu: {"Remove": specific_friend_menu(remove_friend, "TBD")},
+    get_friends_menu: {"remove": specific_friend_menu(remove_friend, "TBD")},
 }
 
 
@@ -188,7 +185,7 @@ def username_menu():
 
 def games_with_friends_menu():
     games = get_filtered_game_list()
-    return {game["name"]: game["game_id"] for game in games}
+    return [(game["name"], game["game_id"]) for game in games]
 
 
 if __name__ == "__main__":

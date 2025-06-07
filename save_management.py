@@ -35,10 +35,10 @@ def get_sorted_saves():
 
 def get_menu_saved_games():
     games = get_sorted_saves()
-    return {
-        save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago": (save,)
+    return [
+        (save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago", save)
         for save in games
-    }
+    ]
 
 
 def save_game_rename(if_after=None):
@@ -55,15 +55,14 @@ def save_game_rename(if_after=None):
             if not getAffirmation():
                 return
             print("Enter a name for your save file:")
-            check = False
-            while check == False:
+            while True:
                 newName = input()
+                dst = os.path.join(SAVES, newName + ".zip")
                 try:
-                    dst = os.path.join(SAVES, newName + ".zip")
                     testFile = open(dst, "w")
                     testFile.close()
                     os.remove(dst)
-                    check = True
+                    break
                 except:
                     print("Invalid file name, please try again.")
             src = os.path.join(SAVES, save)

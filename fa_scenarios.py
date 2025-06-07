@@ -60,7 +60,7 @@ def get_scenarios(m_scenario=None):
             if scenario:
                 scenarios.append(scenario)
     scenarios.sort()
-    return {s.name: (s,) for s in scenarios}
+    return [(s.name, s) for s in scenarios]
 
 
 def launch_scenario(scenario: Scenario):

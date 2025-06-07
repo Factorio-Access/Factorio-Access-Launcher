@@ -4,7 +4,9 @@
         "editor.formatOnSave": true
     },
     "cSpell.words": [
+        "adminlist",
         "autoplace",
+        "banlist",
         "cloudfare",
         "cooldown",
         "excepthook",
@@ -14,8 +16,11 @@
         "localised",
         "neighbouring",
         "pyinstaller",
+        "rcon",
         "referer",
         "steamapps",
+        "unban",
         "userdata"
     ],
+    "stylua.targetReleaseVersion": "latest",
 }
