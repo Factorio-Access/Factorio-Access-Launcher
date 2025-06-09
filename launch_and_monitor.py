@@ -82,14 +82,19 @@ global_commands = {
 
 re_save_started = re.compile(r"Saving to _autosave\w* \(blocking\).")
 re_player_join_game = re.compile(r"PlayerJoinGame .*?playerIndex\((\d+)\)")
+errorA_started = re.compile(r"-+ Error -+")
+errorA_end = re.compile(r"-+")
+errorB_started = re.compile(r" *\d+\.\d{3} Error ")
+errorB_end = re.compile(r" *\d+\.\d{3} ")
 
 
 def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
     global multi_line_buffer
+    error_buffer: list[str] | None = None
     player_index = ""
     restarting = False
     for bline in stdout:
-        if bline.startswith(b"\xEF\xB7"):
+        if bline.startswith(b"\xef\xb7"):
             sys.stdout.buffer.write(bline)
             sys.stdout.buffer.flush()
             continue
@@ -111,6 +116,16 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             else:
                 multi_line_buffer.append(line)
             continue
+        if error_buffer is not None:
+            error_buffer.append(line)
+            if errorA_end.match(line) or (b := errorB_end.match(line)):
+                if b:
+                    error_buffer.pop()
+                print("\n".join(error_buffer))
+                speak_interuptible_text("Printed error to console.")
+                error_buffer = None
+            continue
+
         parts = line.split(" ", 1)
         if len(parts) == 2:
             if parts[0] in player_specific_commands:
@@ -126,10 +141,6 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             playsound(save_complete)
         elif re_save_started.search(line):
             playsound(start_saving)
-        elif line.endswith("time start"):
-            debug_time = time.time
-        elif line.endswith("time end"):
-            print(time.time - debug_time)
         elif line.endswith("Restarting Factorio"):
             restarting = True
         elif line.endswith("Goodbye"):
@@ -149,6 +160,11 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
         elif announce_press_e and line.endswith("Factorio initialised"):
             announce_press_e = False
             ao_output.output("Press e to continue", interrupt=True)
+        elif errorA_started.fullmatch(line) or errorB_started.match(line):
+            speak_interuptible_text(
+                "Error Reported. Will print to console once game exits. Press e twice to exit and restart last save."
+            )
+            error_buffer = [line]
 
 
 def just_launch():
