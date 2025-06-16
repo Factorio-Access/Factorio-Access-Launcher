@@ -4,31 +4,23 @@ from typing import Final
 import re
 
 import config
-import update_factorio
+import player_data
 import fa_paths
 import fa_menu
 import launch_and_monitor
+from credentials import get_json_with_credentials
+from factorio_web import get_json
 
 __ACCESS_LIST_PATH = fa_paths.WRITE_DIR.joinpath("server-whitelist.json")
 
 
 def get_game_list():
-    cred = update_factorio.get_credentials()
-    url = f"https://multiplayer.factorio.com/get-games?username={cred['username']}&token={cred['token']}"
-    with update_factorio.opener.open(url) as fp:
-        games = json.load(fp)
-    with open("all_games", "w") as fp:
-        json.dump(games, fp, indent=2)
-    return games
+    return get_json_with_credentials("https://multiplayer.factorio.com/get-games")
 
 
 def get_game(game_id):
     url = f"https://multiplayer.factorio.com/get-game-details/{game_id}"
-    with update_factorio.opener.open(url) as fp:
-        game = json.load(fp)
-    with open(f"game_{game_id}", "w") as fp:
-        json.dump(game, fp, indent=2)
-    return game
+    return get_json(url)
 
 
 def get_filtered_game_list():
@@ -78,32 +70,32 @@ def multiplayer_join(game_id):
 
 
 def multiplayer_host(game):
-    with config.current_conf:
-        if config.multiplayer_lobby.name == "":
-            config.multiplayer_lobby.name = "FactorioAccessDefault"
-        player = update_factorio.get_player_data()
+    with config.current_conf as conf:
+        if conf.multiplayer_lobby.name == "":
+            conf.multiplayer_lobby.name = "FactorioAccessDefault"
+        player = player_data.get_player_data()
         player["last-played"] = {
-            "type": "hosted-multiplayer",
+            "type": player_data.LastPlayedType.HOST,
             "host-settings": {
                 "server-game-data": {
                     "visibility": {
-                        "public": config.multiplayer_lobby.visibility_public,
-                        "steam": config.multiplayer_lobby.visibility_steam,
-                        "lan": config.multiplayer_lobby.visibility_lan,
+                        "public": bool(conf.multiplayer_lobby.visibility_public),
+                        "steam": bool(conf.multiplayer_lobby.visibility_steam),
+                        "lan": bool(conf.multiplayer_lobby.visibility_lan),
                     },
-                    "name": config.multiplayer_lobby.name,
-                    "description": config.multiplayer_lobby.description,
-                    "max_players": config.multiplayer_lobby.max_players,
+                    "name": str(conf.multiplayer_lobby.name),
+                    "description": str(conf.multiplayer_lobby.description),
+                    "max_players": int(conf.multiplayer_lobby.max_players),
                     "game_time_elapsed": 150,
-                    "has_password": config.multiplayer_lobby.password != "",
+                    "has_password": conf.multiplayer_lobby.password != "",
                 },
                 "server-username": player["service-username"],
-                "autosave-interval": config.other.autosave_interval,
-                "afk-autokick-interval": config.multiplayer_lobby.afk_auto_kick,
+                "autosave-interval": int(conf.other.autosave_interval),
+                "afk-autokick-interval": int(conf.multiplayer_lobby.afk_auto_kick),
             },
             "save-name": game[:-4],
         }
-    update_factorio.set_player_data(player)
+    player_data.save_player_data(player)
     return launch_and_monitor.launch_with_params(
         [], announce_press_e=True, tweak_modified=os.path.join(fa_paths.SAVES, game)
     )
@@ -136,7 +128,7 @@ class host_settings_menu(fa_menu.Menu):
         items = []
         for key, name in setting_data.items():
             setting_key = ("multiplayer-lobby", key)
-            items.append(config_toggle(setting_key, name))
+            items.append(config_toggle(setting_key, (name,)))
         super().__init__(title=("gui-multiplayer-lobby.title",), items=items)
 
     def __call__(self, *args):
@@ -146,8 +138,8 @@ class host_settings_menu(fa_menu.Menu):
 
 def get_username_menu():
     try:
-        player = update_factorio.get_player_data()
-    except:
+        player = player_data.get_player_data()
+    except player_data.NoPlayerData:
         player = {"service-username": "None"}
     return [("Username: " + player["service-username"],)]
 
@@ -156,9 +148,8 @@ def get_friends_menu():
     return [(f, f) for f in get_friend_list()]
 
 
-class specific_friend_menu(fa_menu.Menu_function_leaf):
-    def get_items(self, my_arg, *args):
-        return [("Remove " + my_arg,)]
+def remove_friend_title(friend: str, *args):
+    return [(f"Remove {friend} from your friend list",)]
 
 
 def add_friend_menu():
@@ -174,13 +165,8 @@ def add_friend_menu():
 
 friend_list = {
     "Add": add_friend_menu,
-    get_friends_menu: {"remove": specific_friend_menu(remove_friend, "TBD")},
+    get_friends_menu: {remove_friend_title: remove_friend},
 }
-
-
-def username_menu():
-    update_factorio.get_credentials(False, True)
-    return 0
 
 
 def games_with_friends_menu():

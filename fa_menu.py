@@ -8,7 +8,7 @@ import fa_paths
 from fa_arg_parse import args
 
 
-def getAffirmation(prompt=""):
+def getAffirmation(prompt: localised_str = ""):
     while True:
         i = input(translate(prompt))
         if i == "yes" or i == "Yes" or i == "YES" or i == "y" or i == "Y":
@@ -40,7 +40,9 @@ def getNum():
             print("Invalid input, please enter a number.\n")
 
 
-def select_option(options, prompt="Select an option:", one_indexed=True):
+def select_option(
+    options, prompt: localised_str = "Select an option:", one_indexed=True
+):
     pre_prompt = None
     while True:
         # print("\033c", end="")

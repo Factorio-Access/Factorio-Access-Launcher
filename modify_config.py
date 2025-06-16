@@ -7,7 +7,7 @@ import fa_paths
 import translations
 import config
 from fa_menu import select_option
-from mods import mod_manager
+from mods import mods
 
 CHANGESET_PATH = r"config_changes/.*\.ini"
 
@@ -35,7 +35,7 @@ def get_changes_from_fp(fp):
 
 def get_all_changes(after="AA"):
     all_changes = {}
-    with mod_manager:
+    with mods as mod_manager:
         mod_iter = mod_manager.iter_mod_files(CHANGESET_PATH, True, our_mod_filter)
         for cfg_path in mod_iter:
             version = cfg_path.name[:2]
@@ -51,7 +51,7 @@ def get_all_changes(after="AA"):
 
 
 def do_config_check():
-    with config.current_conf:
+    with config.current_conf as conf:
         current = ""
         try:
             for i in ["1", "2"]:

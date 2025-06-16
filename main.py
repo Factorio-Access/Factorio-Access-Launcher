@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 import sys
 import traceback
+from types import TracebackType
 
-sys.excepthook = lambda *args: (
-    traceback.print_exception(*args),
-    input("Press Enter to Exit"),
-)
+
+def except_hook(t, e: BaseException, tr: TracebackType):
+    if isinstance(e, Exception):
+        traceback.print_exception(t, e, tr)
+        input("Press Enter to Exit")
+
+
+sys.excepthook = except_hook
 
 import os
 
@@ -22,6 +27,7 @@ from translations import check_lang
 from fa_scenarios import get_scenarios, pre_launch_scenario
 from fa_mod_menu import mod_menu
 from version import version
+from credentials_menu import sign_in_menu
 
 os.chdir(fa_paths.MY_CONFIG_DIR)
 
@@ -38,7 +44,7 @@ menu = {
         },
     },
     ("gui-menu.multi-player-menu",): {
-        multiplayer.get_username_menu: multiplayer.username_menu,
+        multiplayer.get_username_menu: sign_in_menu,
         "Host Settings": multiplayer.host_settings_menu(),
         ("gui-menu.host-saved-game",): {
             save_management.get_menu_saved_games: multiplayer.multiplayer_host,

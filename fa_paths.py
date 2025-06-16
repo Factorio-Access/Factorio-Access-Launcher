@@ -28,7 +28,7 @@ WRITE_DATA_MAP = {
 
 steam = "SteamClientLaunch" in os.environ
 d_print(f"steam={steam}")
-
+steam_write_folder = Path()
 if steam:
     _user = os.environ["SteamAppUser"]
     _game = os.environ["SteamAppId"]
@@ -145,8 +145,8 @@ def process(path: str):
 
 
 if args.config:
-    CONFIG = Path(args.config)
-    if not CONFIG.is_file():
+    _CONFIG = Path(args.config)
+    if not _CONFIG.is_file():
         print(f"could not find config file:{args.config}")
         input("press enter to exit...")
         raise SystemExit
@@ -171,8 +171,8 @@ else:
             if path.is_file():
                 return path
 
-    CONFIG = get_config()
-    if not CONFIG:
+    _CONFIG = get_config()
+    if _CONFIG is None:
         import fa_menu
 
         print(
@@ -182,14 +182,15 @@ else:
             raise SystemExit
         f_args = [BIN, "--start-server-load-scenario", "Fake"]
         subprocess.run(f_args, stdout=subprocess.DEVNULL)
-        CONFIG = get_config()
-        if not CONFIG:
+        _CONFIG = get_config()
+        if _CONFIG is None:
             input(
                 "Configuration creation failed. Please report to Factorio Access Maintainers\nPress Enter to exit."
             )
             raise SystemExit
     launch_args.append("-c")
-    launch_args.append(str(CONFIG))
+    launch_args.append(str(_CONFIG))
+CONFIG = _CONFIG
 d_print(f"CONFIG={CONFIG}")
 
 

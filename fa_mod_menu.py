@@ -1,12 +1,12 @@
 import fa_menu
 from fa_paths import MOD_NAME
-from mods import mod_manager
+from mods import mods, ModManager, Dependency
 
 
 class _mod_menu(fa_menu.Menu):
     def __call__(self, *args):
-        with mod_manager:
-            return super().__call__(*args)
+        with mods as mod_manager:
+            return super().__call__(mod_manager, *args)
 
 
 class enable_disable_submenu(fa_menu.setting_menu_bool):
@@ -14,11 +14,16 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
         super().__init__(title=("gui-map-generator.enabled",))
 
     def val_to_string(self, *args):
-        self.val = mod_manager.dict[args[-1]]["enabled"]
-        return super().val_to_string(*args)
+        mod: str = args[0]
+        mod_manager: ModManager = args[1]
+        assert isinstance(mod_manager, ModManager)
+        self.val = mod_manager.dict[mod]["enabled"]
+        return super().val_to_string(*args[2:])
 
-    def set_val(self, val, mod, *args):
-        super().set_val(val, mod, *args)
+    def set_val(self, val, *args):
+        mod: str = args[0]
+        mod_manager: ModManager = args[1]
+        super().set_val(val, mod, *args[2:])
         if self.val:
             mod_manager.enable(mod)
         else:
@@ -26,12 +31,12 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
 
 
 def get_names(*args):
-    if len(args):
-        return args[-1]
-    return get_mod_list()
+    return get_mod_list(*args)
 
 
-def get_mod_list():
+def get_mod_list(*args):
+    mod_manager: ModManager = args[0]
+    assert isinstance(mod_manager, ModManager)
     ret = []
     for name, data in mod_manager.dict.items():
         if data["enabled"]:
@@ -50,14 +55,14 @@ mod_menu = _mod_menu(
 
 
 def check_for_main_mod():
-    with mod_manager:
-        if MOD_NAME not in mod_manager.dict:
-            if fa_menu.getAffirmation(("fa-l.install-main-mod",)):
-                mod_manager.install_mod(MOD_NAME)
-        vers = mod_manager.by_name_version[MOD_NAME]
-        latest_ver = max(vers)
-        deps = vers[latest_ver].get_dependencies()
-        for dep in deps:
+    with mods as mod_manager:
+        if MOD_NAME in mod_manager.dict:
+            return
+        if not fa_menu.getAffirmation(("fa-l.install-main-mod",)):
+            return
+        print("Installing main mod:", MOD_NAME)
+        mod = mod_manager.install_mod(Dependency.from_str(MOD_NAME))
+        for dep in mod.dependencies:
             if not dep.type in ["?", "~", ""]:
                 continue
             if dep.name in mod_manager.dict:

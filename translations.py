@@ -1,5 +1,5 @@
 import re
-from typing import Iterable, Union
+from typing import Iterable, Union, Callable
 from collections import defaultdict, UserDict
 from collections.abc import Sequence
 import os
@@ -10,17 +10,19 @@ import json
 from fa_arg_parse import d_print
 import config
 
+# cSpell:words leftshoulder rightshoulder
+
 localised_str = Union[str, Sequence["localised_str"]]
 
 
 def get_control(name: str) -> list[str]:
     if input_type == joy:
-        hasalt = name.endswith(alt)
-        if hasalt:
+        has_alt = name.endswith(alt)
+        if has_alt:
             name = name.removesuffix(alt)
         if not name.endswith(con):
             name += con
-        if hasalt:
+        if has_alt:
             name += alt
     with config.current_conf:
         return config.current_conf.get_setting("controls", name).split(" + ")
@@ -35,11 +37,11 @@ def t_control(control_name, alt_type=0):
     )
 
 
-def t_modifer(control_name):
+def t_modifier(control_name):
     cont = get_control(control_name)
     if len(cont) <= 1:
         return translate(["no-modifier-selected"])
-    return "".join((translate(["control-keys." + key] for key in cont[:-1])))
+    return "".join((translate(tuple(["control-keys." + key] for key in cont[:-1]))))
 
 
 def t_alt_control(alt_type, control_name):
@@ -82,15 +84,15 @@ input_type = knm
 def do_controller_check():
     global input_type
     try:
-        with config.current_conf:
-            input_type = config.input.input_method
+        with config.current_conf as conf:
+            input_type = conf.input.input_method
     except:
         pass
 
 
 replacements = {
-    "__CONRTOL__name__": t_control,
-    "__CONRTOL__MODIFIER__name__": t_modifer,
+    "__CONTROL__name__": t_control,
+    "__CONTROL__MODIFIER__name__": t_modifier,
     "__CONTROL_STYLE_BEGIN__": return_blank,
     "__CONTROL_STYLE_END__": return_blank,
     "__CONTROL_LEFT_CLICK__": {
@@ -126,7 +128,7 @@ replacements = {
     "__TILE__name__": t_tile,
     "__FLUID__name__": t_fluid,
 }
-replacement_functions = {}
+replacement_functions: dict[str, tuple[int, Callable[..., str]]] = {}
 for replace, r_with in replacements.items():
     key, *args = [p for p in replace.split("__") if p]
     if type(r_with) == dict:
@@ -145,7 +147,7 @@ class MissingTranslation(LookupError):
     pass
 
 
-def translate(l_str: localised_str, n=0, error=False):
+def translate(l_str: localised_str, n=0, error=False) -> str:
     if type(l_str) == str:
         return l_str
     try:
@@ -199,18 +201,21 @@ def plural_compat_replacer(m: re.Match):
 def expand(template: str, args: list[localised_str] = []) -> str:
     template = plural_compat.sub(plural_compat_replacer, template)
     parts = template.split("__")
-    return expand_r(parts, translated_args(args))
+    ret, _ = expand_r(parts, translated_args(args))
+    return ret
 
 
-def expand_r(parts: list[str], t_args: translated_args, in_plural=False):
+def expand_r(
+    parts: list[str], t_args: translated_args, in_plural=False
+) -> tuple[str, str]:
     ret = ""
     stray__ = False
     while parts:
         p = parts.pop(0)
         if p in replacement_functions:
-            mrf = replacement_functions[p]
-            args = [parts.pop(0) for _ in range(mrf[0])]
-            ret += mrf[1](*args)
+            num_args, rep_func = replacement_functions[p]
+            args, parts = parts[:num_args], parts[num_args:]
+            ret += rep_func(*args)
         elif p == "plural_for_parameter":
             arg_num = parts.pop(0)
             my_num = t_args[arg_num]
@@ -251,7 +256,7 @@ def expand_r(parts: list[str], t_args: translated_args, in_plural=False):
             stray__ = True
             continue
         stray__ = False
-    return ret
+    return ret, ""
 
 
 fancy = re.compile(r"[*.?()\[\]]")
@@ -315,37 +320,37 @@ def check_config_locale():
     with fa_paths.CONFIG.open(encoding="utf8") as fp:
         config = read_cfg(fp, conf=True)
     cross_cats = defaultdict(lambda: defaultdict(list))
-    for cat, confs in config.items():
+    for cat, configs in config.items():
         if cat in check_cats:
             t_to_check = {
-                tcat: tlist
-                for tcat, tlist in translations.items()
-                if tcat in check_cats[cat]
+                t_cat: tlist
+                for t_cat, tlist in translations.items()
+                if t_cat in check_cats[cat]
             }
         else:
             t_to_check = {}
-        for config_key in confs.keys():
+        for config_key in configs.keys():
             if config_key[-12:] == "-alternative":
                 continue
             found = False
-            for tcat, trans in t_to_check.items():
+            for t_cat, trans in t_to_check.items():
                 if config_key in trans:
                     found = True
                     break
             if not found:
-                for tcat, trans in translations.items():
+                for t_cat, trans in translations.items():
                     if config_key in trans:
-                        cross_cats[cat][tcat] += [(config_key, trans[config_key])]
+                        cross_cats[cat][t_cat] += [(config_key, trans[config_key])]
                         found = True
                 if not found:
                     print(f"missing:{cat}.{config_key}")
-    for ccat, tcats in cross_cats.items():
-        print(ccat)
-        for tcat, count in tcats.items():
-            print("\t", tcat, count)
+    for c_cat, t_cats in cross_cats.items():
+        print(c_cat)
+        for t_cat, count in t_cats.items():
+            print("\t", t_cat, count)
 
 
-def maybe_load(path: Path):
+def maybe_load(path: Path | zipfile.Path):
     try:
         with path.open(encoding="utf8") as fp:
             read_cfg(fp, ret=translation_table)
@@ -364,17 +369,16 @@ def load_full(code):
 
     cfg = READ_DIR.joinpath("core", "locale", code, "core.cfg")
     maybe_load(cfg)
-    import mods
+    from mods import mods
 
-    with mods.mod_manager:
-        for cfg in mods.mod_manager.iter_mod_files("locale/" + code + "/.*.cfg"):
+    with mods as mod_manager:
+        for cfg in mod_manager.iter_mod_files("locale/" + code + "/.*.cfg"):
             maybe_load(cfg)
 
 
 def get_langs():
     lang = {}
-    regstr = r"locale/([\w-]+)/info.json"
-    reg = re.compile(regstr)
+    reg = re.compile(r"locale/([\w-]+)/info.json")
     from fa_paths import READ_DIR
 
     locs = READ_DIR.joinpath("core", "locale")
@@ -387,8 +391,8 @@ def get_langs():
     return lang
 
 
-def t_print(*args, **kargs):
-    print(*(translate(arg) for arg in args), **kargs)
+def t_print(*args, **kwargs):
+    print(*(translate(arg) for arg in args), **kwargs)
 
 
 code = "en"
@@ -398,8 +402,8 @@ load_init("en")
 def check_lang():
     global code
     load_full("en")
-    with config.current_conf:
-        code = config.general.locale
+    with config.current_conf as conf:
+        code = conf.general.locale
         if not code or code == "auto":
             import locale
             import fa_menu
@@ -428,15 +432,15 @@ def check_lang():
                         ("fa-l.guessed-language", langs[code]),
                     )
                     if op == 0:
-                        config.general.locale = code
+                        conf.general.locale = code
                         return
                 else:
                     d_print("We got a short list for langs", short_list)
             lang_op = fa_menu.select_option(
                 langs.values(), ("gui-interface-settings.locale",)
             )
-            config.general.locale = list(langs.keys())[lang_op]
-        load_full(config.general.locale)
+            conf.general.locale = list(langs.keys())[lang_op]
+        load_full(conf.general.locale)
 
 
 if __name__ == "__main__":
