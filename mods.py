@@ -293,8 +293,11 @@ class InstalledMod(Mod):
 
 
 class PortalMod(Mod):
-    def __init__(self, release: Release) -> None:
-        super().__init__(release["info_json"])
+    def __init__(self, release: Release, name) -> None:
+        info = release["info_json"].copy()
+        info["name"] = name
+        info["version"] = release["version"]
+        super().__init__(info)
         self.release = release
 
 
@@ -439,17 +442,20 @@ class ModManager(object):
     def add_info_for_mods(self, mod_names: list[str]):
         args = {"namelist": ",".join(mod_names)}
         encoded_args = parse.urlencode(args)
-        with opener.open(f"{_mod_portal}/api/mods/?{encoded_args}") as fp:
+        with opener.open(f"{_mod_portal}/api/mods?{encoded_args}") as fp:
             info: PortalListResult = json.load(fp)
         for r in info["results"]:
             self.add_info_for_mod(r)
 
     def add_info_for_mod(self, result: PortalResult):
         for release in result["releases"]:
-            self.add_info_for_release(release)
+            self.add_info_for_release(release, result["name"])
 
-    def add_info_for_release(self, release: Release):
-        m = PortalMod(release)
+    def add_info_for_release(self, release: Release, name: str):
+        m = PortalMod(release, name)
+        to_replace = self.by_name_version[m.name].get(m.version)
+        if to_replace and isinstance(to_replace, InstalledMod):
+            return
         self.by_name_version[m.name][m.version] = m
 
     def expand_dependencies(self, deps: set[Dependency]):
@@ -462,26 +468,47 @@ class ModManager(object):
             progress = False
             while expanding:
                 dep = expanding.pop()
-                if dep.type <= DependencyType.OPTIONAL:
-                    # since this is an optional dependency, we don't need to expand it
-                    progress = True
-                    collected.add(dep)
-                    continue
-                m = self.find_dep(dep)
-                if m is False:
-                    deps.add(dep)
-                    continue
-                assert isinstance(m, Mod), f"Expected mod, got {type(m)}"
-                new_deps = set(m.dependencies)
-                new_deps -= collected
-                new_deps -= deps
-                expanding |= new_deps
+                if not dep.type <= DependencyType.OPTIONAL:
+                    # since this is not optional dependency, we need to expand it
+                    m = self.find_dep(dep)
+                    if m is False:
+                        deps.add(dep)
+                        # we'll try to resolve this later after downloading the mod
+                        continue
+                    assert isinstance(m, Mod), f"Expected mod, got {type(m)}"
+                    new_deps = set(Dependency.from_str(d) for d in m.dependencies)
+                    new_deps -= collected
+                    new_deps -= deps
+                    expanding |= new_deps
+                progress = True
+                collected.add(dep)
             if not deps:
                 break
             self.add_info_for_mods([d.name for d in deps])
         if deps:
             raise UnresolvedModDependency(deps)
         return Dependencies(collected)
+
+    def check_updates(self, require_enabled=True) -> set[Dependency]:
+        """Check for updates to installed mods.
+        Returns a list of mods that have updates available."""
+        updates = []
+        check = []
+        for mod in self.iter_installed_mods(require_enabled=require_enabled):
+            if mod.folder_path.parent == READ_DIR:
+                continue
+            check.append(mod.name)
+        self.add_info_for_mods(check)
+        deps: set[Dependency] = set()
+        for mod in self.iter_installed_mods(require_enabled=require_enabled):
+            current_ver = mod.version
+            versions = self.by_name_version[mod.name]
+            for ver in sorted(versions, reverse=True):
+                if ver > current_ver:
+                    v = VerComp(ver, 0)
+                    deps.add(Dependency(DependencyType.NORMAL, mod.name, v, v))
+                    break
+        return deps
 
     fancy = re.compile(r"[*.?()\[\]]")
 
@@ -502,7 +529,7 @@ class ModManager(object):
         for folders_with_mods in [READ_DIR, MODS]:
             yield from folders_with_mods.iterdir()
 
-    def iter_mods(
+    def iter_installed_mods(
         self, require_enabled=True, mod_filter: re.Pattern | None = None
     ) -> Iterator[InstalledMod]:
         for m in self.dict.values():
@@ -540,7 +567,7 @@ class ModManager(object):
         parts = [
             part if not self.fancy.search(part) else re.compile(part) for part in parts
         ]
-        for mod in self.iter_mods(require_enabled, mod_filter):
+        for mod in self.iter_installed_mods(require_enabled, mod_filter):
             yield from mod.iterate_mods_files(parts)
 
 
@@ -569,6 +596,17 @@ mods = __mod_manger_factory()
 if __name__ == "__main__":
     print(Dependency.from_str("! stop >= 3.4.5").meets(ModVersion("3.4.5")))
     with mods as mod_manager:
-        for mod in mod_manager.iter_mods():
+        for mod in mod_manager.iter_installed_mods():
             print(mod.name, mod.version)
-        pass
+        try:
+            deps = mod_manager.expand_dependencies(mod_manager.check_updates())
+        except IncompatibleDependencies as e:
+            #todo: handle this better
+            raise e
+        optional_deps = set()
+        to_install = set()
+        disable = set()
+        for dep in deps.values():
+            if dep.type == DependencyType.CONFLICT:
+
+            if mod_manager.check_dep()
