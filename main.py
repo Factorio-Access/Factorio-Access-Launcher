@@ -25,7 +25,7 @@ from fa_arg_parse import args
 from map_gen_setting_menu import map_menu
 from translations import check_lang
 from fa_scenarios import get_scenarios, pre_launch_scenario
-from fa_mod_menu import mod_menu
+from fa_mod_menu import mod_menu, check_for_main_mod
 from version import version
 from credentials_menu import sign_in_menu
 
@@ -70,7 +70,7 @@ menu = {
 }
 
 check_lang()
-
+check_for_main_mod()
 modify_config.do_config_check()
 
 if args.launch:

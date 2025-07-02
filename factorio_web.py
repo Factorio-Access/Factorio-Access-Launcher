@@ -1,10 +1,12 @@
+import time
 import urllib.parse
 import urllib.request
 import urllib.error
 import urllib.response
 import json
 import http, http.cookiejar
-from typing import TypedDict, NotRequired
+from typing import TypedDict, NotRequired, Any
+from urllib.parse import quote
 
 LOGIN_API = "https://auth.factorio.com/api-login"
 
@@ -83,9 +85,43 @@ def check_credentials(username: str, token: str) -> bool:
         raise ValueError(f"Unexpected response: {response.status}")
 
 
-def get_json(url: str, params: dict[str, object] = {}) -> dict:
-    """Open a URL and return the JSON response."""
+def append_query(url: str, params: dict[str, Any] = {}):
     if params:
         url += "?" + urllib.parse.urlencode(params)
-    with opener.open(url) as response:
+    return url
+
+
+def get_json(url: str, params: dict[str, Any] = {}):
+    with opener.open(append_query(url, params)) as response:
         return json.load(response)
+
+
+def download(url, filename, params: dict[str, Any] = {}):
+    url = append_query(url, params)
+    with open(filename, "wb") as fp, opener.open(url) as dl:
+        # print(f"saving {url} to {filename}")
+        length = dl.getheader("content-length")
+        buff_size = 4096
+
+        if length:
+            length = int(length)
+            if length > 4096 * 20:
+                print(f"Downloading {length} bytes")
+
+        bytes_done = 0
+        last_percent = -1
+        last_reported = time.time()
+        while True:
+            buffer = dl.read(buff_size)
+            if not buffer:
+                break
+            fp.write(buffer)
+            bytes_done += len(buffer)
+            if length:
+                percent = bytes_done * 100 // length
+                if percent > last_percent and time.time() >= 5 + last_reported:
+                    print(f"{percent}%")
+                    last_percent = percent
+                    last_reported = time.time()
+        if length and length > 4096 * 20:
+            print("Done")

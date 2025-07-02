@@ -1,7 +1,5 @@
 import subprocess
 import re
-import urllib
-import urllib.parse
 import os
 import zipfile
 import time
@@ -9,8 +7,8 @@ from shutil import rmtree
 from sys import platform
 
 from credentials import get_credentials
-from factorio_web import opener, get_json
-from fa_paths import BIN, TEMP, PLAYER_DATA
+from factorio_web import get_json, download
+from fa_paths import BIN, TEMP, FACTORIO_VERSION
 
 debug = False
 
@@ -31,36 +29,6 @@ FACTORIO_INSTALL_PATH = "./"
 
 def get_latest_stable():
     return get_json("https://factorio.com/api/latest-releases")["stable"]["alpha"]
-
-
-def download(url, filename):
-    with open(filename, "wb") as fp, opener.open(url) as dl:
-        # print(f"saving {url} to {filename}")
-        length = dl.getheader("content-length")
-        buff_size = 4096
-
-        if length:
-            length = int(length)
-            if length > 4096 * 20:
-                print(f"Downloading {length} bytes")
-
-        bytes_done = 0
-        last_percent = -1
-        last_reported = time.time()
-        while True:
-            buffer = dl.read(buff_size)
-            if not buffer:
-                break
-            fp.write(buffer)
-            bytes_done += len(buffer)
-            if length:
-                percent = bytes_done * 100 // length
-                if percent > last_percent and time.time() >= 5 + last_reported:
-                    print(f"{percent}%")
-                    last_percent = percent
-                    last_reported = time.time()
-        if length and length > 4096 * 20:
-            print("Done")
 
 
 def delete_dir_if_exists(dirname):
@@ -99,7 +67,7 @@ def install():
 
 def get_current_version():
     version_str = subprocess.check_output([BIN, "--version"]).decode("utf-8")
-    version_re = r"Version:\s*([\d\.]+)\s*\(\s*([^,]+),\s*([^,]+),\s*([^)]+)\)"
+    version_re = r"Version: *([\d\.]+) *\( *([^,]+), *([^,]+), *([^)]+)\)"
     maybe_match = re.match(version_re, version_str)
     if not maybe_match:
         print("could not match version string", version_str)
@@ -159,9 +127,9 @@ def prep_update(current_version, update_candidates):
         this_params = params | update
         print("Downloading " + update["to"])
         download(
-            f"https://updater.factorio.com/updater/get-download?"
-            + urllib.parse.urlencode(this_params),
+            "https://updater.factorio.com/updater/get-download",
             update_filename(params, update),
+            this_params,
         )
     print("Finished Downloads")
     return
