@@ -19,12 +19,20 @@ _mod_portal = "https://mods.factorio.com"
 
 dual_path = zPath | Path
 
+_m = re.match(r"\d+\.\d+", FACTORIO_VERSION)
+assert _m
+FACTORIO_VER = _m[0]
+
 
 class NotAModPath(ValueError):
     pass
 
 
 class UnresolvedModDependency(Exception):
+    pass
+
+
+class FactorioVersionMismatch(Exception):
     pass
 
 
@@ -288,6 +296,8 @@ class InstalledMod(Mod):
             i: ModInfoJson = json.load(fp)
         if path.name == "core":
             i["version"] = FACTORIO_VERSION
+        if path.parent == READ_DIR:
+            i["factorio_version"] = FACTORIO_VER
         re_name = f"{i['name']}(_{i['version']})?(.zip)?"
         if not re.fullmatch(re_name, path.name):
             raise ValueError(
@@ -367,8 +377,8 @@ class ModManager(object):
                 self.add_installed_mod(mod_path)
             except NotAModPath:
                 pass
-            except Exception:
-                traceback.print_exc()
+            except FactorioVersionMismatch:
+                pass
 
         pre_size = len(self.dict)
         self.dict = {
@@ -498,6 +508,8 @@ class ModManager(object):
 
     def add_installed_mod(self, mod_path: dual_path):
         m = InstalledMod(mod_path)
+        if m.info.get("factorio_version") != FACTORIO_VER:
+            raise FactorioVersionMismatch(m)
         self.by_name_version[m.name][m.version] = m  # TODO: check duplicates?
         if m.name not in self.dict and m.name != "core":
             self.dict[m.name] = {"name": m.name, "enabled": self.new_enabled}
@@ -524,7 +536,8 @@ class ModManager(object):
 
     def add_info_for_mod(self, result: PortalResult):
         for release in result["releases"]:
-            self.add_info_for_release(release, result["name"])
+            if release["info_json"].get("factorio_version") == FACTORIO_VER:
+                self.add_info_for_release(release, result["name"])
 
     def add_info_for_release(self, release: Release, name: str):
         m = PortalMod(release, name)
