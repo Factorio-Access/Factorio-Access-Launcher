@@ -27,7 +27,7 @@ def sign_in_password_menu():
         except credentials.Bad_Credentials as e:
             print(f"Login failed: {e}")
     credentials.sign_in_with_credentials(c["username"], "")
-    return 0
+    return 1
 
 
 def sign_in_with_token_menu():
@@ -68,7 +68,7 @@ def sign_in_with_token_menu():
             "The token entered did not match the expected format. Please try again, or enter no to skip"
         )
     credentials.sign_in_with_credentials(username, token)
-    return 0
+    return 1
 
 
 sign_in_menu = {
