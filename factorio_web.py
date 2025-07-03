@@ -5,8 +5,11 @@ import urllib.error
 import urllib.response
 import json
 import http, http.cookiejar
+from collections import defaultdict
 from typing import TypedDict, NotRequired, Any
 from urllib.parse import quote
+from http.client import HTTPSConnection, HTTPConnection
+
 
 LOGIN_API = "https://auth.factorio.com/api-login"
 
@@ -125,3 +128,39 @@ def download(url, filename, params: dict[str, Any] = {}):
                     last_reported = time.time()
         if length and length > 4096 * 20:
             print("Done")
+
+
+connection_pool = {HTTPConnection: {}, HTTPSConnection: {}}
+
+
+def get(url):
+    parts = urllib.parse.urlparse(url)
+    if parts.port:
+        raise ValueError("ports not supported yet, add support.")
+    match parts.scheme:
+        case "http":
+            con_type = HTTPConnection
+        case "https":
+            con_type = HTTPSConnection
+        case _:
+            raise ValueError("Unsupported scheme", parts.scheme)
+    pass
+
+
+if __name__ == "__main__":
+    parts = urllib.parse.urlparse(
+        "https://mods.factorio.com:12345/hi/hello?woot=5&woot=6#butt"
+    )
+    c = HTTPSConnection("mods.factorio.com")
+    c.set_debuglevel(1)
+    c.request("GET", "/api/mods")
+    r1 = c.getresponse()
+    c.request("GET", "/api/mods?page=2")
+    print(r1.closed)
+    with r1 as fp:
+        resp1 = json.load(fp)
+    print(r1.closed)
+    r2 = c.getresponse()
+    with r2 as fp:
+        resp2 = json.load(fp)
+    print("done", len(resp1) + len(resp2))
