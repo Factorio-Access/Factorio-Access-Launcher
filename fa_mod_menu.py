@@ -2,6 +2,8 @@ import fa_menu
 from fa_paths import MOD_NAME
 from mods import mods, ModManager, Dependency, DependencyType, DepCheckResult
 from translations import t_print
+from credentials import NotLoggedIn
+from credentials_menu import sign_in_menu
 
 
 class _mod_menu(fa_menu.Menu):
@@ -87,7 +89,18 @@ def check_for_main_mod():
             return
         print("Installing main mod:", MOD_NAME)
         dep = Dependency.from_str(MOD_NAME)
-        mod = mod_manager.install_mod(dep)
+        try:
+            mod = mod_manager.install_mod(dep)
+        except NotLoggedIn:
+            print(
+                "Looks like you're not logged into your Factorio Account. You need to be logged in in order to download mods. If you bought Factorio on Steam you'll need to create an account at Factorio.com and link your steam account to it."
+            )
+            fa_menu.new_menu("Login", sign_in_menu, top_level=False)()
+            try:
+                mod = mod_manager.install_mod(dep)
+            except NotLoggedIn:
+                print("Not logged in skipping install")
+                return
         orig_deps = mod.dependencies.values()
         # make optional normal
         deps = (Dependency.from_str(str(d).strip("? ")) for d in orig_deps)
