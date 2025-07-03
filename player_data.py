@@ -115,9 +115,12 @@ PlayerData = TypedDict(
 
 
 def get_player_data():
-    with PLAYER_DATA.open(encoding="utf8") as fp:
-        data: PlayerData = json.load(fp)
-        return data
+    try:
+        with PLAYER_DATA.open(encoding="utf8") as fp:
+            data: PlayerData = json.load(fp)
+    except FileNotFoundError:
+        raise NoPlayerData("Player data file not found.")
+    return data
 
 
 def save_player_data(data: PlayerData):
