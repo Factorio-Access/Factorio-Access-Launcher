@@ -14,7 +14,7 @@ cmd = f"python -m {folder}.{name}"
 params = {"hide_deprecated": "false", "page_size": "max"}
 results = []
 data = {
-    "_comment": f"Auto generated from web api by running `{cmd}`",
+    "_comment": f"Auto generated from web api data by running `{cmd}`",
     "pagination": None,
     "results": results,
 }

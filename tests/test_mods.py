@@ -13,6 +13,10 @@ class ModTestBasic(unittest.TestCase):
                 self.assertEqual(str(mods.ModVersion(given)), expect)
 
     def test_parse_all_deps(self):
+        if not hasattr(self, "data") or self.data is None:
+            self.skipTest(
+                "No test data run python -m test.mod_test_data to generate (~100Mb json download)"
+            )
         for mod in self.data["results"]:
             with self.subTest("mod", mod_name=mod["name"]):
                 for release in mod["releases"]:
@@ -31,6 +35,11 @@ class ModTestBasic(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        with (Path(__file__).parent / "mod_test_data.json").open(encoding="utf8") as fp:
-            cls.data = json.load(fp)
+        try:
+            with (Path(__file__).parent / "mod_test_data.json").open(
+                encoding="utf8"
+            ) as fp:
+                cls.data = json.load(fp)
+        except FileNotFoundError:
+            cls.data = None
         return super().setUpClass()
