@@ -6,9 +6,9 @@ import urllib.response
 import json
 import http, http.cookiejar
 from collections import defaultdict
-from typing import TypedDict, NotRequired, Any
+from typing import TypedDict, NotRequired, Any, Type
 from urllib.parse import quote
-from http.client import HTTPSConnection, HTTPConnection
+from http.client import HTTPSConnection, HTTPConnection, RemoteDisconnected
 
 
 LOGIN_API = "https://auth.factorio.com/api-login"
@@ -70,17 +70,12 @@ class NoRedirection(urllib.request.HTTPErrorProcessor):
 
 def check_credentials(username: str, token: str) -> bool:
     """Check if the provided credentials are valid."""
-    no_re_opener = urllib.request.build_opener(NoRedirection)
-    no_re_opener.addheaders = opener.addheaders
-    url = "https://www.factorio.com/get-download/1.1.101/alpha/linux64?"
-    url += urllib.parse.urlencode(
-        {
-            "username": username,
-            "token": token,
-        }
-    )
-    req = urllib.request.Request(url, method="HEAD")
-    with no_re_opener.open(req) as response:
+    url = "https://www.factorio.com/get-download/1.1.101/alpha/linux64"
+    params = {
+        "username": username,
+        "token": token,
+    }
+    with request(append_query(url, params), "HEAD") as response:
         if response.status == 302:
             return True
         elif response.status == 403:
@@ -95,7 +90,8 @@ def append_query(url: str, params: dict[str, Any] = {}):
 
 
 def get_json(url: str, params: dict[str, Any] = {}):
-    with opener.open(append_query(url, params)) as response:
+    """Warning: not thread safe."""
+    with request(append_query(url, params)) as response:
         return json.load(response)
 
 
@@ -130,13 +126,24 @@ def download(url, filename, params: dict[str, Any] = {}):
             print("Done")
 
 
-connection_pool = {HTTPConnection: {}, HTTPSConnection: {}}
+connection_pool: dict[Type, dict[str, HTTPConnection]] = {
+    HTTPConnection: {},
+    HTTPSConnection: {},
+}
 
 
-def get(url):
+def request(url: str, method="GET"):
+    """Warning: not thread safe.
+    This function uses a connection pool with a single connection for each requested net location.
+    The motivation for this is for mod dependency analysis
+    where each mod requires it's own request to get the dependencies.
+    Reusing the connection dramatically speeds the results."""
     parts = urllib.parse.urlparse(url)
-    if parts.port:
-        raise ValueError("ports not supported yet, add support.")
+    assert parts.hostname
+    if parts.query:
+        url = f"{parts.path}?{parts.query}"
+    else:
+        url = parts.path
     match parts.scheme:
         case "http":
             con_type = HTTPConnection
@@ -144,7 +151,19 @@ def get(url):
             con_type = HTTPSConnection
         case _:
             raise ValueError("Unsupported scheme", parts.scheme)
-    pass
+    pool = connection_pool[con_type]
+    for i in range(2):
+        if parts.netloc not in pool:
+            pool[parts.netloc] = con_type(parts.hostname, parts.port)
+        con = pool[parts.netloc]
+        try:
+            con.request(method, url)
+            ret = con.getresponse()
+        except RemoteDisconnected:
+            del pool[parts.netloc]
+        else:
+            return ret
+    raise Exception("repeated disconnects")
 
 
 if __name__ == "__main__":
