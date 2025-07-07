@@ -2,7 +2,7 @@ import os
 import sys
 import re
 import subprocess
-import shutil
+import traceback
 from pathlib import Path
 
 from __main__ import __file__ as main_file
@@ -34,6 +34,17 @@ if steam:
     _game = os.environ["SteamAppId"]
     steam_game_path = Path(os.getcwd())
     _steam_path = steam_game_path.joinpath("..", "..", "..")
+    if sys.platform == WIN:
+        import winreg
+
+        _key = R"SOFTWARE\WOW6432Node\Valve\Steam"
+        try:
+            _hkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, _key)
+            _install_path, _ = winreg.QueryValueEx(_hkey, "InstallPath")
+            _steam_path = Path(_install_path)
+            d_print("steam path updated")
+        except:
+            traceback.print_exc()
     _steam_config = _steam_path.joinpath("config", "config.vdf")
     with open(_steam_config, encoding="utf8") as fp:
         for _line in fp:
@@ -77,8 +88,8 @@ if not BIN.is_file():
             WIN: [
                 "./bin/x64/factorio.exe",
                 "../bin/x64/factorio.exe",
-                r"%ProgramFiles%\Factorio\bin\x64\factorio.exe",
-                r"%ProgramFiles(x86)%\Steam\steamapps\common\Factorio\bin\x64\factorio.exe",
+                R"%ProgramFiles%\Factorio\bin\x64\factorio.exe",
+                R"%ProgramFiles(x86)%\Steam\steamapps\common\Factorio\bin\x64\factorio.exe",
             ],
             MAC: [
                 "/Applications/factorio.app/Contents/MacOS/factorio",
@@ -87,8 +98,8 @@ if not BIN.is_file():
             LIN: [
                 "./bin/x64/factorio",
                 "../bin/x64/factorio",
-                r"~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio",
-                r"~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio",
+                "~/.steam/root/steam/steamapps/common/Factorio/bin/x64/factorio",
+                "~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio",
             ],
         }
         for path in exe_map[sys.platform]:
@@ -111,13 +122,11 @@ if not BIN.is_file():
         raise SystemExit
 launch_args.insert(0, str(BIN))
 
-_FACTORIO_VERSION_output = subprocess.check_output([BIN, "--version"]).decode()
-_factorio_version_match = re.search(
-    r"Version: (\d+\.\d+.\d+)", _FACTORIO_VERSION_output
-)
+_FACTORIO_VER_out = subprocess.check_output([BIN, "--version"]).decode()
+_factorio_version_match = re.search(r"Version: (\d+\.\d+.\d+)", _FACTORIO_VER_out)
 if not _factorio_version_match:
     input(
-        f"The executable found produced a strange version string. {BIN} {_FACTORIO_VERSION_output}\n Press Enter to Exit"
+        f"The executable found produced a strange version string. {BIN} {_FACTORIO_VER_out}\n Press Enter to Exit"
     )
     raise SystemExit
 FACTORIO_VERSION = _factorio_version_match[1]
