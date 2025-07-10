@@ -9,8 +9,8 @@ import io
 from pathlib import Path
 
 import accessible_output2.outputs.auto
-import pyautogui as gui
-from playsound import playsound
+import pyautogui as gui  # cSpell: ignore pyautogui
+from playsound import playsound  # cSpell: ignore playsound
 
 
 from fa_arg_parse import launch_args, args, d_print
@@ -25,8 +25,8 @@ ao_output = accessible_output2.outputs.auto.Auto()
 ao_output.output("Hello Factorio!", interrupt=False)
 
 
-start_saving = str(Path(__file__).parent.joinpath("r", "shh.wav"))
-save_complete = str(Path(__file__).parent.joinpath("r", "shh.wav"))
+start_saving = str(Path(__file__).parent / "r/shh.wav")
+save_complete = str(Path(__file__).parent / "r/shh.wav")
 
 
 rich_text = re.compile(
@@ -51,29 +51,29 @@ def start_multi_line_buffer(first_line):
     multi_line_buffer = [first_line]
 
 
-def speak_interuptible_text(text):
+def speak_interruptable_text(text):
     text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
     d_print(text)
     ao_output.output(text, interrupt=True)
 
 
-def setCursor(coordstring):
-    coords = [int(coord) for coord in coordstring.split(",")]
+def setCursor(coord_string):
+    coords = [int(coord) for coord in coord_string.split(",")]
     gui.moveTo(coords[0], coords[1], _pause=False)
 
 
 player_list = {}
 
 
-def set_player_list(jsons):
+def set_player_list(json_list: str):
     global player_list
-    player_list = {key[1:]: val for key, val in json.loads(jsons).items()}
+    player_list = {key[1:]: val for key, val in json.loads(json_list).items()}
 
 
 player_specific_commands = {
     "fa-out-multi": start_multi_line_buffer,
-    "out": speak_interuptible_text,
+    "out": speak_interruptable_text,
     "setCursor": setCursor,
 }
 global_commands = {
@@ -82,35 +82,50 @@ global_commands = {
 
 re_save_started = re.compile(r"Saving to _autosave\w* \(blocking\).")
 re_player_join_game = re.compile(r"PlayerJoinGame .*?playerIndex\((\d+)\)")
+errorA_started = re.compile(r"-+ Error -+")
+errorA_end = re.compile(r"-+")
+errorB_started = re.compile(r" *\d+\.\d{3} Error ")
+errorB_end = re.compile(r" *\d+\.\d{3} ")
 
 
 def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
     global multi_line_buffer
+    error_buffer: list[str] | None = None
     player_index = ""
     restarting = False
-    for bline in stdout:
-        if bline.startswith(b"\xEF\xB7"):
-            sys.stdout.buffer.write(bline)
+    for b_line in stdout:
+        if b_line.startswith(b"\xef\xb7"):
+            sys.stdout.buffer.write(b_line)
             sys.stdout.buffer.flush()
             continue
         try:
-            line: str = bline.decode("utf-8").rstrip("\r\n")
+            line: str = b_line.decode("utf-8").rstrip("\r\n")
         except UnicodeDecodeError as e:
-            print(bline)
+            print(b_line)
             raise e
         if args.fa_debug:
             if args.fa_stdout_bytes:
-                print(bline)
+                print(b_line)
             else:
-                sys.stdout.buffer.write(bline)
+                sys.stdout.buffer.write(b_line)
                 sys.stdout.buffer.flush()
         if multi_line_buffer:
             if line == multi_line_buffer_end:
-                speak_interuptible_text("\n".join(multi_line_buffer))
+                speak_interruptable_text("\n".join(multi_line_buffer))
                 multi_line_buffer = []
             else:
                 multi_line_buffer.append(line)
             continue
+        if error_buffer is not None:
+            b = errorB_end.match(line)
+            if not b:
+                error_buffer.append(line)
+            if b or errorA_end.fullmatch(line):
+                print("\n".join(error_buffer))
+                speak_interruptable_text("Printed error to console.")
+                error_buffer = None
+            continue
+
         parts = line.split(" ", 1)
         if len(parts) == 2:
             if parts[0] in player_specific_commands:
@@ -126,10 +141,6 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             playsound(save_complete)
         elif re_save_started.search(line):
             playsound(start_saving)
-        elif line.endswith("time start"):
-            debug_time = time.time
-        elif line.endswith("time end"):
-            print(time.time - debug_time)
         elif line.endswith("Restarting Factorio"):
             restarting = True
         elif line.endswith("Goodbye"):
@@ -149,6 +160,11 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
         elif announce_press_e and line.endswith("Factorio initialised"):
             announce_press_e = False
             ao_output.output("Press e to continue", interrupt=True)
+        elif errorA_started.fullmatch(line) or errorB_started.match(line):
+            speak_interruptable_text(
+                "Error Reported. Will print to console once game exits. Press e twice to exit and restart last save."
+            )
+            error_buffer = [line]
 
 
 def just_launch():

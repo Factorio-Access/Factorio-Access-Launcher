@@ -8,7 +8,8 @@ from version_type import Launcher_Version
 
 parent = Path(__file__).parent
 
-cmd = "git describe --tags --long --dirty".split(" ")
+cmd: list[str] = []
+cmd += "git describe --tags --long --dirty".split(" ")
 cmd.insert(1, "-C")
 cmd.insert(2, str(parent))
 ver_info = check_output(cmd, text=True).strip().split("-")

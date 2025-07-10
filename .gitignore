@@ -1,6 +1,6 @@
 /build/**
 /venv/**
-/__pycache__/**
+__pycache__
 .VSCodeCounter/**
 /dist/**
 *.spec
@@ -9,7 +9,7 @@ launcher.exe
 #Mod Files
 /mods/**
 
-#facotrio files
+#Factorio files
 bin
 data
 doc-html
@@ -26,3 +26,4 @@ scenarios/**
 script-output/**
 temp/**
 built_version.py
+tests/mod_test_data.json

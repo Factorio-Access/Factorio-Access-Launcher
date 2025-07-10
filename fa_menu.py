@@ -1,11 +1,14 @@
-from typing import Any, Callable
+from typing import Any, Callable, Sequence, List
+import weakref
+import abc
 
+from fa_arg_parse import d_print
 from translations import translate, localised_str, t_print
 import fa_paths
 from fa_arg_parse import args
 
 
-def getAffirmation(prompt=""):
+def getAffirmation(prompt: localised_str = ""):
     while True:
         i = input(translate(prompt))
         if i == "yes" or i == "Yes" or i == "YES" or i == "y" or i == "Y":
@@ -37,7 +40,9 @@ def getNum():
             print("Invalid input, please enter a number.\n")
 
 
-def select_option(options, prompt="Select an option:", one_indexed=True):
+def select_option(
+    options, prompt: localised_str = "Select an option:", one_indexed=True
+):
     pre_prompt = None
     while True:
         # print("\033c", end="")
@@ -71,66 +76,93 @@ def back_func(*args):
     return 1
 
 
-class Menu(object):
+ItemData = list[tuple[localised_str] | tuple[localised_str, Any]]
+ItemDataFunc = Callable[..., ItemData]
+Title = localised_str | ItemDataFunc
+DescFunc = Callable[..., localised_str | None]
+
+
+class MenuBase(object):
     def __init__(
         self,
-        title: localised_str,
-        items: list["Menu"],
-        desc: localised_str = None,
-        add_back=True,
+        title: Title,
+        desc: localised_str | DescFunc | None = None,
     ):
-        self._title = title
-        self.items = items.copy()
-        self._desc = desc
-        self.add_back = add_back
-        if add_back:
-            self.items.insert(0, back_item)
-        pass
+        self._title: ItemDataFunc = (
+            title if callable(title) else lambda *args: [(title,)]
+        )
+        self._desc: DescFunc = desc if callable(desc) else lambda *args: desc
 
     def get_items(self, *args):
-        return {self._title: ()}
+        self._last_map = self._title(*args)
+        return self._last_map
 
     def get_title(self, *args):
-        return self._title
+        for i in self._last_map:
+            a = i[1:]  # option args
+            b = args[: len(a)]  # our args that might match
+            if a == b:
+                return i[0]
+        raise ValueError("Value not found")
 
     def get_desc(self, *args):
-        return self._desc
+        return self._desc(*args)
 
-    def get_header(self, *args):
-        ret = self.get_title(*args)
+    def get_header(self, *args) -> localised_str:
+        ret: localised_str = self.get_title(*args)
         desc = self.get_desc(*args)
         if desc is not None:
             ret = ("", ret, "\n", desc)
         return ret
 
+    @abc.abstractmethod
+    def __call__(self, *args: Any) -> int:
+        pass
+
+
+class Menu(MenuBase):
+    def __init__(
+        self,
+        title: Title,
+        items: List["MenuBase"],
+        desc: localised_str | DescFunc | None = None,
+        add_back=True,
+    ):
+        super().__init__(title=title, desc=desc)
+        self.items = items.copy()
+        self.add_back = add_back
+        if add_back:
+            self.items.insert(0, back_item)
+        pass
+
     def __call__(self, *args):
         while True:
-            options = {}
+            options = []
+            keys = []
             for submenu in self.items:
                 sub_options = submenu.get_items(*args)
-                for sub_name, sub_arg in sub_options.items():
-                    options[sub_name] = (submenu, sub_arg)
-            keys = list(options)
+                for sub in sub_options:
+                    keys.append(sub[0])
+                    options.append((submenu, sub[1:]))
             opts = [translate(key) for key in keys]
-            selected_menu, arg = options[
-                keys[
-                    select_option(
-                        opts,
-                        prompt=translate(self.get_header(*args)),
-                        one_indexed=not self.add_back,
-                    )
-                ]
-            ]
+            opt = select_option(
+                opts,
+                prompt=translate(self.get_header(*args)),
+                one_indexed=not self.add_back,
+            )
+            selected_menu, arg = options[opt]
             ret = selected_menu(*(arg + args))
             if ret > 0 and self.add_back:
                 return ret - 1
 
 
-class Menu_function_leaf(Menu):
-    def __init__(self, call: Callable, title: localised_str, back_levels=1):
+class Menu_function_leaf(MenuBase):
+    def __init__(
+        self, call: Callable, title: localised_str | ItemDataFunc, back_levels=1
+    ):
         self.call = call
         self.back_levels = back_levels
-        self._title = title
+        super().__init__(title=title)
 
     def __call__(self, *args: Any) -> Any:
         ret = self.call(*args)
@@ -142,35 +174,9 @@ class Menu_function_leaf(Menu):
 back_item = Menu_function_leaf(back_func, ("gui.cancel",))
 
 
-class VariableMenuMixIn(object):
-    def get_items(self, *args):
-        self.last_map = self._title(*args)
-        return self.last_map
-
-    def get_title(self, my_arg, *args):
-        for name, val in self.last_map.items():
-            if val[0] == my_arg:
-                return name
-        raise ValueError("Value not found")
-
-    def get_desc(self, my_arg, *args):
-        desc = self._desc
-        if callable(desc):
-            desc = desc(my_arg)
-        return desc
-
-
-class Menu_var(VariableMenuMixIn, Menu):
-    pass
-
-
-class Menu_var_leaf(VariableMenuMixIn, Menu_function_leaf):
-    pass
-
-
-def parse_menu_dict(menu: dict):
-    subs = []
-    desc = None
+def parse_menu_dict(menu: dict[Title, Any]):
+    subs: list[MenuBase] = []
+    desc: DescFunc | localised_str | None = None
     for t, sub in menu.items():
         if t == "_desc":
             desc = sub
@@ -182,22 +188,19 @@ def parse_menu_dict(menu: dict):
     return subs, desc
 
 
-def new_menu(title: localised_str, menu: dict | Callable, top_level=True):
+def new_menu(title: Title, menu: dict | Callable, top_level=True):
     if isinstance(menu, dict):
         subs, desc = parse_menu_dict(menu)
-        if callable(title):
-            return Menu_var(title, subs, desc, not top_level)
-        return Menu(title, subs, desc, not top_level)
+        ret = Menu(title, subs, desc, not top_level)
+        if top_level:
+            ret.get_items()
+        return ret
     if callable(menu):
-        if callable(title):
-            return Menu_var_leaf(menu, title)
         return Menu_function_leaf(menu, title)
     raise ValueError("Unexpected menu item:", menu)
 
 
 class setting_menu(Menu):
-    __slots__ = ["my_title", "desc", "default", "val", "submenu"]
-
     def __init__(
         self,
         title: localised_str,
@@ -205,16 +208,26 @@ class setting_menu(Menu):
         default: Any = "",
         val: Any = "",
     ) -> None:
-        self._title = title
-        self._desc = desc
+        super().__init__(title=title, desc=desc, items=[], add_back=False)
         self.default = default
         self.val = val
-        # self.submenu = self.edit
 
-    def get_items(self, *args):
-        return {("", self._title, ":", self.val_to_string(*args)): ()}
+    def get_items(self, *args) -> ItemData:
+        data = super().get_items(*args)
+        return [
+            (
+                (
+                    "",
+                    d[0],
+                    ":",
+                    self.val_to_string(*(d[1:] + args)),
+                ),
+            )
+            + d[1:]
+            for d in data
+        ]
 
-    def input_to_val(self, inp: str, *args):
+    def input_to_val(self, inp: str, *args) -> Any:
         return inp
 
     def val_to_string(self, *args):
@@ -234,7 +247,7 @@ class setting_menu(Menu):
                 except:
                     print("Invalid value")
                     continue
-                self.set_val(val)
+                self.set_val(val, *args)
             return 0
 
 
@@ -291,30 +304,30 @@ class setting_menu_bool(setting_menu):
         )
 
     def get_items(self, *args):
-        ret = ("", self._title, ":", self.val_to_string(*args))
-        if self._desc:
-            ret = ret + (" ", self._desc)
-        return {ret: ()}
+        ret: ItemData = []
+        for data in super().get_items(*args):
+            desc = self._desc(*(data[1:] + args))
+            name = ("", data[0], " ", desc) if desc is not None else data[0]
+            ret.append((name,) + data[1:])
+        return ret
 
     def __call__(self, *args):
         self.set_val(not self.val, *args)
         return 0
 
 
-class setting_menu_option(Menu):
-    def __init__(self, title: localised_str, val, desc=None) -> None:
-        self._title = title
-        self.val = val
-        self._desc = desc
+class setting_menu_option(Menu_function_leaf):
+    def __init__(
+        self, parent: "setting_menu_options", options: ItemDataFunc, **kwargs
+    ) -> None:
+        self.parent = weakref.ref(parent)
+        super().__init__(call=self.set_parents_val, title=options, **kwargs)
 
-    def get_items(self, parent: "setting_menu_options", *args):
-        ret = self._title
-        if self._desc:
-            ret = ("", self._title, ":", self._desc)
-        return {ret: ()}
-
-    def __call__(self, parent: "setting_menu_options", *args):
-        parent.set_val(self.val)
+    def set_parents_val(self, val, *args):
+        parent = self.parent()
+        if not parent:
+            raise Exception("whoops!")
+        parent.set_val(val, *args)
         return 1
 
 
@@ -322,25 +335,19 @@ class setting_menu_options(setting_menu):
     def __init__(
         self,
         title: localised_str,
-        items: dict,
+        items: Callable | list[tuple],
         desc: localised_str | None = None,
-        default: Any = "",
-        val: Any = "",
+        default: Any = None,
+        val: Any = None,
+        child_class=setting_menu_option,
     ) -> None:
-        menu_items = [
-            setting_menu_option(sub_name, sub_val)
-            for sub_name, sub_val in items.items()
-        ]
+        if not callable(items):
+            items = lambda: items
+        menu_items: list[MenuBase] = [child_class(self, items)]
         Menu.__init__(self, title, menu_items, desc)
         self.default = default
-        self.set_val(val)
-
-    def val_to_string(self, *args):
-        maybe = [sub._title for sub in self.items[1:] if sub.val == self.val]
-        if len(maybe):
-            return translate(maybe[0])
-        return self.val
+        if val is not None:
+            self.set_val(val)
 
     def __call__(self, *args):
-        # duplicate self is to pass the parent to the option
-        return Menu.__call__(self, self, *args)
+        return Menu.__call__(self, *args)

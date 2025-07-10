@@ -5,13 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Main",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "main"
+        },
+        {
+            "name": "Python Debugger: Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "unittest"
+        },
+        {
             "name": "Python: Current File",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--fa-debug"]
+            "args": [
+                "--fa-debug"
+            ]
         }
     ]
 }

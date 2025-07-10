@@ -5,18 +5,23 @@ from zipfile import is_zipfile, Path as zPath
 from pathlib import Path
 from urllib import parse, error
 from collections import defaultdict
-from typing import Iterator, Union, TypedDict
+from typing import Iterator, Union, TypedDict, NamedTuple, NotRequired
 from enum import StrEnum
 import traceback
 
 import config
 from fa_paths import MODS, READ_DIR, FACTORIO_VERSION
 from fa_arg_parse import d_print
-from update_factorio import download, get_credentials, opener
+from credentials import get_credentials
+from factorio_web import get_json, quote, download
 
 _mod_portal = "https://mods.factorio.com"
 
 dual_path = zPath | Path
+
+_m = re.match(r"\d+\.\d+", FACTORIO_VERSION)
+assert _m
+FACTORIO_VER = _m[0]
 
 
 class NotAModPath(ValueError):
@@ -27,16 +32,24 @@ class UnresolvedModDependency(Exception):
     pass
 
 
-class info_json(TypedDict):
+class FactorioVersionMismatch(Exception):
+    pass
+
+
+class PortalInfoJson(TypedDict):
+    factorio_version: str
+    dependencies: NotRequired[list[str]]
+
+
+class ModInfoJson(PortalInfoJson):
     name: str
     version: str
-    dependencies: list[str]
 
 
 class Release(TypedDict):
     download_url: str  # 	Path to download for a mod. starts with "/download" and does not include a full url. See #Downloading Mods
     file_name: str  # 	The file name of the release. Always seems to follow the pattern "{name}_{version}.zip"
-    info_json: info_json  # A copy of the mod's info.json file, only contains factorio_version in short version, also contains an array of dependencies in full version
+    info_json: PortalInfoJson  # A copy of the mod's info.json file, only contains factorio_version in short version, also contains an array of dependencies in full version
     released_at: str  # 	String(ISO 8601)	ISO 8601 for when the mod was released.
     version: (
         str  # g	The version string of this mod release. Used to determine dependencies.
@@ -68,7 +81,17 @@ class PortalListResult(TypedDict):
     results: list[PortalResult]
 
 
-class mod_version(tuple):
+class ModFileListing(TypedDict):
+    name: str
+    enabled: bool
+    version: NotRequired[str]
+
+
+class ModFile(TypedDict):
+    mods: list[ModFileListing]
+
+
+class ModVersion(tuple):
     def __new__(cls, version: str):
         ver = [0, 0, 0]
         for i, val in enumerate(version.split(".", 2)):
@@ -79,8 +102,8 @@ class mod_version(tuple):
         return ".".join(str(n) for n in self)
 
 
-MIN_MOD_VERSION = mod_version("0")
-MAX_MOD_VERSION = mod_version("65535.65535.65535")
+MIN_MOD_VERSION = ModVersion("0")
+MAX_MOD_VERSION = ModVersion("65535.65535.65535")
 
 
 class DependencyType(StrEnum):
@@ -103,20 +126,25 @@ class DependencyType(StrEnum):
         return list(DependencyType).index(self) >= list(DependencyType).index(other)
 
 
-ver_comp = tuple[mod_version, int]
+class VerComp(NamedTuple):
+    ver: ModVersion
+    epsilon: int  # offsets to emulate e.g < behavior with <=
+
+    def __str__(self):
+        return f'{"=" if self.epsilon == 0 else ""} {self.ver}'
 
 
 class IncompatibleDependencies(ValueError):
     pass
 
 
-class dependency(object):
+class Dependency(object):
     __types = "|".join([re.escape(t) for t in DependencyType])
     __re_raw = rf"({__types})\s*([-\w ]+?)(?:\s*([><=]+)\s*(\d+\.\d+(?:\.\d+)?))?"
     __re = re.compile(__re_raw)
 
     def __init__(
-        self, type: DependencyType, name: str, min_ver: ver_comp, max_ver: ver_comp
+        self, type: DependencyType, name: str, min_ver: VerComp, max_ver: VerComp
     ):
         self.type = type
         self.name = name
@@ -130,32 +158,32 @@ class dependency(object):
             raise ValueError(f"Unmatched mod dependency {dep}")
         name = m[2]
         type = DependencyType(m[1])
-        # the second values of the tuples allow for < and > to be handled with <= and >= so we don't need branching
+
         # start with the full range
-        min = (MIN_MOD_VERSION, 0)
-        max = (MAX_MOD_VERSION, 0)
+        min = VerComp(MIN_MOD_VERSION, 0)
+        max = VerComp(MAX_MOD_VERSION, 0)
         # and then narrow as specified
         if type == DependencyType.CONFLICT:
-            max = (MIN_MOD_VERSION, -1)
+            max = VerComp(MIN_MOD_VERSION, -1)
         elif not m[4]:
             # no version restriction
             pass
         else:
-            ver = mod_version(m[4])
+            ver = ModVersion(m[4])
             match m[3]:
                 case "<":
-                    max = (ver, -1)
+                    max = VerComp(ver, -1)
                 case "<=":
-                    max = (ver, 0)
-                case "<":
-                    min = (ver, 1)
-                case "<=":
-                    min = (ver, 0)
+                    max = VerComp(ver, 0)
+                case ">":
+                    min = VerComp(ver, 1)
+                case ">=":
+                    min = VerComp(ver, 0)
                 case "=":
-                    min = max = (ver, 0)
+                    min = max = VerComp(ver, 0)
         return cls(type, name, min, max)
 
-    def meets(self, other: mod_version):
+    def meets(self, other: ModVersion):
         # works because of how we set up min and max as tuples
         return self.min <= (other, 0) <= self.max
 
@@ -166,7 +194,7 @@ class dependency(object):
     def __add__(self, other):
         if not other:
             return self
-        assert isinstance(other, dependency)
+        assert isinstance(other, Dependency)
         if self.name != other.name:
             raise ValueError(f"Mod names must match {self.name}!={other.name}")
         a, b = sorted([self, other])
@@ -178,22 +206,40 @@ class dependency(object):
         new_type = max(a.type, b.type)
         new_min = max(a.min, b.min)
         new_max = min(a.max, b.max)
-        if new_min < new_max:
+        if new_min > new_max:
             # they have mutually exclusive compatible ranges
             if b.type <= DependencyType.OPTIONAL:
                 # both are optional so the mod isn't required
                 # therefore this mod is actually conflicting
-                return dependency(
+                return Dependency(
                     DependencyType.CONFLICT,
                     a.name,
-                    (MIN_MOD_VERSION, 0),
-                    (MIN_MOD_VERSION, -1),
+                    VerComp(MIN_MOD_VERSION, 0),
+                    VerComp(MIN_MOD_VERSION, -1),
                 )
             raise IncompatibleDependencies(f"Dependencies incompatible", self, other)
-        return dependency(new_type, a.name, new_min, new_max)
+        return Dependency(new_type, a.name, new_min, new_max)
+
+    def __str__(self):
+        prefix = f"{self.type} {self.name}".strip()
+        if self.min == self.max:
+            return f"{prefix} = {self.min.ver}"
+        if VerComp(MIN_MOD_VERSION, 0) < self.max < VerComp(MAX_MOD_VERSION, 0):
+            if self.min == VerComp(MIN_MOD_VERSION, 0):
+                return f"{prefix} <{self.max}"
+            return f"{prefix} >{self.min},{prefix} <{self.max}"
+        if self.min == VerComp(MIN_MOD_VERSION, 0):
+            return prefix
+        return f"{prefix} >{self.min}"
+
+    def __repr__(self) -> str:
+        my_str = str(self)
+        if "," in my_str:
+            return f"Dependency({repr(str(self.type))}, {repr(self.name)}, {self.min}, {self.max})"
+        return f"Dependency.from_str({repr(my_str)})"
 
 
-class Dependencies(dict):
+class Dependencies(dict[str, Dependency]):
     """A collection of dependencies that are all compatible.
     Attempting to add incompatible dependencies raises an error.
     dependencies can be added individually or from an iterable.
@@ -206,47 +252,52 @@ class Dependencies(dict):
         pass
 
     def __iadd__(self, deps):
-        if isinstance(deps, dependency):
+        if isinstance(deps, Dependency):
             if deps.name in self:
                 self[deps.name] += deps
             else:
                 self[deps.name] = deps
             return self
         if isinstance(deps, str):
-            self += dependency.from_str(deps)
+            self += Dependency.from_str(deps)
             return self
         for dep in deps:
             self += dep
         return self
 
 
-class mod(object):
-    info: info_json
+class Mod(object):
+    info: ModInfoJson
 
-    def __init__(self, info: info_json) -> None:
+    def __init__(self, info: ModInfoJson) -> None:
         self.info = info
-        if "dependencies" not in info:
-            info["dependencies"] = ["base"]
-        self.dependencies = Dependencies(info["dependencies"])
-        self.version = mod_version(info["version"])
+        if "dependencies" in info:
+            self.dependencies = Dependencies(info["dependencies"])
+        else:
+            self.dependencies = None
+        self.version = ModVersion(info["version"])
         self.name = info["name"]
 
 
-class installed_mod(mod):
+class InstalledMod(Mod):
+    dependencies: Dependencies
+
     def __init__(self, path: dual_path) -> None:
         if path.is_file():
-            if not is_zipfile(path):
+            if not is_zipfile(str(path)):
                 raise NotAModPath(path)
-            self.folder_path = next(zPath(path).iterdir())
+            self.folder_path = next(zPath(str(path)).iterdir())
         else:
             self.folder_path = path
         info_path = self.folder_path.joinpath("info.json")
         if not info_path.is_file():
             raise NotAModPath(self.folder_path)
         with info_path.open(encoding="utf8") as fp:
-            i: info_json = json.load(fp)
+            i: ModInfoJson = json.load(fp)
         if path.name == "core":
             i["version"] = FACTORIO_VERSION
+        if path.parent == READ_DIR:
+            i["factorio_version"] = FACTORIO_VER
         re_name = f"{i['name']}(_{i['version']})?(.zip)?"
         if not re.fullmatch(re_name, path.name):
             raise ValueError(
@@ -255,6 +306,8 @@ class installed_mod(mod):
    name:{path.name}
    re:{re_name}"""
             )
+        if "dependencies" not in i:
+            i["dependencies"] = ["base"]
         super().__init__(i)
 
     @staticmethod
@@ -268,42 +321,55 @@ class installed_mod(mod):
         if not path.is_dir():
             return
         part = parts[0]
-        if isinstance(part, str):
-            yield from installed_mod._iter_files_sub(parts[1:], path.joinpath(part))
-            return
-        for path_part in path.iterdir():
-            if part.fullmatch(path_part.name):
-                yield from installed_mod._iter_files_sub(parts[1:], path_part)
+        if isinstance(part, re.Pattern):
+            subs = (sub for sub in path.iterdir() if part.fullmatch(sub.name))
+        else:
+            subs = iter([path / part])
+        for sub in subs:
+            yield from InstalledMod._iter_files_sub(parts[1:], sub)
 
     def iterate_mods_files(self, parts: list[Union[str, re.Pattern]]):
         yield from self._iter_files_sub(parts, self.folder_path)
 
 
-class portal_mod(mod):
-    def __init__(self, release: Release) -> None:
-        super().__init__(release["info_json"])
+class PortalMod(Mod):
+    def __init__(self, release: Release, name) -> None:
+        info: ModInfoJson = {
+            "factorio_version": release["info_json"]["factorio_version"],
+            "name": name,
+            "version": release["version"],
+        }
+        if "dependencies" in release["info_json"]:
+            info["dependencies"] = release["info_json"]["dependencies"]
+        super().__init__(info)
         self.release = release
 
 
-class __mod_manager(object):
-    MOD_LIST_FILE = MODS.joinpath("mod-list.json")
+class DepCheckResult(StrEnum):
+    OK = "OK"
+    ENABLE = "ENABLE"
+    DISABLE = "DISABLE"
+    INSTALL = "INSTALL"
+    VERSION_SWITCH = "VERSION_SWITCH"
+
+
+DepCheckResults = dict[DepCheckResult, set[Dependency]]
+
+
+class ModManager(object):
+    MOD_LIST_FILE = MODS / "mod-list.json"
 
     def __init__(self) -> None:
-        self.dict = None
-        with config.current_conf:
-            self.new_enabled = config.other.enable_new_mods == "true"
-
-    def __enter__(self) -> None:
-        assert self.dict == None, "Already in a with statement"
+        with config.current_conf as conf:
+            self.new_enabled = conf.other.enable_new_mods == "true"
         try:
             with open(self.MOD_LIST_FILE, "r", encoding="utf8") as fp:
-                data = json.load(fp)
+                data: ModFile = json.load(fp)
         except FileNotFoundError:
             data = {"mods": []}
         self.dict = {m["name"]: m for m in data["mods"]}
-
         self.modified = False
-        self.by_name_version: defaultdict[str, dict[mod_version, mod]] = defaultdict(
+        self.by_name_version: defaultdict[str, dict[ModVersion, Mod]] = defaultdict(
             dict
         )
         for mod_path in self._iterate_over_all_mod_paths():
@@ -311,8 +377,8 @@ class __mod_manager(object):
                 self.add_installed_mod(mod_path)
             except NotAModPath:
                 pass
-            except Exception:
-                traceback.print_exc()
+            except FactorioVersionMismatch:
+                pass
 
         pre_size = len(self.dict)
         self.dict = {
@@ -321,18 +387,16 @@ class __mod_manager(object):
         if len(self.dict) != pre_size:
             self.modified = True
 
-    def __exit__(self, *args) -> None:
+    def exit(self) -> None:
         if self.modified:
             data = {"mods": [m for m in self.dict.values()]}
             with open(self.MOD_LIST_FILE, "w", encoding="utf8") as fp:
                 json.dump(data, fp, ensure_ascii=False, indent=2)
-        self.dict = None
 
     def enabled(self) -> list[str]:
         return [name for name, m in self.dict.items() if m["enabled"]]
 
     def set_enabled(self, name: str, val: bool) -> None:
-        assert self.dict
         self.dict[name]["enabled"] = val
         self.modified = True
 
@@ -342,128 +406,200 @@ class __mod_manager(object):
     def disable(self, name) -> None:
         self.set_enabled(name, False)
 
-    def select_version(self, name, version):
-        self.dict[name]["version"] = version
+    def select_version(self, name, version: ModVersion) -> None:
+        self.dict[name]["version"] = str(version)
         self.modified = True
 
-    def find_dep(self, dep: dependency):
-        if dep.type == DependencyType.CONFLICT:
-            return True
+    def get_version(self, name: str) -> ModVersion | None:
+        if name not in self.dict:
+            return None
+        current = self.dict[name]
+        if "version" in current:
+            return ModVersion(current["version"])
+        versions = self.by_name_version[name]
+        for ver in sorted(versions, reverse=True):
+            if isinstance(versions[ver], InstalledMod):
+                return ver
+        return None
+
+    def find_dep(self, dep: Dependency, installed_only=False) -> Mod | None:
+        assert dep.type != DependencyType.CONFLICT
         if dep.name not in self.by_name_version:
-            return False
+            return None
         vers = self.by_name_version[dep.name]
-        ops = [ver for ver in vers.keys() if dep.meets(ver)]
-        if ops:
-            return vers[max(ops)]
-        return False
+        for ver in sorted(vers, reverse=True):
+            if not dep.meets(ver):
+                continue
+            mod = vers[ver]
+            if installed_only and not isinstance(mod, InstalledMod):
+                continue
+            return mod
+        return None
 
-    def check_dep(self, dep: dependency, do_optional=False):
+    def dep_from_mod(self, mod: Mod):
+        return Dependency.from_str(f"{mod.name} = {mod.version}")
+
+    def check_dep(
+        self, dep: Dependency, req_optional=False
+    ) -> tuple[DepCheckResult, Dependency]:
         if dep.type == DependencyType.CONFLICT:
-            if dep.name in self.dict:
-                return not self.dict[dep.name]["enabled"]
-            return True
-        if dep.name in self.dict:
-            current = self.dict[dep.name]
-            if "version" in current:
-                current_ver = mod_version(current["version"])
-            else:
-                current_ver = max(self.by_name_version[dep.name])
-            return dep.meets(current_ver)
-        if dep.type == "(?)" or (dep.type == "?" and not do_optional):
-            return True
-        return False
+            if dep.name in self.dict and self.dict[dep.name]["enabled"]:
+                return (DepCheckResult.DISABLE, dep)
+            return (DepCheckResult.OK, dep)
+        req = (
+            dep.type >= DependencyType.UNORDERED
+            or dep.type == DependencyType.OPTIONAL
+            and req_optional
+        )
+        current = self.get_version(dep.name)
+        if current:
+            if dep.meets(current):
+                return (DepCheckResult.OK, dep)
+            good_version = self.find_dep(dep, installed_only=True)
+            if good_version:
+                dep = self.dep_from_mod(good_version)
+                return (DepCheckResult.VERSION_SWITCH, dep)
+        else:
+            if not req:
+                return (DepCheckResult.OK, dep)
+        mod = self.find_dep(dep)
+        if mod:
+            dep = self.dep_from_mod(mod)
+            return (DepCheckResult.INSTALL, dep)
+        if req:
+            raise UnresolvedModDependency(dep)
+        return (DepCheckResult.DISABLE, Dependency.from_str(f"! {dep.name}"))
 
-    def force_dep(self, dep: dependency, do_optional=False):
-        if dep.type == "!":
-            if dep.name in self.dict:
-                self.dict[dep.name]["enabled"] = False
-            return True
-        if dep.name in self.dict:
-            current = self.dict[dep.name]
-            if "version" in current:
-                current_ver = mod_version(current["version"])
-            else:
-                current_ver = max(self.by_name_version[dep.name])
-            if dep.meets(current_ver):
-                return True
-            ops = [ver for ver in self.by_name_version[dep.name] if dep.meets(ver)]
-            if ops:
-                current["enabled"] = True
-                current["version"] = str(ops[-1])
-                return True
-            if dep.type == "(?)" or (dep.type == "?" and not do_optional):
-                self.dict[dep.name]["enabled"] = False
-                return True
-        if dep.type == "(?)" or (dep.type == "?" and not do_optional):
-            return True
-        return self.install_mod(dep)
+    def check_deps(self, deps: Dependencies, require_optional=False):
+        ret: DepCheckResults = defaultdict(set)
+        for dep in deps.values():
+            res, dep = self.check_dep(dep, require_optional)
+            ret[res].add(dep)
+        return ret
 
-    def install_mod(self, dep: dependency):
-        with opener.open(f"{_mod_portal}/api/mods/{dep.name}") as fp:
-            info: PortalResult = json.load(fp)
-        ops = [r for r in info["releases"] if dep.meets(mod_version(r["version"]))]
-        if not ops:
-            raise ValueError(f"No mods on portal matching dependency:{dep}")
-        self.download_mod(ops[-1])
+    def exec_dep_check_res(self, res: DepCheckResults):
+        for dep in res[DepCheckResult.ENABLE]:
+            self.enable(dep.name)
+        for dep in res[DepCheckResult.DISABLE]:
+            self.disable(dep.name)
+        for dep in res[DepCheckResult.VERSION_SWITCH]:
+            self.select_version(dep.name, dep.min.ver)
+        for dep in res[DepCheckResult.INSTALL]:
+            self.install_mod(dep)
 
-    def download_mod(self, release):
+    def install_mod(self, dep: Dependency):
+        mod = self.find_dep(dep)
+        if isinstance(mod, InstalledMod):
+            return mod
+        if not mod:
+            self.add_info_for_mods([dep.name])
+        mod = self.find_dep(dep)
+        if not mod:
+            raise UnresolvedModDependency(dep)
+        assert isinstance(mod, PortalMod)
+        return self.download_mod(mod.release)
+
+    def download_mod(self, release: Release):
         cred = get_credentials()
         url = _mod_portal + release["download_url"] + "?" + parse.urlencode(cred)
         new_path = MODS.joinpath(release["file_name"])
         download(url, new_path)
-        self.add_installed_mod(new_path)
+        return self.add_installed_mod(new_path)
 
-    def add_installed_mod(self, mod_path):
-        m = installed_mod(mod_path)
+    def add_installed_mod(self, mod_path: dual_path):
+        m = InstalledMod(mod_path)
+        if m.info.get("factorio_version") != FACTORIO_VER:
+            raise FactorioVersionMismatch(m)
         self.by_name_version[m.name][m.version] = m  # TODO: check duplicates?
         if m.name not in self.dict and m.name != "core":
             self.dict[m.name] = {"name": m.name, "enabled": self.new_enabled}
             self.modified = True
+        return m
 
-    def add_info_for_mods(self, mod_names: list[str]):
-        args = {"namelist": ",".join(mod_names)}
-        encoded_args = parse.urlencode(args)
-        with opener.open(f"{_mod_portal}/api/mods/?{encoded_args}") as fp:
-            info: PortalListResult = json.load(fp)
+    def add_dep_info_for_mod(self, mod_name: str):
+        all_data: PortalResult = get_json(
+            f"{_mod_portal}/api/mods/{quote(mod_name)}/full"
+        )
+        self.add_info_for_mod(all_data)
+
+    def add_info_for_mods(self, mod_names: Iterable[str]):
+        args = {
+            "namelist": ",".join(mod_names),
+        }
+        info: PortalListResult = get_json(f"{_mod_portal}/api/mods", args)
         for r in info["results"]:
             self.add_info_for_mod(r)
 
+    def add_dep_info_for_mods(self, mod_names: Iterable[str]):
+        for name in mod_names:
+            self.add_dep_info_for_mod(name)
+
     def add_info_for_mod(self, result: PortalResult):
         for release in result["releases"]:
-            self.add_info_for_release(release)
+            if release["info_json"].get("factorio_version") == FACTORIO_VER:
+                self.add_info_for_release(release, result["name"])
 
-    def add_info_for_release(self, release: Release):
-        m = portal_mod(release)
+    def add_info_for_release(self, release: Release, name: str):
+        m = PortalMod(release, name)
+        to_replace = self.by_name_version[m.name].get(m.version)
+        if isinstance(to_replace, InstalledMod):
+            return
         self.by_name_version[m.name][m.version] = m
 
-    def expand_dependencies(self, deps: set[dependency]):
-        collected: set[dependency] = set()
+    def expand_dependencies(self, deps: Iterable[Dependency]):
+        collected: set[Dependency] = set()
         progress = True
         connection_issues = False
-        while progress:
-            expanding = deps
-            deps: set[dependency] = set()
-            progress = False
+        looked_up = set()
+        while deps:
+            expanding = set(deps)
+            deps = set()
             while expanding:
                 dep = expanding.pop()
-                if dep.type <= DependencyType.OPTIONAL:
-                    progress == True
-                    collected.add(dep)
-                    continue
-                m = self.find_dep(dep)
-                if m is False:
-                    deps.add(dep)
-                    continue
-                new_deps = set(m.dependencies)
-                new_deps -= collected
-                new_deps -= deps
-                expanding |= new_deps
+                if not dep.type <= DependencyType.OPTIONAL:
+                    # since this is not optional dependency, we need to expand it
+                    m = self.find_dep(dep)
+                    if not m or m.dependencies is None:
+                        if dep in looked_up:
+                            raise UnresolvedModDependency(dep)
+                        deps.add(dep)
+                        # we'll try to resolve this later after downloading the mod
+                        continue
+                    new_deps = set(m.dependencies.values())
+                    new_deps -= collected
+                    new_deps -= deps
+                    expanding |= new_deps
+                collected.add(dep)
             if not deps:
                 break
-            self.add_info_for_mods([d.name for d in deps])
-        if deps:
-            raise UnresolvedModDependency(deps)
+            self.add_dep_info_for_mods(set((d.name for d in deps)))
+            looked_up |= deps
+
         return Dependencies(collected)
+
+    def get_updatable(self, require_enabled=True):
+        """Check for updates to installed mods.
+        Returns a set of dependencies listing latest updates available."""
+        check = []
+        for mod in self.iter_installed_mods(require_enabled=require_enabled):
+            if mod.folder_path.parent == READ_DIR:  # don't check built in
+                continue
+            check.append(mod.name)
+        self.add_info_for_mods(check)
+        deps: set[Dependency] = set()
+        for mod in self.iter_installed_mods(require_enabled=require_enabled):
+            current_ver = mod.version
+            versions = self.by_name_version[mod.name]
+            ver = max(versions)
+            if ver > current_ver:
+                v = VerComp(ver, 0)
+                deps.add(Dependency(DependencyType.NORMAL, mod.name, v, v))
+        return deps
+
+    def check_updates(self, require_enabled=True):
+        deps = self.get_updatable(require_enabled)
+        exp_deps = self.expand_dependencies(deps)
+        return self.check_deps(exp_deps)
 
     fancy = re.compile(r"[*.?()\[\]]")
 
@@ -484,32 +620,76 @@ class __mod_manager(object):
         for folders_with_mods in [READ_DIR, MODS]:
             yield from folders_with_mods.iterdir()
 
-    def iter_mods(
-        self, require_enabled=True, mod_filter: re.Pattern = None
-    ) -> Iterator[installed_mod]:
+    def iter_installed_mods(
+        self, require_enabled=True, mod_filter: re.Pattern | None = None
+    ) -> Iterator[InstalledMod]:
         for m in self.dict.values():
             if m["enabled"] or not require_enabled:
                 name = m["name"]
                 if mod_filter and not mod_filter.fullmatch(name):
                     continue
-                ver = "version" in m and m["version"] or max(self.by_name_version[name])
-                yield self.by_name_version[name][ver]
+                ver = self.get_version(name)
+                if ver is None:
+                    raise ValueError(
+                        f"Mod {name} is not installed, but is in the mod list"
+                    )
+                mod = self.by_name_version[name][ver]
+                assert isinstance(mod, InstalledMod)
+                yield mod
 
     def iter_mod_files(
-        self, inner_re_path: str, require_enabled=True, mod_filter: re.Pattern = None
+        self,
+        inner_re_path: str,
+        require_enabled=True,
+        mod_filter: re.Pattern | None = None,
     ) -> Iterator[dual_path]:
         parts = inner_re_path.split("/")
         parts = [
             part if not self.fancy.search(part) else re.compile(part) for part in parts
         ]
-        for mod in self.iter_mods(require_enabled, mod_filter):
+        for mod in self.iter_installed_mods(require_enabled, mod_filter):
             yield from mod.iterate_mods_files(parts)
 
 
-mod_manager = __mod_manager()
+class __mod_manger_factory(object):
+    def __init__(self) -> None:
+        self.mod_manager: ModManager | None = None
+
+    def __enter__(self) -> ModManager:
+        assert (
+            self.mod_manager is None
+        ), "Asking for a second mod manager before the first one is closed"
+        self.mod_manager = ModManager()
+        return self.mod_manager
+
+    def __exit__(self, *args) -> None:
+        assert isinstance(
+            self.mod_manager, ModManager
+        ), "Exiting mod manager without entering it first"
+        self.mod_manager.exit()
+        self.mod_manager = None
+
+
+mods = __mod_manger_factory()
 
 
 if __name__ == "__main__":
-    print(dependency.from_str("! stop >= 3.4.5").meets(mod_version("3.4.5")))
-    with mod_manager:
-        pass
+    print(Dependency.from_str("! stop >= 3.4.5").meets(ModVersion("3.4.5")))
+    with mods as mod_manager:
+        for mod in mod_manager.iter_installed_mods():
+            print(mod.name, mod.version)
+        try:
+            actions = mod_manager.check_updates()
+        except IncompatibleDependencies as e:
+            # todo: handle this better
+            raise e
+        for action in DepCheckResult:
+            if action == DepCheckResult.OK:
+                continue
+            my_actions = actions[action]
+            if not my_actions:
+                continue
+            print(action)
+            for i in my_actions:
+                print("    ", i)
+        mod_manager.exec_dep_check_res(actions)

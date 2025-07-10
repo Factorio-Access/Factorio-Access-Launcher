@@ -4,17 +4,34 @@
         "editor.formatOnSave": true
     },
     "cSpell.words": [
+        "adminlist",
+        "autokick",
         "autoplace",
+        "banlist",
         "cloudfare",
         "cooldown",
         "excepthook",
         "Factorio",
+        "factoriopedia",
         "freeplay",
+        "initialised",
         "localised",
         "neighbouring",
         "pyinstaller",
+        "rcon",
         "referer",
         "steamapps",
+        "unban",
         "userdata"
     ],
+    "stylua.targetReleaseVersion": "latest",
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
 }

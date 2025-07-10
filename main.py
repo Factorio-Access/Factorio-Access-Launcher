@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 import sys
 import traceback
+from types import TracebackType
 
-sys.excepthook = lambda *args: (
-    traceback.print_exception(*args),
-    input("Press Enter to Exit"),
-)
+
+def except_hook(t, e: BaseException, tr: TracebackType):
+    if isinstance(e, Exception):
+        traceback.print_exception(t, e, tr)
+        input("Press Enter to Exit")
+
+
+sys.excepthook = except_hook
 
 import os
 
@@ -17,11 +22,12 @@ import modify_config
 import launch_and_monitor
 import save_management
 from fa_arg_parse import args
-from map_gen_setting_menu import sub_preset
+from map_gen_setting_menu import map_menu
 from translations import check_lang
 from fa_scenarios import get_scenarios, pre_launch_scenario
-from fa_mod_menu import mod_menu
+from fa_mod_menu import mod_menu, check_for_main_mod
 from version import version
+from credentials_menu import sign_in_menu
 
 os.chdir(fa_paths.MY_CONFIG_DIR)
 
@@ -30,7 +36,7 @@ menu = {
     "Launch last played": launch_and_monitor.just_launch,
     ("gui-menu.single-player-menu",): {
         ("gui-menu.new-game",): {
-            ("gui-new-game.main-game",): sub_preset,
+            ("gui-new-game.main-game",): map_menu,
             ("gui-new-game.mod-scenarios",): pre_launch_scenario,
         },
         ("gui-menu.load-game",): {
@@ -38,7 +44,7 @@ menu = {
         },
     },
     ("gui-menu.multi-player-menu",): {
-        multiplayer.get_username_menu: multiplayer.username_menu,
+        multiplayer.get_username_menu: sign_in_menu,
         "Host Settings": multiplayer.host_settings_menu(),
         ("gui-menu.host-saved-game",): {
             save_management.get_menu_saved_games: multiplayer.multiplayer_host,
@@ -64,11 +70,12 @@ menu = {
 }
 
 check_lang()
-
+check_for_main_mod()
 modify_config.do_config_check()
 
 if args.launch:
     launch_and_monitor.launch_with_params([], save_rename=False)
 else:
+
     main_menu = new_menu(("gui-menu.main-menu",), menu)
     main_menu()

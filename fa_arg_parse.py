@@ -7,19 +7,19 @@ import re
 parser = argparse.ArgumentParser(prog="Factorio Access Launcher", prefix_chars="-+")
 
 fa = parser.add_argument_group(
-    title="FacotrioAccess",
+    title="FactorioAccess",
     description="Arguments meant just for the launcher. These will not be passed along to Factorio",
 )
 
 fa.add_argument(
     "--fa-debug",
     action="store_true",
-    help="This will print debugging information intervleaved with the launcher. This includes factorio output which can be quite verbose",
+    help="This will print debugging information interleaved with the launcher. This includes factorio output which can be quite verbose",
 )
 fa.add_argument(
     "--fa-stdout-bytes",
     action="store_true",
-    help="This will print the facotrio output as bytes",
+    help="This will print the factorio output as bytes",
 )
 
 used = parser.add_argument_group(
@@ -30,105 +30,105 @@ used = parser.add_argument_group(
 used.add_argument(
     "bin",
     nargs="?",
-    help="If any possitional arguments exist the whole command is assumed to be used to launch factorio",
+    help="If any positional arguments exist the whole command is assumed to be used to launch factorio",
 )
 used.add_argument("-c", "--config", help="config file to use")
 used.add_argument("--mod-directory", help="Mod directory to use")
 used.add_argument("--executable-path", metavar="PATH", help="Mod directory to use")
 
 launch_group = parser.add_argument_group(
-    title="Launch Rrequests",
+    title="Launch Requests",
     description="Options that will skip the menu and just do the requested thing",
 )
-launch_reqs = launch_group.add_mutually_exclusive_group()
+launch_requests = launch_group.add_mutually_exclusive_group()
 
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--version", dest="launch", help="show version information", action="store_true"
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "-s",
     "--map2scenario",
     dest="launch",
     metavar="FILE",
     help="map to scenario conversion",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "-m",
     "--scenario2map",
     dest="launch",
     metavar="[MOD/]NAME",
     help="map to scenario conversion",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--apply-update",
     dest="launch",
     metavar="FILE",
     help="immediately apply update package",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--create", dest="launch", metavar="FILE", help="create a new map"
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--start-server", dest="launch", metavar="FILE", help="start a multiplayer server"
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--start-server-load-scenario",
     dest="launch",
     metavar="[MOD/]NAME",
     help="start a multiplayer server and load the specified scenario. The scenario is looked for inside the given mod. If no mod is given, it is looked for in the top-level scenarios directory.",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--start-server-load-latest",
     dest="launch",
     action="store_true",
     help="create a new map",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--benchmark", dest="launch", metavar="FILE", help="load save and run benchmark"
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--dump-data",
     dest="launch",
     action="store_true",
     help="dumps data.raw as JSON to the script output folder and exits.",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--dump-icon-sprites",
     dest="launch",
     action="store_true",
     help="dumps all icon sprites as png files to the script output folder and exits.",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--dump-prototype-locale",
     dest="launch",
     action="store_true",
     help="dumps all prototypes name and description (if they have a valid value) to the script output folder and exits.",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--mp-connect",
     dest="launch",
     metavar="ADDRESS",
     help="start factorio and connect to address",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--load-game",
     dest="launch",
     metavar="FILE",
-    help="start Factorio and load a game in singleplayer",
+    help="start Factorio and load a game in single player",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--load-scenario",
     dest="launch",
     metavar="[MOD/]NAME",
-    help="start Factorio and load the specified scenario in singleplayer. The scenario is looked for inside the given mod. If no mod is given, it is looked for in the top-level scenarios directory.",
+    help="start Factorio and load the specified scenario in single player. The scenario is looked for inside the given mod. If no mod is given, it is looked for in the top-level scenarios directory.",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--benchmark-graphics",
     dest="launch",
     metavar="FILE",
     help="load save and run it with graphics for benchmark-ticks number of ticks as normal game would",
 )
-launch_reqs.add_argument(
+launch_requests.add_argument(
     "--join-game-by-steam-id",
     "+connect_lobby",
     dest="launch",
@@ -137,8 +137,8 @@ launch_reqs.add_argument(
 )
 
 extra_args_group = parser.add_argument_group(
-    title="argumented parameters",
-    description="Options that have parameters that might otherewise be mistaken as an executable. Not actually used for anything in the launcher",
+    title="parameters with arguments",
+    description="Options that have parameters that might otherwise be mistaken as an executable. Not actually used for anything in the launcher",
 )
 extra_args_group.add_argument("--map-gen-settings", nargs=1, metavar="FILE")
 extra_args_group.add_argument("--map-gen-seed", nargs=1, metavar="SEED")
@@ -151,10 +151,10 @@ extra_args_group.add_argument("--map-preview-size", nargs=1, metavar="SIZE")
 extra_args_group.add_argument("--map-preview-scale", nargs=1, metavar="SCALE")
 extra_args_group.add_argument("--map-preview-offset", nargs=1, metavar="X,Y")
 extra_args_group.add_argument("--noise-outputs", nargs=1, metavar="TAG,TAG,...")
-extra_args_group.add_argument("--slope-shading", nargs=1, metavar="SHADEAMOUNT")
-extra_args_group.add_argument("--slope-shade-property", nargs=1, metavar="SHADEPROP")
+extra_args_group.add_argument("--slope-shading", nargs=1, metavar="SHADE_AMOUNT")
+extra_args_group.add_argument("--slope-shade-property", nargs=1, metavar="SHADE_PROP")
 extra_args_group.add_argument("--report-quantities", nargs=1, metavar="PROTOTYPE,...")
-extra_args_group.add_argument("--threads", nargs=1, metavar="THREADCOUNT")
+extra_args_group.add_argument("--threads", nargs=1, metavar="THREAD_COUNT")
 extra_args_group.add_argument("--instrument-mod", nargs=1, metavar="MOD")
 extra_args_group.add_argument("--until-tick", nargs=1, metavar="TICK")
 extra_args_group.add_argument("--benchmark-ticks", nargs=1, metavar="TICKS")
@@ -223,9 +223,9 @@ clean_args = [arg for arg in launch_args if arg != "--"]
 args, _ = parser.parse_known_args(clean_args)
 
 
-def d_print(*pargs, **kargs):
+def d_print(*p_args, **kwargs):
     if args.fa_debug:
-        print(*pargs, **kargs)
+        print(*p_args, **kwargs)
 
 
 d_print("We're debugging now :)")

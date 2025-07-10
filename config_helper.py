@@ -1,7 +1,23 @@
 import config as _config
+from typing import Protocol as _Protocol
 
-class my_awesome_getter_setter(object):
-    def __getattribute__(self, __name: str) -> str:
-        return _config.current_conf.get_setting(*(super().__getattribute__(__name)))
-    def __setattr__(self, __name: str, __value: str) -> None:
-        _config.current_conf.set_setting(*super().__getattribute__(__name),__value)
+
+class base_settings(object):
+    _cat: str
+    _config_manager: "_config.Conf_Editor"
+
+    def __init__(self, cat: str, config_manger: "_config.Conf_Editor"):
+        super().__setattr__("_cat", cat)
+        super().__setattr__("_config_manager", config_manger)
+
+    def __getattr__(self, name: str):
+        return (
+            super()
+            .__getattribute__("_config_manager")
+            .get_setting(self._cat, name.replace("_", "-"))
+        )
+
+    def __setattr__(self, name, value):
+        super().__getattribute__("_config_manager").set_setting(
+            self._cat, name.replace("_", "-"), value
+        )
