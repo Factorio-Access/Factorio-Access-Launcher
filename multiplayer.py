@@ -100,6 +100,8 @@ def multiplayer_host(game):
                 "server-username": player["service-username"],
                 "autosave-interval": config.other.autosave_interval,
                 "afk-autokick-interval": config.multiplayer_lobby.afk_auto_kick,
+                "required-verification": config.multiplayer_lobby.verify_user_identity,
+                "enable-authserver-side-bans": config.multiplayer_lobby.enable_authserver_side_bans,
             },
             "save-name": game[:-4],
         }
