@@ -87,8 +87,13 @@ class json_map_settings(object):
     def get(*args):
         key_path, self = __class__.make_key(*args)
         item = self.current
-        for key in key_path:
-            item = item[key]
+        try:
+            for key in key_path:
+                item = item[key]
+        except KeyError:
+            raise ValueError(
+                "Either Factorio changed their json format or a dev messed up :("
+            )
         return item
 
     @staticmethod
@@ -191,6 +196,7 @@ class enable_disable_menu(fa_menu.Menu):
         self.remake_submenu(*args)
 
     def remake_submenu(self, *args):
+        self.val_to_string(*args)  # hack to make sure it's up to date
         if self.enabler.val:
             self.items = self.full_submenu
         else:
@@ -219,6 +225,7 @@ class enable_disable_submenu(fa_menu.setting_menu_bool):
 
     def __call__(self, *args):
         super().__call__(*args)
+        self.val_to_string(*args)  # hack to make sure it's up to date
         parent = self.parent()
         assert parent is not None
         parent.got_toggled(*args)
@@ -291,13 +298,10 @@ class autoplace_menu(enable_disable_menu):
     def got_toggled(self, *args):
         spec: prototype_data.AutoplaceControl = args[0]
         self.enabler.val_to_string()  # hack to make sure val is up to date
-        if self.enabler.val:
-            for sub in self.full_submenu[2:]:
-                sub.set_val(0, *args)
-        else:
-            for sub in self.full_submenu[2:]:
-                sub.set_val(1, *args)
-        return super().got_toggled(*args[1:])
+        set_to = 1 if self.enabler.val else 0
+        for sub in self.full_submenu[2:]:
+            sub.set_val(set_to, *args)
+        return super().got_toggled(*args) # toggling cliffs needs spec
 
 
 class j_enable_disable_menu(enable_disable_menu):
@@ -626,7 +630,7 @@ enemy_menu = {
     "expansion": j_enable_disable_menu(
         name=("gui-map-generator.enemy-expansion-group-tile",),
         desc=("gui-map-generator.enemy-expansion-group-tile-description",),
-        submenu=evolution_subs,
+        submenu=expansion_subs,
         path=(ADVANCED, "enemy_expansion", "enabled"),
     ),
     "evolution": j_enable_disable_menu(
@@ -644,7 +648,7 @@ advanced_menu = {
     },
     "technology_price_multiplier": j_float(
         ("gui-map-generator.price-multiplier",),
-        path=(ADVANCED, "difficulty", "technology_price_multiplier"),
+        path=(ADVANCED, "difficulty_settings", "technology_price_multiplier"),
     ),
     "pollution": j_enable_disable_menu(
         name=("gui-map-generator.pollution",),
@@ -672,7 +676,7 @@ map_menu = {
         "_desc": get_preset_desc,
         ("gui-map-generator.play",): launch_new_preset,
         "customize": set_preset_for_customize(
-            title=("fa-l.customize-map-settings",), items=customize_menu
+            title=("fa-l.customize",), items=customize_menu
         ),
     },
 }

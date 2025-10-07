@@ -58,7 +58,10 @@ if sys.platform == "linux":
 
 locale_copy_error = None
 try:
+    raise Exception("skipping locale copy till more stable")
     p = Path("./mods/FactorioAccess/locale")
+    if not p.exists():
+        p = Path("../")/p
     base = Path("./r/locale")
     if not base.is_dir():
         raise Exception("missing resource locale folder")
