@@ -7,6 +7,7 @@ import os
 import sys
 import io
 from pathlib import Path
+from pyperclip import copy
 
 import accessible_output2.outputs.auto
 import pyautogui as gui  # cSpell: ignore pyautogui
@@ -16,8 +17,6 @@ from playsound import playsound  # cSpell: ignore playsound
 from fa_arg_parse import launch_args, args, d_print
 from save_management import save_game_rename
 from translations import translate
-
-multi_line_buffer_end = "fa-end-multi-line"
 
 gui.FAILSAFE = False
 
@@ -43,13 +42,6 @@ def translate_key_name(m: re.Match):
     return translate(("?", ("control-keys." + key,), m[0]))
 
 
-multi_line_buffer: list[str] = []
-
-
-def start_multi_line_buffer(first_line):
-    global multi_line_buffer
-    multi_line_buffer = [first_line]
-
 
 def speak_interruptable_text(text):
     text = rich_text.sub("", text)
@@ -72,9 +64,9 @@ def set_player_list(json_list: str):
 
 
 player_specific_commands = {
-    "fa-out-multi": start_multi_line_buffer,
     "out": speak_interruptable_text,
     "setCursor": setCursor,
+    "copy": copy,
 }
 global_commands = {
     "playerList": set_player_list,
@@ -89,10 +81,12 @@ errorB_end = re.compile(r" *\d+\.\d{3} ")
 
 
 def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
-    global multi_line_buffer
     error_buffer: list[str] | None = None
     player_index = ""
     restarting = False
+    here_doc_end = None
+    cmd = None
+    arg = None
     for b_line in stdout:
         if b_line.startswith(b"\xef\xb7"):
             sys.stdout.buffer.write(b_line)
@@ -109,12 +103,15 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             else:
                 sys.stdout.buffer.write(b_line)
                 sys.stdout.buffer.flush()
-        if multi_line_buffer:
-            if line == multi_line_buffer_end:
-                speak_interruptable_text("\n".join(multi_line_buffer))
-                multi_line_buffer = []
+        if here_doc_end:
+            if line == here_doc_end:
+                if cmd:
+                    cmd(arg)
+                    cmd = None
+                arg = None
+                here_doc_end = None
             else:
-                multi_line_buffer.append(line)
+                arg += line + "\n"
             continue
         if error_buffer is not None:
             b = errorB_end.match(line)
@@ -131,10 +128,19 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             if parts[0] in player_specific_commands:
                 more_parts = parts[1].split(" ", 1)
                 if not player_index or more_parts[0] == player_index:
-                    player_specific_commands[parts[0]](more_parts[1])
-                    continue
+                    cmd = player_specific_commands[parts[0]]
+                arg = more_parts[1]
             elif parts[0] in global_commands:
-                global_commands[parts[0]](parts[1])
+                cmd = global_commands[parts[0]]
+                arg = parts[1]
+            if arg:
+                if arg.startswith("<<<"):
+                    here_doc_end = arg[3:]
+                    arg = ""
+                else:
+                    cmd(arg)
+                    cmd = None
+                    arg = None
                 continue
 
         if line.endswith("Saving finished"):
