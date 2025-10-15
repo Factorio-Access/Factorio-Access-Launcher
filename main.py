@@ -28,6 +28,7 @@ from fa_scenarios import get_scenarios, pre_launch_scenario
 from fa_mod_menu import mod_menu, check_for_main_mod
 from version import version
 from credentials_menu import sign_in_menu
+from github_mods import update_all
 
 os.chdir(fa_paths.MY_CONFIG_DIR)
 
@@ -68,6 +69,8 @@ menu = {
     },
     ("gui.exit",): launch_and_monitor.time_to_exit,
 }
+
+update_all()
 
 check_lang()
 check_for_main_mod()
