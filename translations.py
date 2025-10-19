@@ -309,6 +309,7 @@ check_cats = {
     "other": ["gui-other-settings"],
     "sound": ["gui-sound-settings"],
     "general": ["gui-interface-settings"],
+    "input": ["gui-interface-input"],
 }
 
 
