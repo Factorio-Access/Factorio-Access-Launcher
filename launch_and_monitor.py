@@ -11,15 +11,12 @@ from playsound import playsound  # cSpell: words playsound
 
 
 from fa_arg_parse import launch_args, args
-from save_management import save_game_rename
-import launchers_mod_api
 
+import launchers_mod_api
 
 
 start_saving = str(Path(__file__).parent / "r/shh.wav")
 save_complete = str(Path(__file__).parent / "r/shh.wav")
-
-
 
 
 re_save_started = re.compile(r"Saving to _autosave\w* \(blocking\).")
@@ -30,14 +27,22 @@ errorB_started = re.compile(r" *\d+\.\d{3} Error ")
 errorB_end = re.compile(r" *\d+\.\d{3} ")
 
 
-def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
+def process_game_stdout(
+    stdout: io.BytesIO,
+    announce_press_e,
+    tweak_modified,
+    config_reset_process_handle: subprocess.Popen,
+):
     error_buffer: list[str] | None = None
     player_index = ""
     restarting = False
+    waiting_on_config_reset = False
     here_doc_end = None
     cmd = None
     arg = None
     for b_line in stdout:
+        if waiting_on_config_reset:
+            config_reset_process_handle.terminate()
         if b_line.startswith(b"\xef\xb7"):
             sys.stdout.buffer.write(b_line)
             sys.stdout.buffer.flush()
@@ -116,7 +121,13 @@ def process_game_stdout(stdout: io.BytesIO, announce_press_e, tweak_modified):
             tweak_modified = None
         elif announce_press_e and line.endswith("Factorio initialised"):
             announce_press_e = False
-            launchers_mod_api.speak_interruptable_text("Press e to continue")
+            if config_reset_process_handle:
+                launchers_mod_api.speak_interruptable_text(
+                    "Press e to reset config file."
+                )
+                waiting_on_config_reset = True
+            else:
+                launchers_mod_api.speak_interruptable_text("Press e to continue.")
         elif errorA_started.fullmatch(line) or errorB_started.match(line):
             launchers_mod_api.speak_interruptable_text(
                 "Error Reported. Will print to console once game exits. Press e twice to exit and restart last save."
@@ -143,7 +154,11 @@ def launch(path):
 
 
 def launch_with_params(
-    params, announce_press_e=False, save_rename=True, tweak_modified=None
+    params,
+    announce_press_e=False,
+    save_rename=True,
+    tweak_modified=None,
+    config_reset=False,
 ):
     start_time = time.time()
     if tweak_modified:
@@ -160,7 +175,12 @@ def launch_with_params(
         proc = subprocess.Popen(params, stdout=subprocess.PIPE, stdin=sys.stdin.buffer)
         threading.Thread(
             target=process_game_stdout,
-            args=(proc.stdout, announce_press_e, tweak_modified),
+            args=(
+                proc.stdout,
+                announce_press_e,
+                tweak_modified,
+                proc if config_reset else None,
+            ),
             daemon=True,
         ).start()
         proc.wait()
@@ -168,6 +188,8 @@ def launch_with_params(
         print("error running game")
         raise e
     if save_rename:
+        from save_management import save_game_rename
+
         save_game_rename(start_time)
     return 5
 

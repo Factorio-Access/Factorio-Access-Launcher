@@ -7,6 +7,7 @@ from pathlib import Path
 
 from __main__ import __file__ as main_file
 from fa_arg_parse import args, d_print, launch_args
+from launch_and_monitor import launch_with_params
 
 
 if getattr(sys, "frozen", False):
@@ -161,7 +162,7 @@ if args.config:
         raise SystemExit
 else:
     config_path = "config/config.ini"
-    configs = [MY_CONFIG_DIR / config_path]
+    configs = []  # [MY_CONFIG_DIR / config_path]
     # try to append another config path from config-path.cfg
     try:
         fp = process("__PATH__executable__/../../config-path.cfg").open(encoding="utf8")
@@ -179,6 +180,8 @@ else:
         for path in configs:
             if path.is_file():
                 return path
+            else:
+                d_print(f"checked:{path}")
 
     _CONFIG = get_config()
     if _CONFIG is None:
@@ -189,8 +192,11 @@ else:
         )
         if not fa_menu.getAffirmation():
             raise SystemExit
-        f_args = [BIN, "--start-server-load-scenario", "Fake"]
-        subprocess.run(f_args, stdout=subprocess.DEVNULL)
+        with configs[0].open(mode="w", encoding="utf8") as fp:
+            pass
+        launch_with_params(
+            [], announce_press_e=True, save_rename=False, config_reset=True
+        )
         _CONFIG = get_config()
         if _CONFIG is None:
             input(

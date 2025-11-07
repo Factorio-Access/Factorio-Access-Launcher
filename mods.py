@@ -298,7 +298,7 @@ class InstalledMod(Mod):
             i["version"] = FACTORIO_VERSION
         if path.parent == READ_DIR:
             i["factorio_version"] = FACTORIO_VER
-        re_name = f"{i['name']}(_{i['version']})?(.zip)?"
+        re_name = f"{i['name']}(_{i['version']}(.zip)?)?"
         if not re.fullmatch(re_name, path.name):
             raise ValueError(
                 f"""Mod path mismatch:
