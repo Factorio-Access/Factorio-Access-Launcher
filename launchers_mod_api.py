@@ -24,13 +24,11 @@ def translate_key_name(m: re.Match):
     return translate(("?", ("control-keys." + key,), m[0]))
 
 
-
 def speak_interruptable_text(text):
-    text = rich_text.sub("", text)
+    # text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
     d_print(text)
     ao_output.output(text, interrupt=True)
-
 
 
 def setCursor(coord_string):
@@ -38,13 +36,9 @@ def setCursor(coord_string):
     gui.moveTo(coords[0], coords[1], _pause=False)
 
 
-
-
-
 player_specific_commands = {
     "out": speak_interruptable_text,
     "setCursor": setCursor,
     "copy": copy,
 }
-global_commands = {
-}
+global_commands = {}
