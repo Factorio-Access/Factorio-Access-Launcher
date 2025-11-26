@@ -1,13 +1,49 @@
+import json
 import re
+from contextlib import ExitStack
 from pyperclip import copy
 import accessible_output2.outputs.auto
 import pyautogui as gui  # cSpell: ignore pyautogui
 
 from fa_arg_parse import d_print
+from fa_launcher_audio import AudioManager
 from translations import translate
 
 gui.FAILSAFE = False
 ao_output = accessible_output2.outputs.auto.Auto()
+
+# Audio session management
+_audio_exit_stack: ExitStack | None = None
+audio_manager: AudioManager | None = None
+mod_manager = None  # ModManager, lazily imported to avoid circular import
+FA_MOD_FILTER = re.compile(r"FactorioAccess")
+
+
+def audio_data_provider(name: str) -> bytes:
+    if not mod_manager:
+        raise RuntimeError(f"No mod manager active when loading audio: {name}")
+    for path in mod_manager.iter_mod_files(f"audio/{name}", mod_filter=FA_MOD_FILTER):
+        return path.read_bytes()
+    raise FileNotFoundError(f"Audio file not found in FactorioAccess mod: audio/{name}")
+
+
+def start_audio_session():
+    global _audio_exit_stack, audio_manager, mod_manager
+    from mods import mods
+    _audio_exit_stack = ExitStack()
+    mod_manager = _audio_exit_stack.enter_context(mods)
+    audio_manager = _audio_exit_stack.enter_context(
+        AudioManager(data_provider=audio_data_provider)
+    )
+
+
+def stop_audio_session():
+    global _audio_exit_stack, audio_manager, mod_manager
+    if _audio_exit_stack:
+        _audio_exit_stack.close()
+        _audio_exit_stack = None
+        audio_manager = None
+        mod_manager = None
 
 
 rich_text = re.compile(
@@ -36,9 +72,21 @@ def setCursor(coord_string):
     gui.moveTo(coords[0], coords[1], _pause=False)
 
 
+def handle_acmd(json_string: str):
+    if not audio_manager:
+        d_print("acmd: no audio session active")
+        return
+    try:
+        command = json.loads(json_string)
+        audio_manager.submit_command(command)
+    except json.JSONDecodeError as e:
+        d_print(f"acmd: invalid JSON: {e}")
+
+
 player_specific_commands = {
     "out": speak_interruptable_text,
     "setCursor": setCursor,
     "copy": copy,
+    "acmd": handle_acmd,
 }
 global_commands = {}

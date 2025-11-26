@@ -13,6 +13,7 @@ from playsound import playsound  # cSpell: words playsound
 from fa_arg_parse import launch_args, args
 
 import launchers_mod_api
+from launchers_mod_api import start_audio_session, stop_audio_session
 
 
 start_saving = str(Path(__file__).parent / "r/shh.wav")
@@ -170,6 +171,7 @@ def launch_with_params(
         proc = subprocess.Popen(params, stdout=sys.stdout.buffer)
         proc.wait()
         return 5
+    start_audio_session()
     try:
         print("Launching")
         proc = subprocess.Popen(params, stdout=subprocess.PIPE, stdin=sys.stdin.buffer)
@@ -187,6 +189,8 @@ def launch_with_params(
     except Exception as e:
         print("error running game")
         raise e
+    finally:
+        stop_audio_session()
     if save_rename:
         from save_management import save_game_rename
 
