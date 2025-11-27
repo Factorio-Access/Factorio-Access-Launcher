@@ -2,6 +2,7 @@
 Launcher self-update module.
 
 Checks GitHub releases for newer versions and handles download/replacement.
+Windows only - source users and other platforms are skipped silently.
 """
 
 import sys
