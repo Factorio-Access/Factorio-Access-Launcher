@@ -51,7 +51,9 @@ if sys.base_prefix == sys.prefix and "GITHUB_RUN_ID" not in os.environ:  # not i
 from version_freeze import frozen, pyinstaller_version_txt
 import PyInstaller.__main__
 
-hidden_imports = []
+hidden_imports = [
+    "_cffi_backend",  # Required by fa_launcher_audio's dependencies
+]
 if sys.platform == "linux":
     hidden_imports += linux_hidden_modules
 
