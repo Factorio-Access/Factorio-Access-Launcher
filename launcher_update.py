@@ -136,7 +136,7 @@ def get_current_exe() -> Path | None:
     return None
 
 
-def cleanup_old_exe():
+def cleanup_stale_files():
     """Remove old/new exe files from previous update, if present."""
     current_exe = get_current_exe()
     if not current_exe:
@@ -212,7 +212,7 @@ def check_and_update() -> bool:
         return False
 
     # Clean up from previous update
-    cleanup_old_exe()
+    cleanup_stale_files()
 
     print("Checking for updates...")
 
