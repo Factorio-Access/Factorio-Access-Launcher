@@ -10,7 +10,6 @@ import os
 import urllib.request
 import urllib.error
 import json
-import tempfile
 from pathlib import Path
 
 from packaging.version import Version
@@ -138,16 +137,17 @@ def get_current_exe() -> Path | None:
 
 
 def cleanup_old_exe():
-    """Remove old exe from previous update, if present."""
+    """Remove old/new exe files from previous update, if present."""
     current_exe = get_current_exe()
     if not current_exe:
         return
-    old_exe = current_exe.with_suffix(".exe.old")
-    if old_exe.exists():
-        try:
-            old_exe.unlink()
-        except OSError:
-            pass  # Ignore if can't delete
+    for suffix in (".exe.old", ".exe.new"):
+        stale_file = current_exe.with_suffix(suffix)
+        if stale_file.exists():
+            try:
+                stale_file.unlink()
+            except OSError:
+                pass  # Ignore if can't delete
 
 
 def apply_update(new_exe: Path) -> bool:
@@ -238,9 +238,9 @@ def check_and_update() -> bool:
         print(f"Could not find {ASSET_NAME} in release assets.")
         return False
 
-    # Download to temp file
-    temp_dir = Path(tempfile.gettempdir())
-    new_exe = temp_dir / f"launcher_update_{latest_tag}.exe"
+    # Download next to current exe (must be same drive for rename to work)
+    current_exe = get_current_exe()
+    new_exe = current_exe.with_suffix(".exe.new")
 
     if not download_update(asset_url, new_exe):
         return False
