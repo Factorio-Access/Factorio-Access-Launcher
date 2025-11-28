@@ -8,6 +8,7 @@ import pyautogui as gui  # cSpell: ignore pyautogui
 from fa_arg_parse import d_print
 from fa_launcher_audio import AudioManager
 from translations import translate
+from mods import mods, dual_path
 
 gui.FAILSAFE = False
 ao_output = accessible_output2.outputs.auto.Auto()
@@ -15,35 +16,35 @@ ao_output = accessible_output2.outputs.auto.Auto()
 # Audio session management
 _audio_exit_stack: ExitStack | None = None
 audio_manager: AudioManager | None = None
-mod_manager = None  # ModManager, lazily imported to avoid circular import
+audio_path: dual_path | None = None
 FA_MOD_FILTER = re.compile(r"FactorioAccess")
 
 
 def audio_data_provider(name: str) -> bytes:
-    if not mod_manager:
-        raise RuntimeError(f"No mod manager active when loading audio: {name}")
-    for path in mod_manager.iter_mod_files(f"audio/{name}", mod_filter=FA_MOD_FILTER):
-        return path.read_bytes()
-    raise FileNotFoundError(f"Audio file not found in FactorioAccess mod: audio/{name}")
+    if not audio_path:
+        raise RuntimeError(f"No audio path when loading audio: {name}")
+    path = audio_path / name
+    return path.read_bytes()
 
 
 def start_audio_session():
-    global _audio_exit_stack, audio_manager, mod_manager
-    from mods import mods
+    global _audio_exit_stack, audio_manager, audio_path
+
+    with mods as m:
+        audio_path = m.get_current_mod_path("FactorioAccess") / "audio"
     _audio_exit_stack = ExitStack()
-    mod_manager = _audio_exit_stack.enter_context(mods)
     audio_manager = _audio_exit_stack.enter_context(
         AudioManager(data_provider=audio_data_provider)
     )
 
 
 def stop_audio_session():
-    global _audio_exit_stack, audio_manager, mod_manager
+    global _audio_exit_stack, audio_manager, audio_path
     if _audio_exit_stack:
         _audio_exit_stack.close()
         _audio_exit_stack = None
         audio_manager = None
-        mod_manager = None
+        audio_path = None
 
 
 rich_text = re.compile(

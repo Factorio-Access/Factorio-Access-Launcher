@@ -12,9 +12,6 @@ from playsound import playsound  # cSpell: words playsound
 
 from fa_arg_parse import launch_args, args
 
-import launchers_mod_api
-from launchers_mod_api import start_audio_session, stop_audio_session
-
 
 start_saving = str(Path(__file__).parent / "r/shh.wav")
 save_complete = str(Path(__file__).parent / "r/shh.wav")
@@ -34,6 +31,8 @@ def process_game_stdout(
     tweak_modified,
     config_reset_process_handle: subprocess.Popen,
 ):
+    import launchers_mod_api
+
     error_buffer: list[str] | None = None
     player_index = ""
     restarting = False
@@ -161,6 +160,8 @@ def launch_with_params(
     tweak_modified=None,
     config_reset=False,
 ):
+    from launchers_mod_api import start_audio_session, stop_audio_session
+
     start_time = time.time()
     if tweak_modified:
         old_time = os.path.getmtime(tweak_modified)
@@ -199,6 +200,8 @@ def launch_with_params(
 
 
 def time_to_exit():
+    import launchers_mod_api
+
     launchers_mod_api.speak_interruptable_text("Goodbye Factorio")
     time.sleep(1.5)
     raise SystemExit
