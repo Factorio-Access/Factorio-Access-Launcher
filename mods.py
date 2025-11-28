@@ -36,6 +36,10 @@ class FactorioVersionMismatch(Exception):
     pass
 
 
+class ModNotInstalled(Exception):
+    pass
+
+
 class PortalInfoJson(TypedDict):
     factorio_version: str
     dependencies: NotRequired[list[str]]
@@ -410,9 +414,9 @@ class ModManager(object):
         self.dict[name]["version"] = str(version)
         self.modified = True
 
-    def get_version(self, name: str) -> ModVersion | None:
+    def get_version(self, name: str):
         if name not in self.dict:
-            return None
+            raise ModNotInstalled(name)
         current = self.dict[name]
         if "version" in current:
             return ModVersion(current["version"])
@@ -420,7 +424,17 @@ class ModManager(object):
         for ver in sorted(versions, reverse=True):
             if isinstance(versions[ver], InstalledMod):
                 return ver
-        return None
+        raise ModNotInstalled(name)
+
+    def get_current_mod(self, name: str):
+        ver = self.get_version(name)
+        mod = self.by_name_version[name][ver]
+        assert isinstance(mod, InstalledMod)
+        return mod
+
+    def get_current_mod_path(self, name: str):
+        mod = self.get_current_mod(name)
+        return mod.folder_path
 
     def find_dep(self, dep: Dependency, installed_only=False) -> Mod | None:
         assert dep.type != DependencyType.CONFLICT
@@ -451,17 +465,18 @@ class ModManager(object):
             or dep.type == DependencyType.OPTIONAL
             and req_optional
         )
-        current = self.get_version(dep.name)
-        if current:
+        try:
+            current = self.get_version(dep.name)
+        except ModNotInstalled:
+            if not req:
+                return (DepCheckResult.OK, dep)
+        else:
             if dep.meets(current):
                 return (DepCheckResult.OK, dep)
             good_version = self.find_dep(dep, installed_only=True)
             if good_version:
                 dep = self.dep_from_mod(good_version)
                 return (DepCheckResult.VERSION_SWITCH, dep)
-        else:
-            if not req:
-                return (DepCheckResult.OK, dep)
         mod = self.find_dep(dep)
         if mod:
             dep = self.dep_from_mod(mod)
@@ -628,14 +643,7 @@ class ModManager(object):
                 name = m["name"]
                 if mod_filter and not mod_filter.fullmatch(name):
                     continue
-                ver = self.get_version(name)
-                if ver is None:
-                    raise ValueError(
-                        f"Mod {name} is not installed, but is in the mod list"
-                    )
-                mod = self.by_name_version[name][ver]
-                assert isinstance(mod, InstalledMod)
-                yield mod
+                yield self.get_current_mod(name)
 
     def iter_mod_files(
         self,

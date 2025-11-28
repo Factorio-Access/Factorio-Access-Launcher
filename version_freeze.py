@@ -17,7 +17,8 @@ class frozen(object):
 
         with orig_version.open("w", encoding="utf8") as fp:
             fp.write(
-                f"""from version_type import Launcher_Version
+                f"""\
+from version_type import Launcher_Version
 {version=} 
 """
             )
