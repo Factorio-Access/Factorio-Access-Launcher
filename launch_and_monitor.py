@@ -24,6 +24,10 @@ errorA_end = re.compile(r"-+")
 errorB_started = re.compile(r" *\d+\.\d{3} Error ")
 errorB_end = re.compile(r" *\d+\.\d{3} ")
 
+# There are a number of commands which are printed every tick or closer to it. These commands need to be filtered from
+# debug output else the console floods and freezes NVDA. SetCursor is mouse movement, and acmd is for playing sound.
+debug_filter = re.compile(r"^(acmd|setCursor) ")
+
 
 def process_game_stdout(
     stdout: io.BytesIO,
@@ -55,7 +59,7 @@ def process_game_stdout(
         if args.fa_debug:
             if args.fa_stdout_bytes:
                 print(b_line)
-            else:
+            elif not debug_filter.match(line):
                 sys.stdout.buffer.write(b_line)
                 sys.stdout.buffer.flush()
         if here_doc_end and isinstance(arg, str):
