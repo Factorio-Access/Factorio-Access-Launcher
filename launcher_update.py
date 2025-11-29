@@ -152,18 +152,15 @@ def cleanup_stale_files():
 
 def apply_update(new_exe: Path) -> bool:
     """
-    Replace current exe with new one and restart.
+    Replace current exe with the new one.
 
     On Windows, we can rename a running exe but not delete it.
     So we:
     1. Rename current exe to .old
     2. Move new exe into place
-    3. Launch new exe (inherits console)
-    4. Exit current process
-    5. Next startup cleans up .old file
+    3. Return True - caller handles user notification and clean exit
+    4. Next startup cleans up .old file
     """
-    import subprocess
-
     if sys.platform != "win32":
         print("Auto-update only supported on Windows.")
         print(f"Please manually replace with: {new_exe}")
@@ -192,10 +189,6 @@ def apply_update(new_exe: Path) -> bool:
         print(f"Failed to apply update: {e}")
         return False
 
-    print("Update applied. Restarting...")
-
-    # Launch new exe - inherits console from parent
-    subprocess.Popen([str(current_exe)])
     return True
 
 
@@ -245,9 +238,12 @@ def check_and_update() -> bool:
     if not download_update(asset_url, new_exe):
         return False
 
-    # Apply update (will exit process if successful)
+    # Apply update and prompt user to restart manually
     if apply_update(new_exe):
-        sys.exit(0)
+        print("Update applied successfully!")
+        print("Please restart the launcher to use the new version.")
+        input("Press Enter to exit...")
+        return True
 
     return False
 
