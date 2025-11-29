@@ -61,11 +61,13 @@ def translate_key_name(m: re.Match):
     return translate(("?", ("control-keys." + key,), m[0]))
 
 
+
 def speak_interruptable_text(text):
-    # text = rich_text.sub("", text)
+    text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
     d_print(text)
     ao_output.output(text, interrupt=True)
+
 
 
 def setCursor(coord_string):
@@ -90,4 +92,5 @@ player_specific_commands = {
     "copy": copy,
     "acmd": handle_acmd,
 }
-global_commands = {}
+global_commands = {
+}
