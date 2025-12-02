@@ -1,16 +1,21 @@
 import json
 import re
+import os
 from contextlib import ExitStack
 from pyperclip import copy
 import accessible_output2.outputs.auto
-import pyautogui as gui  # cSpell: ignore pyautogui
+
 
 from fa_arg_parse import d_print
 from fa_launcher_audio import AudioManager
 from translations import translate
 from mods import mods, dual_path
 
-gui.FAILSAFE = False
+wayland = os.environ.get("XDG_SESSION_TYPE", "") == "wayland"
+if not wayland:
+    import pyautogui as gui  # cSpell: ignore pyautogui
+
+    gui.FAILSAFE = False
 ao_output = accessible_output2.outputs.auto.Auto()
 
 # Audio session management
@@ -61,7 +66,6 @@ def translate_key_name(m: re.Match):
     return translate(("?", ("control-keys." + key,), m[0]))
 
 
-
 def speak_interruptable_text(text):
     text = rich_text.sub("", text)
     text = maybe_key.sub(translate_key_name, text)
@@ -69,10 +73,10 @@ def speak_interruptable_text(text):
     ao_output.output(text, interrupt=True)
 
 
-
 def setCursor(coord_string):
-    coords = [int(coord) for coord in coord_string.split(",")]
-    gui.moveTo(coords[0], coords[1], _pause=False)
+    if not wayland:
+        coords = [int(coord) for coord in coord_string.split(",")]
+        gui.moveTo(coords[0], coords[1], _pause=False)
 
 
 def handle_acmd(json_string: str):
@@ -92,5 +96,4 @@ player_specific_commands = {
     "copy": copy,
     "acmd": handle_acmd,
 }
-global_commands = {
-}
+global_commands = {}
