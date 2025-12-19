@@ -80,7 +80,7 @@ class process:
 
     @staticmethod
     def exe():
-        return str(BIN())
+        return str(BIN().parent)
 
     @staticmethod
     def read():
@@ -232,9 +232,14 @@ def find_config(force=False):
     config_path = "config/config.ini"
     configs = []  # [MY_CONFIG_DIR / config_path]
     # try to append another config path from config-path.cfg
+    check_path = process("__PATH__executable__/../../config-path.cfg")
     try:
-        fp = process("__PATH__executable__/../../config-path.cfg").open(encoding="utf8")
+        fp = check_path.open(encoding="utf8")
     except FileNotFoundError:
+        d_print(
+            f"""no config-path.cfg found at {check_path}
+                Adding default system config path."""
+        )
         configs.append(process("__PATH__system-write-data__") / config_path)
     else:
         with fp:
@@ -301,6 +306,7 @@ def find_read_write_dirs(force=False):
                 paths["WRITE_DIR"] = write
                 paths["READ_DIR"] = read
                 d_print(f"{write=}\n{read=}")
+                return
     raise PathNotFound("Unable to find path directives in config file:{config}")
 
 

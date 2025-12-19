@@ -34,7 +34,7 @@ python -m unittest discover       # Run all tests (discovers tests/test_*.py)
 
 **Menu System (`fa_menu.py`)** - Custom accessible menu framework with localization support. Base classes `MenuBase`, `Menu` handle keyboard input and screen reader output.
 
-**Path Management (`fa_paths.py`)** - Auto-detects Factorio installation (Steam, MSI, zip). Exports global constants: `FACTORIO_VERSION`, `FACTORIO_BIN`, `CONFIG`, `MODS`, `WRITE_DIR`.
+**Path Management (`fa_paths.py`)** - Auto-detects Factorio installation (Steam, MSI, zip). Exports global getters: `BIN`, `CONFIG`, `MODS`, `WRITE_DIR` and others.
 
 **Configuration (`config.py`)** - INI file editor using `Conf_Editor` context manager. Handles both commented and active settings with regex-based lookup.
 
