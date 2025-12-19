@@ -1,0 +1,3 @@
+[submodule "launcher-audio"]
+	path = launcher-audio
+	url = https://github.com/Factorio-Access/launcher-audio.git

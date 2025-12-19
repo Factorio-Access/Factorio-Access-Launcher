@@ -119,11 +119,11 @@ class config_toggle(fa_menu.setting_menu_bool):
 class host_settings_menu(fa_menu.Menu):
     def __init__(self):
         setting_data = {
-            "visibility-public": "config-output.visibility-public",
-            "visibility-lan": "config-output.visibility-lan",
-            "visibility-steam": "config-output.visibility-steam",
+            "visibility-public": "gui-multiplayer-lobby.game-visibility-public",
+            "visibility-lan": "gui-multiplayer-lobby.game-visibility-LAN",
+            "visibility-steam": "gui-multiplayer-lobby.game-visibility-steam",
             "enable-whitelist": "fa-l.access-list-enabled",
-            "verify-user-identity": "config-output.verify-user-identity",
+            "verify-user-identity": "gui-multiplayer-lobby.verify-user-identity",
         }
         items = []
         for key, name in setting_data.items():

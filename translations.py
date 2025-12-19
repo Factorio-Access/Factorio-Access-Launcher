@@ -187,7 +187,13 @@ class translated_args(dict):
         super().__init__()
 
     def __missing__(self, key):
-        self[key] = translate(self.args[int(key) - 1])
+        try:
+            arg = self.args[int(key) - 1]
+        except (ValueError, IndexError):
+            val = f"__{key}__"
+        else:
+            val = translate(arg)
+        self[key] = val
         return self[key]
 
 

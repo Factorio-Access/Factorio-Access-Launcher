@@ -5,4 +5,4 @@ PyInstaller
 pyperclip
 packaging
 
-fa_launcher_audio @ git+https://github.com/Factorio-Access/launcher-audio.git
+./launcher-audio

@@ -28,7 +28,9 @@ FA_MOD_FILTER = re.compile(r"FactorioAccess")
 def audio_data_provider(name: str) -> bytes:
     if not audio_path:
         raise RuntimeError(f"No audio path when loading audio: {name}")
-    path = audio_path / name
+    path = audio_path
+    for part in name.replace("\\", "/").split("/"):
+        path = path / part
     return path.read_bytes()
 
 
