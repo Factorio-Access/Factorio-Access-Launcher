@@ -19,10 +19,6 @@ _mod_portal = "https://mods.factorio.com"
 
 dual_path = zPath | Path
 
-_m = re.match(r"\d+\.\d+", FACTORIO_VERSION())
-assert _m
-FACTORIO_VER = _m[0]
-
 
 class NotAModPath(ValueError):
     pass
@@ -361,13 +357,15 @@ DepCheckResults = dict[DepCheckResult, set[Dependency]]
 
 
 class ModManager(object):
-    MOD_LIST_FILE = MODS() / "mod-list.json"
+    _re_factorio_ver = re.compile(r"\d+\.\d+")
 
     def __init__(self) -> None:
+        self.factorio_version: str = self._re_factorio_ver.search(FACTORIO_VERSION())[0]
+        self.mod_list_file = MODS() / "mod-list.json"
         with config.current_conf as conf:
             self.new_enabled = conf.other.enable_new_mods == "true"
         try:
-            with open(self.MOD_LIST_FILE, "r", encoding="utf8") as fp:
+            with open(self.mod_list_file, "r", encoding="utf8") as fp:
                 data: ModFile = json.load(fp)
         except FileNotFoundError:
             data = {"mods": []}
@@ -394,7 +392,7 @@ class ModManager(object):
     def exit(self) -> None:
         if self.modified:
             data = {"mods": [m for m in self.dict.values()]}
-            with open(self.MOD_LIST_FILE, "w", encoding="utf8") as fp:
+            with open(self.mod_list_file, "w", encoding="utf8") as fp:
                 json.dump(data, fp, ensure_ascii=False, indent=2)
 
     def enabled(self) -> list[str]:
@@ -523,7 +521,7 @@ class ModManager(object):
 
     def add_installed_mod(self, mod_path: dual_path):
         m = InstalledMod(mod_path)
-        if m.info.get("factorio_version") != FACTORIO_VER:
+        if m.info.get("factorio_version") != self.factorio_version:
             raise FactorioVersionMismatch(m)
         self.by_name_version[m.name][m.version] = m  # TODO: check duplicates?
         if m.name not in self.dict and m.name != "core":
@@ -551,7 +549,7 @@ class ModManager(object):
 
     def add_info_for_mod(self, result: PortalResult):
         for release in result["releases"]:
-            if release["info_json"].get("factorio_version") == FACTORIO_VER:
+            if release["info_json"].get("factorio_version") == self.factorio_version:
                 self.add_info_for_release(release, result["name"])
 
     def add_info_for_release(self, release: Release, name: str):

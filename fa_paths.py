@@ -84,7 +84,7 @@ class process:
 
     @staticmethod
     def read():
-        read_data = BIN().parent
+        read_data = BIN().parent.parent
         if sys.platform != OS_flavor.MAC:
             read_data = read_data.parent
         read_data /= "data"

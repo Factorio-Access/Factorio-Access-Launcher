@@ -11,7 +11,7 @@ import launch_and_monitor
 from credentials import get_json_with_credentials
 from factorio_web import get_json
 
-__ACCESS_LIST_PATH = fa_paths.WRITE_DIR() / "server-whitelist.json"
+__ACCESS_LIST_PATH = lambda: fa_paths.WRITE_DIR() / "server-whitelist.json"
 
 
 def get_game_list():
@@ -31,14 +31,14 @@ def get_filtered_game_list():
 
 def get_friend_list():
     try:
-        with __ACCESS_LIST_PATH.open(encoding="utf8") as fp:
+        with __ACCESS_LIST_PATH().open(encoding="utf8") as fp:
             return json.load(fp)
     except:
         return []
 
 
 def add_friend(friend: str):
-    with __ACCESS_LIST_PATH.open("a+", encoding="utf8", newline="") as fp:
+    with __ACCESS_LIST_PATH().open("a+", encoding="utf8", newline="") as fp:
         fp.seek(0)
         try:
             friends: list[str] = json.load(fp)
@@ -51,7 +51,7 @@ def add_friend(friend: str):
 
 
 def remove_friend(friend: str):
-    with __ACCESS_LIST_PATH.open("r+", encoding="utf8", newline="") as fp:
+    with __ACCESS_LIST_PATH().open("r+", encoding="utf8", newline="") as fp:
         friends = set(json.load(fp))
         friends.remove(friend)
         fp.seek(0)

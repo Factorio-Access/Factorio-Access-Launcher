@@ -154,6 +154,8 @@ def connect_to_address(address):
 
 
 def launch(path: Path | str):
+    start_time = time.time()
+    os.utime(path, (start_time, start_time))
     return launch_with_params(["--load-game", str(path)])
 
 
@@ -164,8 +166,11 @@ def launch_with_params(
     tweak_modified: Path | None = None,
     config_reset=False,
 ):
-    from launchers_mod_api import start_audio_session, stop_audio_session
-
+    params = launch_args + params
+    if "--version" in launch_args or "-v" in launch_args:
+        proc = subprocess.Popen(params, stdout=sys.stdout.buffer)
+        proc.wait()
+        return 5
     start_time = time.time()
     if tweak_modified:
         old_time = os.path.getmtime(tweak_modified)
@@ -173,12 +178,12 @@ def launch_with_params(
         tweak_modified_data = (tweak_modified, old_time)
     else:
         tweak_modified_data = None
-    params = launch_args + params
-    if "--version" in launch_args or "-v" in launch_args:
-        proc = subprocess.Popen(params, stdout=sys.stdout.buffer)
-        proc.wait()
-        return 5
-    start_audio_session()
+
+    if not config_reset:
+        from launchers_mod_api import start_audio_session, stop_audio_session
+
+        start_audio_session()
+
     try:
         print("Launching")
         proc = subprocess.Popen(params, stdout=subprocess.PIPE, stdin=sys.stdin.buffer)
@@ -197,7 +202,8 @@ def launch_with_params(
         print("error running game")
         raise e
     finally:
-        stop_audio_session()
+        if not config_reset:
+            stop_audio_session()
     if save_rename:
         from save_management import save_game_rename
 
