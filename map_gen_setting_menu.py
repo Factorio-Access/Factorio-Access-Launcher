@@ -17,16 +17,16 @@ AUTO = "autoplace_controls"
 PROPERTY_EXPRESSION_NAMES = "property_expression_names"
 
 DEFAULT_DATA_PATHS = {
-    BASIC: fa_paths.READ_DIR.joinpath("map-gen-settings.example.json"),
-    ADVANCED: fa_paths.READ_DIR.joinpath("map-settings.example.json"),
+    BASIC: fa_paths.READ_DIR() / "map-gen-settings.example.json",
+    ADVANCED: fa_paths.READ_DIR() / "map-settings.example.json",
 }
 FLAGS = {
     BASIC: "--map-gen-settings",
     ADVANCED: "--map-settings",
 }
 JSON_OUTPUT_PATHS = {
-    BASIC: fa_paths.SCRIPT_OUTPUT.joinpath("map_gen.json"),
-    ADVANCED: fa_paths.SCRIPT_OUTPUT.joinpath("map.json"),
+    BASIC: fa_paths.SCRIPT_OUTPUT() / "map_gen.json",
+    ADVANCED: fa_paths.SCRIPT_OUTPUT() / "map.json",
 }
 
 
@@ -301,7 +301,7 @@ class autoplace_menu(enable_disable_menu):
         set_to = 1 if self.enabler.val else 0
         for sub in self.full_submenu[2:]:
             sub.set_val(set_to, *args)
-        return super().got_toggled(*args) # toggling cliffs needs spec
+        return super().got_toggled(*args)  # toggling cliffs needs spec
 
 
 class j_enable_disable_menu(enable_disable_menu):
@@ -413,8 +413,8 @@ def get_preset_desc(preset, *args):
 
 
 def launch_new_game_from_params(params):
-    new_save = str(fa_paths.SAVES.joinpath("_autosave-new.zip").absolute())
-    params += ["--create", new_save]
+    new_save = (fa_paths.SAVES() / "_autosave-new.zip").resolve()
+    params += ["--create", str(new_save)]
     launch_with_params(params, save_rename=False)
     return launch(new_save)
 

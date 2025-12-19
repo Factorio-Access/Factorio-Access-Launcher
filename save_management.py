@@ -1,5 +1,5 @@
+from pathlib import Path
 import time
-import os
 
 from fa_paths import SAVES
 from fa_menu import getAffirmation
@@ -20,13 +20,13 @@ def get_elapsed_time(t1):
 
 
 def save_time(file):
-    return os.path.getmtime(os.path.join(SAVES, file))
+    return (SAVES() / file).stat().st_mtime
 
 
-def get_sorted_saves():
+def get_sorted_saves() -> list[Path]:
     try:
-        all_files = os.listdir(SAVES)
-        zip_files = [f for f in all_files if f.lower().endswith(".zip")]
+        all_files = SAVES().iterdir()
+        zip_files = [f for f in all_files if f.suffix.lower() == ".zip"]
         zip_files.sort(reverse=True, key=save_time)
         return zip_files
     except:
@@ -36,7 +36,7 @@ def get_sorted_saves():
 def get_menu_saved_games():
     games = get_sorted_saves()
     return [
-        (save[:-4] + " " + get_elapsed_time(save_time(save)) + " ago", save)
+        (save.stem + " " + get_elapsed_time(save_time(save)) + " ago", save)
         for save in games
     ]
 
@@ -57,16 +57,14 @@ def save_game_rename(if_after=None):
             print("Enter a name for your save file:")
             while True:
                 newName = input()
-                dst = os.path.join(SAVES, newName + ".zip")
+                dst = SAVES() / f"{newName}.zip"
                 try:
-                    testFile = open(dst, "w")
-                    testFile.close()
-                    os.remove(dst)
+                    dst.touch()
+                    dst.unlink()
                     break
                 except:
                     print("Invalid file name, please try again.")
-            src = os.path.join(SAVES, save)
-            os.replace(src, dst)
+            save.rename(dst)
             print("Renamed.")
             return
     print("Looks like you didn't save!")

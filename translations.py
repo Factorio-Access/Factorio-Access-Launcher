@@ -267,10 +267,10 @@ def get_mod_path_parts(path: Union[zipfile.Path, Path]):
 
     if isinstance(path, Path):
         try:
-            return path.relative_to(fa_paths.MODS).parts
+            return path.relative_to(fa_paths.MODS()).parts
         except:
             pass
-        return path.relative_to(fa_paths.READ_DIR).parts
+        return path.relative_to(fa_paths.READ_DIR()).parts
     parts = []
     while isinstance(path.parent, zipfile.Path):
         parts.append(path.name)
@@ -316,9 +316,9 @@ check_cats = {
 def check_config_locale():
     import fa_paths
 
-    with (fa_paths.READ_DIR / "core/locale/en/core.cfg").open(encoding="utf8") as fp:
+    with (fa_paths.READ_DIR() / "core/locale/en/core.cfg").open(encoding="utf8") as fp:
         translations = read_cfg(fp)
-    with fa_paths.CONFIG.open(encoding="utf8") as fp:
+    with fa_paths.CONFIG().open(encoding="utf8") as fp:
         config = read_cfg(fp, conf=True)
     cross_cats = defaultdict(lambda: defaultdict(list))
     for cat, configs in config.items():
@@ -368,7 +368,7 @@ def load_full(code):
     load_init(code)
     from fa_paths import READ_DIR
 
-    cfg = READ_DIR.joinpath("core", "locale", code, "core.cfg")
+    cfg = READ_DIR() / "core" / "locale" / code / "core.cfg"
     maybe_load(cfg)
     from mods import mods
 
@@ -382,10 +382,10 @@ def get_langs():
     reg = re.compile(r"locale/([\w-]+)/info.json")
     from fa_paths import READ_DIR
 
-    locs = READ_DIR.joinpath("core", "locale")
+    locs = READ_DIR() / "core" / "locale"
     for path in locs.iterdir():
         code = path.name
-        with path.joinpath("info.json").open(encoding="utf8") as fp:
+        with (path / "info.json").open(encoding="utf8") as fp:
             info = json.load(fp)
         if "language-name" in info:
             lang[code] = info["language-name"]

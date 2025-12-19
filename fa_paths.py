@@ -5,6 +5,8 @@ import subprocess
 import traceback
 from pathlib import Path
 from enum import StrEnum, auto
+from typing import Callable
+
 from fa_arg_parse import args, d_print, launch_args
 
 __all__ = [
@@ -17,8 +19,8 @@ __all__ = [
     "SAVES",
     "PLAYER_DATA",
     "SCRIPT_OUTPUT",
-    "FACTORIO_VERSION" "find_bin",
-    "find_config",
+    "TEMP",
+    "FACTORIO_VERSION",
 ]
 
 
@@ -30,38 +32,32 @@ class PathNotFound(ValueError):
     pass
 
 
-def get_path(name: str):
-    ret = paths[name]
-    if ret is None:
-        raise PathNotInitialized(name)
-    return ret
+def get_path(name: str, find_func: Callable, force: bool = False) -> Path:
+    if not force and name in paths:
+        return paths[name]
+    find_func()
+    if name in paths:
+        return paths[name]
+    raise PathNotInitialized(name)
 
 
 MOD_NAME = "FactorioAccess"
 
 
-class d_printing_dict(dict):
-    def __setitem__(self, key, value):
-        d_print(f"{key}={value}")
-        return super().__setitem__(key, value)
+paths: dict[str, Path] = {}
 
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except KeyError:
-            return None
-
-
-paths: dict[str, Path | None] = d_printing_dict()
-
-BIN = lambda: get_path("BIN")
-CONFIG = lambda: get_path("CONFIG")
-READ_DIR = lambda: get_path("READ_DIR")
-WRITE_DIR = lambda: get_path("WRITE_DIR")
-MODS = lambda: get_path("MODS")
-SAVES = lambda: get_path("SAVES")
-PLAYER_DATA = lambda: get_path("PLAYER_DATA")
-SCRIPT_OUTPUT = lambda: get_path("SCRIPT_OUTPUT")
+BIN = lambda force=False: get_path("BIN", find_bin, force)
+CONFIG = lambda force=False: get_path("CONFIG", find_config, force)
+READ_DIR = lambda force=False: get_path("READ_DIR", find_read_write_dirs, force)
+WRITE_DIR = lambda force=False: get_path("WRITE_DIR", find_read_write_dirs, force)
+MODS = lambda force=False: get_path("MODS", find_mod_folder, force)
+SAVES = lambda force=False: get_path("SAVES", find_everything_else, force)
+PLAYER_DATA = lambda force=False: get_path("PLAYER_DATA", find_everything_else, force)
+SCRIPT_OUTPUT = lambda force=False: get_path(
+    "SCRIPT_OUTPUT", find_everything_else, force
+)
+TEMP = lambda force=False: get_path("TEMP", find_everything_else, force)
+FACTORIO_VERSION = lambda force=False: factorio_ver
 
 steam = False
 steam_game = "427520"
@@ -74,28 +70,38 @@ class OS_flavor(StrEnum):
 
 
 class process:
-    WRITE_DATA = {
+    sys_write = {
         OS_flavor.MAC: "~/Library/Application Support/factorio",
         OS_flavor.WIN: R"%appdata%\Factorio",
         OS_flavor.LIN: "~/.factorio",
-    }[sys.platform]
-    WRITE_DATA = os.path.expandvars(WRITE_DATA)
-    WRITE_DATA = os.path.expanduser(WRITE_DATA)
-    read_data = paths["BIN"].parent
-    if sys.platform != OS_flavor.MAC:
-        read_data = read_data.parent
-    read_data /= "data"
+    }[OS_flavor(sys.platform)]
+    sys_write = os.path.expandvars(sys_write)
+    sys_write = os.path.expanduser(sys_write)
+
+    @staticmethod
+    def exe():
+        return str(BIN())
+
+    @staticmethod
+    def read():
+        read_data = BIN().parent
+        if sys.platform != OS_flavor.MAC:
+            read_data = read_data.parent
+        read_data /= "data"
+        return str(read_data)
+
     factorio_replacements = {
-        "__PATH__system-write-data__": WRITE_DATA,
-        "__PATH__executable__": str(paths["BIN"].parent),
-        "__PATH__system-read-data__": str(read_data),
+        "__PATH__system-write-data__": lambda: process.sys_write,
+        "__PATH__executable__": exe,
+        "__PATH__system-read-data__": read,
     }
 
     def __new__(cls, p: str | Path):
         if isinstance(p, Path):
             p = str(p)
         for k, v in cls.factorio_replacements.items():
-            p = p.replace(k, v)
+            if k in p:
+                p = p.replace(k, v())
         p = os.path.expanduser(p)
         p = os.path.expandvars(p)
         return Path(p).resolve()
@@ -111,12 +117,17 @@ def get_first_file(l: list[str | Path]):
 
 
 def find_bin_without_steam_check():
+    if getattr(sys, "frozen", False):
+        MY_BIN = sys.executable
+    else:
+        from __main__ import __file__ as MY_BIN
+    MY_CONFIG_DIR = Path(MY_BIN).parent
 
     if args.executable_path:
         test = Path(args.executable_path)
         if test.is_file():
             paths["BIN"] = test
-            return
+            return MY_BIN
         raise PathNotFound(
             "The path specified in the --executable-path argument does not exist"
         )
@@ -129,18 +140,10 @@ def find_bin_without_steam_check():
                 test = Path(arg)
                 if test.is_file():
                     paths["BIN"] = test
-                    return
+                    return MY_BIN
         raise PathNotFound(
             "It looks like a command line option was given to launch factorio, but we couldn't figure out where factorio is located. Please add the --executable-path option with the location of the factorio binary to be launched"
         )
-
-    from __main__ import __file__ as main_file
-
-    if getattr(sys, "frozen", False):
-        MY_BIN = sys.executable
-    else:
-        MY_BIN = main_file
-    MY_CONFIG_DIR = Path(MY_BIN).parent
 
     exe_map = {
         OS_flavor.WIN: [
@@ -164,29 +167,39 @@ def find_bin_without_steam_check():
             "~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio",
         ],
     }
-    paths["BIN"] = get_first_file(exe_map[sys.platform])
+    paths["BIN"] = get_first_file(exe_map[OS_flavor(sys.platform)])
+    return MY_BIN
+
+
+def steam_check(MY_BIN: str):
+    global steam
+    if "steam" not in paths["BIN"].parts:
+        return
+    steam = True
+    if os.environ.get("SteamAppId", "") == steam_game:
+        return
+    if False:
+        os.environ["SteamAppId"] = steam_game
+        # need to get user ID too for player data file location :(
+    else:
+        print(
+            "Looks like you have a steam installed version of factorio, but didn't launch this launcher through steam. Please launch through steam after updating it's command line parameters to the following:"
+        )
+        print(f'"{MY_BIN}" %command%')
+        input("press enter to exit")
+        raise SystemExit
 
 
 inserted_bin_into_launch_args = False
 
 
-def find_bin():
-    global FACTORIO_VERSION
+def find_bin(force=False):
+    global factorio_ver
     global steam
-    find_bin_without_steam_check()
-    if "steam" in paths["BIN"].parts:
-        steam = True
-        if os.environ.get("SteamAppId", "") == steam_game:
-            return
-        if True:
-            os.environ["SteamAppId"] = steam_game
-        else:
-            print(
-                "Looks like you have a steam installed version of factorio, but didn't launch this launcher through steam. Please launch through steam after updating it's command line parameters to the following:"
-            )
-            print('"' + os.path.abspath(MY_BIN) + '" %command%')
-            input("press enter to exit")
-            raise SystemExit
+    global inserted_bin_into_launch_args
+    force  # type: ignore
+    my_bin = find_bin_without_steam_check()
+    steam_check(my_bin)
     p_args = [paths["BIN"], "--version"]
     factorio_stdout = subprocess.check_output(p_args).decode()
     factorio_version_match = re.search(r"Version: (\d+\.\d+.\d+)", factorio_stdout)
@@ -195,7 +208,7 @@ def find_bin():
             f"The executable found produced a strange version string. {BIN} {factorio_stdout}\n Press Enter to Exit"
         )
         raise SystemExit
-    FACTORIO_VERSION = factorio_version_match[1]
+    factorio_ver = factorio_version_match[1]
     if inserted_bin_into_launch_args:
         launch_args[0] = str(paths["BIN"])
     else:
@@ -203,7 +216,7 @@ def find_bin():
         inserted_bin_into_launch_args = True
 
 
-def find_config():
+def find_config(force=False):
     import fa_menu
     from launch_and_monitor import launch_with_params
 
@@ -237,11 +250,16 @@ def find_config():
             "Unable to find the factorio config. Would you like to create a configuration in the default location?"
         ):
             raise SystemExit
-        with configs[0].open(mode="w", encoding="utf8") as fp:
-            pass
-        launch_with_params(
-            [], announce_press_e=True, save_rename=False, config_reset=True
-        )
+        bin = BIN(force)
+        if factorio_ver == "2.0.72":
+            configs[0].parent.mkdir(parents=True, exist_ok=True)
+            with configs[0].open(mode="w", encoding="utf8") as fp:
+                pass
+            launch_with_params(
+                [], announce_press_e=True, save_rename=False, config_reset=True
+            )
+        else:
+            subprocess.run([bin, "--start-server-load-scenario", "fake"])
         try:
             config = get_first_file(configs)
         except PathNotFound:
@@ -259,33 +277,38 @@ def find_config():
     paths["CONFIG"] = config
 
 
-def read_write_dirs(config: Path):
+def find_read_write_dirs(force=False):
     write: Path | None = None
     read: Path | None = None
     find_write = re.compile(r"write-data=(.*)")
     find_read = re.compile(r"read-data=(.*)")
+    config = CONFIG(force)
     with config.open(encoding="utf8") as fp:
         for line in fp:
             if match := find_write.match(line):
                 write = process(match[1])
                 if not write.is_dir():
-                    raise Exception(f'Write directory "{write}" is not a directory.')
+                    raise PathNotFound(
+                        f'Write directory "{write}" in config {config} is not a directory.'
+                    )
             if match := find_read.match(line):
                 read = process(match[1])
                 if not read.is_dir():
-                    raise Exception(f'Read directory "{read}" is not a directory.')
+                    raise PathNotFound(
+                        f'Read directory "{read}" in config {config} is not a directory.'
+                    )
             if write and read:
                 paths["WRITE_DIR"] = write
                 paths["READ_DIR"] = read
                 d_print(f"{write=}\n{read=}")
-    raise Exception("Unable to find path directives in config file:{config}")
+    raise PathNotFound("Unable to find path directives in config file:{config}")
 
 
 def find_mod_folder():
     if args.mod_directory:
         mods = Path(args.mod_directory)
     else:
-        mods = paths["WRITE_DIR"] / "mods"
+        mods = WRITE_DIR() / "mods"
     if not mods.is_dir():
         if mods.is_file():
             print("Mod Directory cannot be a file.")
@@ -296,55 +319,54 @@ def find_mod_folder():
         print(f"The mod folder {mods} does not exist. Would you like to create it?")
         if not fa_menu.getAffirmation():
             raise SystemExit
-        mods.mkdir()
+        mods.mkdir(parents=True, exist_ok=True)
     paths["MODS"] = mods
     d_print(f"{mods=}")
 
 
 def find_everything_else():
-    paths["SAVES"] = paths["WRITE_DIR"] / "saves"
+    paths["SAVES"] = WRITE_DIR() / "saves"
 
-    player_data_folder = paths["WRITE_DIR"]
+    player_data_folder = WRITE_DIR()
     if steam:
         player_data_folder = get_steam_player_data_folder()
 
     paths["PLAYER_DATA"] = player_data_folder / "player-data.json"
-    paths["TEMP"] = paths["WRITE_DIR"] / "temp"
-    paths["SCRIPT_OUTPUT"] = paths["WRITE_DIR"] / "script-output"
+    paths["TEMP"] = WRITE_DIR() / "temp"
+    paths["SCRIPT_OUTPUT"] = WRITE_DIR() / "script-output"
 
 
 def get_steam_player_data_folder():
-    _user = os.environ["SteamAppUser"]
+    user = os.environ["SteamAppUser"]
     steam_game_path = Path(os.getcwd())
     steam_path = steam_game_path.joinpath("..", "..", "..")
     if sys.platform == OS_flavor.WIN:
         import winreg
 
-        _key = R"SOFTWARE\WOW6432Node\Valve\Steam"
+        key = R"SOFTWARE\WOW6432Node\Valve\Steam"
         try:
-            _hkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, _key)
-            _install_path, _ = winreg.QueryValueEx(_hkey, "InstallPath")
-            steam_path = Path(_install_path)
+            hkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key)
+            install_path, _ = winreg.QueryValueEx(hkey, "InstallPath")
+            steam_path = Path(install_path)
             d_print("steam path updated")
         except:
             traceback.print_exc()
-    _steam_config = steam_path.joinpath("config", "config.vdf")
-    with open(_steam_config, encoding="utf8") as fp:
-        for _line in fp:
-            if _user in _line:
+    steam_config = steam_path.joinpath("config", "config.vdf")
+    with open(steam_config, encoding="utf8") as fp:
+        for line in fp:
+            if user in line:
                 break
-        _pat = re.compile(r'\s*"?SteamID"?\s+"?(\d+)')
-        for _line in fp:
-            if m := _pat.match(_line):
-                _steam_id = m[1]
+        pat = re.compile(r'\s*"?SteamID"?\s+"?(\d+)')
+        for line in fp:
+            if m := pat.match(line):
+                steam_id = m[1]
                 break
         else:
             raise ValueError(
                 "Unable to find SteamID. Please report this error to Factorio Access Launcher maintainer via discord issues channel."
             )
-    _account_id = str(((1 << 32) - 1) & int(_steam_id))
-    steam_write_folder = steam_path.joinpath(
-        "userdata", _account_id, steam_game, "remote"
-    )
+    account_id = str(((1 << 32) - 1) & int(steam_id))
+    steam_write_folder = steam_path / "userdata" / account_id / steam_game / "remote"
     steam_write_folder = steam_write_folder.resolve()
     d_print(steam_write_folder)
+    return steam_write_folder

@@ -19,7 +19,7 @@ _mod_portal = "https://mods.factorio.com"
 
 dual_path = zPath | Path
 
-_m = re.match(r"\d+\.\d+", FACTORIO_VERSION)
+_m = re.match(r"\d+\.\d+", FACTORIO_VERSION())
 assert _m
 FACTORIO_VER = _m[0]
 
@@ -299,9 +299,9 @@ class InstalledMod(Mod):
         with info_path.open(encoding="utf8") as fp:
             i: ModInfoJson = json.load(fp)
         if path.name == "core":
-            i["version"] = FACTORIO_VERSION
-        if path.parent == READ_DIR:
-            i["factorio_version"] = FACTORIO_VER
+            i["version"] = FACTORIO_VERSION()
+        if path.parent == READ_DIR():
+            i["factorio_version"] = FACTORIO_VERSION()
         re_name = f"{i['name']}(_{i['version']}(.zip)?)?"
         if not re.fullmatch(re_name, path.name):
             raise ValueError(
@@ -361,7 +361,7 @@ DepCheckResults = dict[DepCheckResult, set[Dependency]]
 
 
 class ModManager(object):
-    MOD_LIST_FILE = MODS / "mod-list.json"
+    MOD_LIST_FILE = MODS() / "mod-list.json"
 
     def __init__(self) -> None:
         with config.current_conf as conf:
@@ -517,7 +517,7 @@ class ModManager(object):
     def download_mod(self, release: Release):
         cred = get_credentials()
         url = _mod_portal + release["download_url"] + "?" + parse.urlencode(cred)
-        new_path = MODS.joinpath(release["file_name"])
+        new_path = MODS() / release["file_name"]
         download(url, new_path)
         return self.add_installed_mod(new_path)
 
@@ -597,7 +597,7 @@ class ModManager(object):
         Returns a set of dependencies listing latest updates available."""
         check = []
         for mod in self.iter_installed_mods(require_enabled=require_enabled):
-            if mod.folder_path.parent == READ_DIR:  # don't check built in
+            if mod.folder_path.parent == READ_DIR():  # don't check built in
                 continue
             check.append(mod.name)
         self.add_info_for_mods(check)
@@ -621,10 +621,10 @@ class ModManager(object):
     def get_mod_path_parts(self, path: dual_path):
         if isinstance(path, Path):
             try:
-                return path.relative_to(MODS).parts
+                return path.relative_to(MODS()).parts
             except:
                 pass
-            return path.relative_to(READ_DIR).parts
+            return path.relative_to(READ_DIR()).parts
         parts = []
         while isinstance(path.parent, zPath):
             parts.append(path.name)
@@ -632,7 +632,7 @@ class ModManager(object):
         return tuple(parts[::-1])
 
     def _iterate_over_all_mod_paths(self) -> Iterator[Path]:
-        for folders_with_mods in [READ_DIR, MODS]:
+        for folders_with_mods in [READ_DIR(), MODS()]:
             yield from folders_with_mods.iterdir()
 
     def iter_installed_mods(

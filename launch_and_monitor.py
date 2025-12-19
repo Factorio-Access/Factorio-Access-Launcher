@@ -32,7 +32,7 @@ debug_filter = re.compile(r"^(acmd|setCursor) ")
 def process_game_stdout(
     stdout: io.BytesIO,
     announce_press_e,
-    tweak_modified,
+    tweak_modified: tuple[Path, int] | None,
     config_reset_process_handle: subprocess.Popen,
 ):
     import launchers_mod_api
@@ -153,15 +153,15 @@ def connect_to_address(address):
     return launch_with_params(["--mp-connect", address])
 
 
-def launch(path):
-    return launch_with_params(["--load-game", path])
+def launch(path: Path | str):
+    return launch_with_params(["--load-game", str(path)])
 
 
 def launch_with_params(
     params,
     announce_press_e=False,
     save_rename=True,
-    tweak_modified=None,
+    tweak_modified: Path | None = None,
     config_reset=False,
 ):
     from launchers_mod_api import start_audio_session, stop_audio_session
@@ -170,7 +170,9 @@ def launch_with_params(
     if tweak_modified:
         old_time = os.path.getmtime(tweak_modified)
         os.utime(tweak_modified, (start_time, start_time))
-        tweak_modified = (tweak_modified, old_time)
+        tweak_modified_data = (tweak_modified, old_time)
+    else:
+        tweak_modified_data = None
     params = launch_args + params
     if "--version" in launch_args or "-v" in launch_args:
         proc = subprocess.Popen(params, stdout=sys.stdout.buffer)
@@ -185,7 +187,7 @@ def launch_with_params(
             args=(
                 proc.stdout,
                 announce_press_e,
-                tweak_modified,
+                tweak_modified_data,
                 proc if config_reset else None,
             ),
             daemon=True,

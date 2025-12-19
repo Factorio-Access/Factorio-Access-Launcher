@@ -44,7 +44,7 @@ def get_scenario_from_path(path):
 
 def get_freeplay():
     return get_scenario_from_path(
-        fa_paths.READ_DIR.joinpath("base", "scenarios", "freeplay", "description.json")
+        fa_paths.READ_DIR() / "base" / "scenarios" / "freeplay" / "description.json"
     )
 
 

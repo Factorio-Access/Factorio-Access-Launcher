@@ -55,8 +55,8 @@ def install():
     version = input("Enter version to download. Leave blank for latest stable:")
     if not version:
         version = get_latest_stable()
-    os.makedirs(TEMP, exist_ok=True)
-    filename = os.path.join(TEMP, "factorio-" + version + "-" + download_package)
+    TEMP().mkdir(exist_ok=True)
+    filename = TEMP() / f"factorio-{version}-{download_package}"
     print("Downloading version " + version)
     download(
         f"https://www.factorio.com/get-download/{version}/alpha/{download_package}",
@@ -66,7 +66,7 @@ def install():
 
 
 def get_current_version():
-    version_str = subprocess.check_output([BIN, "--version"]).decode("utf-8")
+    version_str = subprocess.check_output([str(BIN()), "--version"]).decode("utf-8")
     version_re = r"Version: *([\d\.]+) *\( *([^,]+), *([^,]+), *([^)]+)\)"
     maybe_match = re.match(version_re, version_str)
     if not maybe_match:
@@ -114,11 +114,11 @@ def check_for_updates(current_version):
 
 def update_filename(current_version, update):
     p = current_version["package"]
-    return TEMP / f"{p}-{update['from']}-{update['to']}-update.zip"
+    return TEMP() / f"{p}-{update['from']}-{update['to']}-update.zip"
 
 
 def prep_update(current_version, update_candidates):
-    os.makedirs(TEMP, exist_ok=True)
+    TEMP().mkdir(exist_ok=True)
     params = {}
     params.update(**get_credentials())
     params["package"] = current_version["package"]
@@ -145,7 +145,7 @@ def process_exists():
 def execute_update(current_version, update_candidates):
     applying = re.compile(r"Applying update .*-(\d+\.\d+\.\d+)-update")
     print(current_version, update_candidates)
-    params = [BIN]
+    params = [str(BIN())]
     for update in update_candidates:
         file = os.path.abspath(update_filename(current_version, update))
         params.append("--apply-update")

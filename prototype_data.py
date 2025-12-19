@@ -9,9 +9,9 @@ from copy import deepcopy
 from fa_paths import SCRIPT_OUTPUT, MODS
 from launch_and_monitor import launch_with_params
 
-CACHE = MODS.joinpath("cached_raw_sub.json")
-MOD_INFO = MODS.joinpath("mod-list.json")
-MOD_SETTINGS = MODS.joinpath("mod-settings.dat")
+CACHE = lambda: MODS() / "cached_raw_sub.json"
+MOD_INFO = lambda: MODS() / "mod-list.json"
+MOD_SETTINGS = lambda: MODS() / "mod-settings.dat"
 
 cached_fields = {
     "noise-expression": {
@@ -145,20 +145,20 @@ def extract_fields(template, data):
 
 
 def refresh_file_data():
-    out_path = SCRIPT_OUTPUT.joinpath("data-raw-dump.json")
+    out_path = SCRIPT_OUTPUT().joinpath("data-raw-dump.json")
     out_path.unlink(missing_ok=True)
     launch_with_params(["--dump-data"], save_rename=False)
     with out_path.open(encoding="utf8") as fp:
         full_data = json.load(fp)
     selected_data = extract_fields(cached_fields, full_data)
-    with CACHE.open("w", encoding="utf8") as fp:
+    with CACHE().open("w", encoding="utf8") as fp:
         json.dump(selected_data, fp, indent=2)
     return selected_data
 
 
 def from_cache():
     try:
-        with CACHE.open(encoding="utf8") as fp:
+        with CACHE().open(encoding="utf8") as fp:
             return json.load(fp)
     except FileNotFoundError:
         return refresh_file_data()
@@ -174,7 +174,7 @@ def get_prototype_data():
     by_time = 0
     for p in [MOD_INFO, MOD_SETTINGS]:
         try:
-            p_time = os.path.getmtime(p)
+            p_time = p().stat().st_mtime
         except FileNotFoundError:
             continue
         if p_time > by_time:
@@ -183,7 +183,7 @@ def get_prototype_data():
         return local_cache
     local_cache = None
     try:
-        if os.path.getmtime(CACHE) >= by_time:
+        if CACHE().stat().st_mtime >= by_time:
             local_cache = from_cache()
     except FileNotFoundError:
         pass

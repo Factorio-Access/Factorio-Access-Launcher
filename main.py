@@ -31,7 +31,6 @@ from credentials_menu import sign_in_menu
 from github_mods import update_all
 from launcher_update import check_and_update
 
-os.chdir(fa_paths.MY_CONFIG_DIR)
 
 check_and_update()
 

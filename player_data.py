@@ -116,7 +116,7 @@ PlayerData = TypedDict(
 
 def get_player_data():
     try:
-        with PLAYER_DATA.open(encoding="utf8") as fp:
+        with PLAYER_DATA().open(encoding="utf8") as fp:
             data: PlayerData = json.load(fp)
     except FileNotFoundError:
         raise NoPlayerData("Player data file not found.")
@@ -125,7 +125,7 @@ def get_player_data():
 
 def save_player_data(data: PlayerData):
     try:
-        with PLAYER_DATA.open("w", encoding="utf8") as fp:
+        with PLAYER_DATA().open("w", encoding="utf8") as fp:
             json.dump(data, fp, indent=2)
     except FileNotFoundError:
         raise NoPlayerData("Player data file not found.")

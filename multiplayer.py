@@ -11,7 +11,7 @@ import launch_and_monitor
 from credentials import get_json_with_credentials
 from factorio_web import get_json
 
-__ACCESS_LIST_PATH = fa_paths.WRITE_DIR.joinpath("server-whitelist.json")
+__ACCESS_LIST_PATH = fa_paths.WRITE_DIR() / "server-whitelist.json"
 
 
 def get_game_list():
@@ -61,7 +61,7 @@ def remove_friend(friend: str):
 
 def multiplayer_join(game_id):
     game = get_game(game_id)
-    if fa_paths.BIN.count("steam") and "steam_id" in game:
+    if fa_paths.steam and "steam_id" in game:
         launch_and_monitor.launch_with_params(
             ["--join-game-by-steam-id", game["steam_id"]]
         )
@@ -97,7 +97,7 @@ def multiplayer_host(game):
         }
     player_data.save_player_data(player)
     return launch_and_monitor.launch_with_params(
-        [], announce_press_e=True, tweak_modified=os.path.join(fa_paths.SAVES, game)
+        [], announce_press_e=True, tweak_modified=fa_paths.SAVES() / game
     )
 
 

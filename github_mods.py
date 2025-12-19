@@ -38,7 +38,7 @@ def update_if_needed(current_version: str, name: str, user="Factorio-Access"):
         if latest == current_version:
             return None
         print(f"Updating {name} to {latest}")
-        download(tags[0]["zipball_url"], MODS / f"{name}_{latest.strip(' v')}.zip")
+        download(tags[0]["zipball_url"], MODS() / f"{name}_{latest.strip(' v')}.zip")
     except urllib.error.URLError:
         print(f"Network Error updating: {name}")
         return None
@@ -48,7 +48,7 @@ def update_if_needed(current_version: str, name: str, user="Factorio-Access"):
 def update_all():
     for _ in range(2):
         try:
-            with open(MODS / "git_versions.txt", "r+", encoding="utf8") as fp:
+            with open(MODS() / "git_versions.txt", "r+", encoding="utf8") as fp:
                 new_file_contents = []
                 for line in fp:
                     parts = line.strip().split()
@@ -63,7 +63,7 @@ def update_all():
                 fp.truncate(0)
                 fp.writelines(new_file_contents)
         except FileNotFoundError:
-            with open(MODS / "git_versions.txt", "w") as fp:
+            with open(MODS() / "git_versions.txt", "w") as fp:
                 fp.write("FactorioAccess none\n")
                 fp.write("Kruise_Kontrol_Remote none\n")
         else:
