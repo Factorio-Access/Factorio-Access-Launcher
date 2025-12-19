@@ -297,7 +297,7 @@ class InstalledMod(Mod):
         if path.name == "core":
             i["version"] = FACTORIO_VERSION()
         if path.parent == READ_DIR():
-            i["factorio_version"] = FACTORIO_VERSION()
+            i["factorio_version"] = factorio_version
         re_name = f"{i['name']}(_{i['version']}(.zip)?)?"
         if not re.fullmatch(re_name, path.name):
             raise ValueError(
@@ -360,7 +360,8 @@ class ModManager(object):
     _re_factorio_ver = re.compile(r"\d+\.\d+")
 
     def __init__(self) -> None:
-        self.factorio_version: str = self._re_factorio_ver.search(FACTORIO_VERSION())[0]
+        global factorio_version
+        factorio_version = self._re_factorio_ver.search(FACTORIO_VERSION())[0]
         self.mod_list_file = MODS() / "mod-list.json"
         with config.current_conf as conf:
             self.new_enabled = conf.other.enable_new_mods == "true"
@@ -521,7 +522,7 @@ class ModManager(object):
 
     def add_installed_mod(self, mod_path: dual_path):
         m = InstalledMod(mod_path)
-        if m.info.get("factorio_version") != self.factorio_version:
+        if m.info.get("factorio_version") != factorio_version:
             raise FactorioVersionMismatch(m)
         self.by_name_version[m.name][m.version] = m  # TODO: check duplicates?
         if m.name not in self.dict and m.name != "core":
