@@ -550,7 +550,7 @@ class ModManager(object):
 
     def add_info_for_mod(self, result: PortalResult):
         for release in result["releases"]:
-            if release["info_json"].get("factorio_version") == self.factorio_version:
+            if release["info_json"].get("factorio_version") == factorio_version:
                 self.add_info_for_release(release, result["name"])
 
     def add_info_for_release(self, release: Release, name: str):

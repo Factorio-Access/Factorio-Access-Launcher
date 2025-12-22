@@ -29,6 +29,7 @@ opener.addheaders = [
 
 class UpdateCheckFailed(Exception):
     """Raised when update check fails in an unexpected way."""
+
     pass
 
 
@@ -49,7 +50,9 @@ def get_latest_release() -> dict | None:
 
             # Validate expected fields exist
             if not isinstance(data, dict):
-                raise UpdateCheckFailed(f"Expected dict from GitHub API, got {type(data).__name__}")
+                raise UpdateCheckFailed(
+                    f"Expected dict from GitHub API, got {type(data).__name__}"
+                )
             if "tag_name" not in data:
                 raise UpdateCheckFailed("GitHub release missing 'tag_name' field")
             if "assets" not in data:
@@ -64,7 +67,7 @@ def get_latest_release() -> dict | None:
             return None
         raise
 
-    except urllib.error.URLError as e:
+    except (urllib.error.URLError, TimeoutError) as e:
         # Network unreachable, timeout, DNS failure - fail silently
         print("Could not reach GitHub, skipping update check.")
         return None
@@ -124,7 +127,7 @@ def download_update(url: str, dest: Path) -> bool:
 
         print("Download complete.")
         return True
-    except urllib.error.URLError as e:
+    except (urllib.error.URLError, TimeoutError) as e:
         print(f"Download failed: {e}")
         return False
 
