@@ -14,8 +14,7 @@ def do_git_cmd(cmd: str):
     assert cmd_args[0] == "git"
     cmd_args.insert(1, "-C")
     cmd_args.insert(2, str(git_folder))
-    check_output(cmd, text=True).strip()
-    return check_output(cmd, text=True).strip()
+    return check_output(cmd_args, text=True).strip()
 
 
 ver_info = do_git_cmd("git describe --tags --long --dirty").split("-")
