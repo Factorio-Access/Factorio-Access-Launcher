@@ -316,13 +316,11 @@ class j_enable_disable_menu(enable_disable_menu):
         super().__init__(name, submenu, desc, enabler)
 
 
-_ = {
-    "seed": j_seed(
-        ("gui-map-generator.map-seed",),
-        ("fa-l.map-seed-description",),
-        path=(BASIC, "seed"),
-    ),
-}
+seed_menu = j_seed(
+    ("gui-map-generator.map-seed",),
+    ("fa-l.map-seed-description",),
+    path=(BASIC, "seed"),
+)
 
 pollution_subs: list[fa_menu.MenuBase] = [
     j_float(
@@ -642,6 +640,7 @@ enemy_menu = {
 }
 
 advanced_menu = {
+    "seed": seed_menu,
     ("gui-map-generator.map-size-group-tile",): {
         "width": j_float(("gui-map-generator.map-width",), path=(BASIC, "width")),
         "height": j_float(("gui-map-generator.map-height",), path=(BASIC, "height")),
