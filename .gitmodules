@@ -1,3 +1,6 @@
 [submodule "launcher-audio"]
 	path = launcher-audio
 	url = https://github.com/Factorio-Access/launcher-audio.git
+[submodule "accessible_output2"]
+	path = ao2
+	url = https://github.com/Factorio-Access/accessible_output2.git

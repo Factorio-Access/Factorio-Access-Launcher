@@ -132,9 +132,22 @@ def download_update(url: str, dest: Path) -> bool:
         return False
 
 
+def _is_frozen() -> bool:
+    """Check if running as a compiled executable (PyInstaller or Nuitka)."""
+    # PyInstaller sets sys.frozen
+    if getattr(sys, "frozen", False):
+        return True
+    # Nuitka sets __compiled__ at module level
+    try:
+        import __main__
+        return hasattr(__main__, "__compiled__")
+    except ImportError:
+        return False
+
+
 def get_current_exe() -> Path | None:
     """Get path to currently running executable, or None if running from source."""
-    if getattr(sys, "frozen", False):
+    if _is_frozen():
         return Path(sys.executable)
     return None
 

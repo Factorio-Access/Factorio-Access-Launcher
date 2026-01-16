@@ -1,5 +1,5 @@
 pyautogui
-git+https://github.com/Factorio-Access/accessible_output2.git
+./ao2
 git+https://github.com/killjoy1221/playsound.git
 PyInstaller
 pyperclip
