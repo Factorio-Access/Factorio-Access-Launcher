@@ -145,26 +145,12 @@ def _is_frozen() -> bool:
         return False
 
 
-def _is_nuitka() -> bool:
-    """Check if running under Nuitka."""
-    try:
-        import __main__
-        return hasattr(__main__, "__nuitka_binary_dir")
-    except ImportError:
-        return False
-
-
 def get_current_exe() -> Path | None:
     """Get path to currently running executable, or None if running from source."""
     if not _is_frozen():
         return None
-
-    if _is_nuitka():
-        # Nuitka onefile: sys.executable points to temp dir, use sys.argv[0] instead
-        return Path(sys.argv[0]).resolve()
-    else:
-        # PyInstaller: sys.executable is the actual exe
-        return Path(sys.executable)
+    # sys.argv[0] is the invoked executable path for both PyInstaller and Nuitka
+    return Path(sys.argv[0]).resolve()
 
 
 def cleanup_stale_files():
