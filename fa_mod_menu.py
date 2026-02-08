@@ -85,6 +85,11 @@ def check_for_main_mod():
     with mods as mod_manager:
         if MOD_NAME in mod_manager.dict:
             return
+        print("It looks like we could not install Factorio access! Try downloading it manually from the mod portal, as well as Kruise Kontrol Remote")
+        print("So you can troubleshoot, the launcher will now continue, but your game will not have speech")
+        return
+        # The following is dead, the idea was that we would let people use the mod portal but in practice that doesn't work
+        # yet and everyone keeps getting confused. When working on it, comment out the above
         if not fa_menu.getAffirmation(("fa-l.install-main-mod",)):
             return
         print("Installing main mod:", MOD_NAME)

@@ -39,8 +39,8 @@ def update_if_needed(current_version: str, name: str, user="Factorio-Access"):
             return None
         print(f"Updating {name} to {latest}")
         download(tags[0]["zipball_url"], MODS() / f"{name}_{latest.strip(' v')}.zip")
-    except urllib.error.URLError:
-        print(f"Network Error updating: {name}")
+    except urllib.error.URLError as err:
+        print(f"Network Error updating: {name}: {err}")
         return None
     return latest
 
