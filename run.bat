@@ -17,6 +17,11 @@ set EMBED_DIR=.python
 set VENV_DIR=.venv
 set SETUP_MARKER=.setup_done
 
+:: Pass --force-embed to skip system Python detection and always use the
+:: downloaded embeddable Python. Useful for testing the embed path.
+set FORCE_EMBED=0
+for %%a in (%*) do if "%%a"=="--force-embed" set FORCE_EMBED=1
+
 :: Run from the script's own directory so all relative paths are correct.
 cd /d "%~dp0"
 
@@ -75,6 +80,8 @@ if defined _SYS_VER (
         )
     )
 )
+
+if %FORCE_EMBED%==1 set BASE_PYTHON=
 
 if not defined BASE_PYTHON (
     set USE_EMBED=1
@@ -189,4 +196,8 @@ if exist "%VENV_DIR%\Scripts\python.exe" (
     set RUN_PYTHON=%EMBED_DIR%\python.exe
 )
 
-"%RUN_PYTHON%" main.py %*
+:: Strip --force-embed before passing args to main.py
+set MAIN_ARGS=
+for %%a in (%*) do if not "%%a"=="--force-embed" set MAIN_ARGS=!MAIN_ARGS! %%a
+
+"%RUN_PYTHON%" main.py !MAIN_ARGS!
