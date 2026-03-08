@@ -73,7 +73,7 @@ if not defined BASE_PYTHON (
         set ARCH=x86_64
         if "!PROCESSOR_ARCHITECTURE!"=="ARM64" set ARCH=aarch64
 
-        echo Downloading uv (!ARCH!)...
+        echo Downloading uv ^(!ARCH!^)...
         curl --fail --location --progress-bar ^
             -o uv.zip ^
             "https://github.com/astral-sh/uv/releases/latest/download/uv-!ARCH!-pc-windows-msvc.zip"
