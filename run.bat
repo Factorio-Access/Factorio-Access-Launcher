@@ -4,8 +4,8 @@ setlocal enabledelayedexpansion
 :: ─────────────────────────────────────────────────────────────────────────────
 ::  Factorio Access Launcher - run without a compiled exe
 ::
-::  First run: downloads uv and Python (if needed), installs dependencies,
-::  then starts the launcher.
+::  First run: downloads Python (if needed), sets up the environment via
+::  build_main.py --setup-only, then starts the launcher.
 ::  Subsequent runs: skips setup and starts immediately.
 ::
 ::  Requirements:
@@ -13,7 +13,7 @@ setlocal enabledelayedexpansion
 ::    - git (for the git+https://... playsound dependency and submodules)
 :: ─────────────────────────────────────────────────────────────────────────────
 
-set VENV_DIR=.venv
+set VENV_DIR=venv
 set UV_DIR=.uv
 set SETUP_MARKER=.setup_done
 
@@ -54,55 +54,75 @@ if !errorlevel! neq 0 (
     )
 )
 
-:: ── Step 2: Download uv if not already present ───────────────────────────────
+:: ── Step 2: Find or download Python ──────────────────────────────────────────
 
-if not exist "%UV_DIR%\uv.exe" (
-    set ARCH=x86_64
-    if "!PROCESSOR_ARCHITECTURE!"=="ARM64" set ARCH=aarch64
+set BASE_PYTHON=
 
-    echo Downloading uv (!ARCH!)...
-    curl --fail --location --progress-bar ^
-        -o uv.zip ^
-        "https://github.com/astral-sh/uv/releases/latest/download/uv-!ARCH!-pc-windows-msvc.zip"
+:: Look for Python 3.11+ on PATH
+for /f "tokens=2" %%v in ('python --version 2^>^&1') do set _SYS_VER=%%v
+if defined _SYS_VER (
+    for /f "tokens=1,2 delims=." %%a in ("!_SYS_VER!") do (
+        if "%%a"=="3" if %%b GEQ 11 set BASE_PYTHON=python
+    )
+)
+
+if not defined BASE_PYTHON (
+    echo Python 3.11+ not found on PATH.
+
+    if not exist "%UV_DIR%\uv.exe" (
+        set ARCH=x86_64
+        if "!PROCESSOR_ARCHITECTURE!"=="ARM64" set ARCH=aarch64
+
+        echo Downloading uv (!ARCH!)...
+        curl --fail --location --progress-bar ^
+            -o uv.zip ^
+            "https://github.com/astral-sh/uv/releases/latest/download/uv-!ARCH!-pc-windows-msvc.zip"
+        if !errorlevel! neq 0 (
+            echo ERROR: Download failed. Check your internet connection.
+            if exist uv.zip del uv.zip
+            pause
+            exit /b 1
+        )
+
+        powershell -NoProfile -Command ^
+            "Expand-Archive -Path 'uv.zip' -DestinationPath '%UV_DIR%' -Force"
+        if !errorlevel! neq 0 (
+            echo ERROR: Failed to extract uv.zip.
+            if exist uv.zip del uv.zip
+            pause
+            exit /b 1
+        )
+        del uv.zip
+    )
+
+    echo Installing Python 3.11 via uv...
+    "%UV_DIR%\uv.exe" python install 3.11
     if !errorlevel! neq 0 (
-        echo ERROR: Download failed. Check your internet connection.
-        if exist uv.zip del uv.zip
+        echo ERROR: Could not install Python 3.11.
         pause
         exit /b 1
     )
 
-    powershell -NoProfile -Command ^
-        "Expand-Archive -Path 'uv.zip' -DestinationPath '%UV_DIR%' -Force"
-    del uv.zip
+    :: Get the path to the uv-managed Python executable
+    "%UV_DIR%\uv.exe" python find 3.11 > .python_path.tmp 2>&1
+    set /p BASE_PYTHON=<.python_path.tmp
+    del .python_path.tmp
 ) else (
-    echo Using existing uv.
+    echo Found system Python !_SYS_VER!
 )
 
-:: ── Step 3: Create venv with Python 3.11 and install dependencies ─────────────
+:: ── Step 3: Set up environment via build_main.py ─────────────────────────────
+:: build_main.py --setup-only creates ./venv and installs dependencies,
+:: then exits before running PyInstaller.
 
-echo Setting up Python 3.11...
-"%UV_DIR%\uv.exe" python install 3.11
-if !errorlevel! neq 0 (
-    echo ERROR: Could not install Python 3.11.
-    pause
-    exit /b 1
-)
+echo Setting up environment...
+"%BASE_PYTHON%" build_main.py --setup-only
 
-echo Creating virtual environment...
-"%UV_DIR%\uv.exe" venv "%VENV_DIR%" --python 3.11
-if !errorlevel! neq 0 (
-    echo ERROR: Could not create virtual environment.
-    pause
-    exit /b 1
-)
-
-echo Installing dependencies (this may take a minute)...
-"%UV_DIR%\uv.exe" pip install -r requirements.txt --python "%VENV_DIR%\Scripts\python.exe"
-if !errorlevel! neq 0 (
+:: Verify the venv was actually created, since build_main.py doesn't
+:: propagate pip errors as a non-zero exit code.
+if not exist "%VENV_DIR%\Scripts\python.exe" (
     echo.
-    echo ERROR: Dependency install failed.
-    echo.
-    echo Common causes:
+    echo ERROR: Environment setup failed. Common causes:
     echo   - git not on PATH  ^(needed for the playsound GitHub dependency^)
     echo   - git submodules empty  ^(run: git submodule update --init^)
     echo   - no internet access
