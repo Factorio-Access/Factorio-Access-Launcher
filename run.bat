@@ -38,7 +38,7 @@ echo.
 git --version >nul 2>&1
 if !errorlevel! neq 0 (
     echo WARNING: git not found on PATH.
-    echo   - Submodule packages (ao2, launcher-audio) may already be present.
+    echo   - Submodule packages ^(ao2, launcher-audio^) may already be present.
     echo   - The playsound dependency requires git to install from GitHub.
     echo   If setup fails, install git from https://git-scm.com and re-run.
     echo.
