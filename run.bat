@@ -131,6 +131,24 @@ if not exist "%VENV_DIR%\Scripts\python.exe" (
     exit /b 1
 )
 
+:: Verify key packages installed correctly. playsound is the most likely
+:: to fail since it installs from git rather than PyPI.
+"%VENV_DIR%\Scripts\python.exe" -c "import playsound" >nul 2>&1
+if !errorlevel! neq 0 (
+    echo.
+    echo ERROR: Dependencies did not install correctly ^(playsound is missing^).
+    echo This usually means git was not on PATH during pip install.
+    echo.
+    echo Cleaning up so the next run retries setup...
+    rmdir /s /q "%VENV_DIR%"
+    echo.
+    echo Please ensure git is installed and on PATH, then run this script again.
+    echo Get git from https://git-scm.com
+    echo.
+    pause
+    exit /b 1
+)
+
 :: Mark setup as complete so we skip all of this next time.
 echo. > "%SETUP_MARKER%"
 
