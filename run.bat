@@ -4,7 +4,8 @@ setlocal enabledelayedexpansion
 :: ─────────────────────────────────────────────────────────────────────────────
 ::  Factorio Access Launcher - run without a compiled exe
 ::
-::  First run: downloads Python (if needed), installs dependencies, then starts.
+::  First run: downloads uv and Python (if needed), installs dependencies,
+::  then starts the launcher.
 ::  Subsequent runs: skips setup and starts immediately.
 ::
 ::  Requirements:
@@ -12,15 +13,9 @@ setlocal enabledelayedexpansion
 ::    - git (for the git+https://... playsound dependency and submodules)
 :: ─────────────────────────────────────────────────────────────────────────────
 
-set PYTHON_VER=3.11.9
-set EMBED_DIR=.python
 set VENV_DIR=.venv
+set UV_DIR=.uv
 set SETUP_MARKER=.setup_done
-
-:: Pass --force-embed to skip system Python detection and always use the
-:: downloaded embeddable Python. Useful for testing the embed path.
-set FORCE_EMBED=0
-for %%a in (%*) do if "%%a"=="--force-embed" set FORCE_EMBED=1
 
 :: Run from the script's own directory so all relative paths are correct.
 cd /d "%~dp0"
@@ -31,11 +26,8 @@ echo ============================================================
 echo.
 
 :: ── Fast path: already set up ────────────────────────────────────────────────
-:: Both checks require the setup marker so a failed mid-setup run doesn't
-:: skip straight to launch with missing dependencies.
 
 if exist "%VENV_DIR%\Scripts\python.exe" if exist "%SETUP_MARKER%" goto :run
-if exist "%EMBED_DIR%\python.exe" if exist "%SETUP_MARKER%" goto :run
 
 echo First-time setup - this only runs once.
 echo.
@@ -51,7 +43,6 @@ if !errorlevel! neq 0 (
     echo   If setup fails, install git from https://git-scm.com and re-run.
     echo.
 ) else (
-    :: Check if ao2 looks empty (no setup.py / pyproject.toml)
     if not exist "ao2\setup.py" if not exist "ao2\pyproject.toml" (
         echo Initialising git submodules...
         git submodule update --init
@@ -63,113 +54,53 @@ if !errorlevel! neq 0 (
     )
 )
 
-:: ── Step 2: Find or download Python ──────────────────────────────────────────
+:: ── Step 2: Download uv if not already present ───────────────────────────────
 
-set BASE_PYTHON=
-set USE_EMBED=0
+if not exist "%UV_DIR%\uv.exe" (
+    set ARCH=x86_64
+    if "!PROCESSOR_ARCHITECTURE!"=="ARM64" set ARCH=aarch64
 
-:: Look for Python 3.11+ on PATH
-for /f "tokens=2" %%v in ('python --version 2^>^&1') do set _SYS_VER=%%v
-if defined _SYS_VER (
-    for /f "tokens=1,2 delims=." %%a in ("!_SYS_VER!") do (
-        if "%%a"=="3" (
-            if %%b GEQ 11 (
-                set BASE_PYTHON=python
-                echo Found system Python !_SYS_VER!
-            )
-        )
-    )
-)
-
-if %FORCE_EMBED%==1 set BASE_PYTHON=
-
-if not defined BASE_PYTHON (
-    set USE_EMBED=1
-
-    if not exist "%EMBED_DIR%\python.exe" (
-        echo Python 3.11+ not found on PATH.
-
-        :: Detect CPU architecture for the correct embeddable package.
-        set ARCH=amd64
-        if "!PROCESSOR_ARCHITECTURE!"=="ARM64" set ARCH=arm64
-
-        echo Downloading Python %PYTHON_VER% (!ARCH!) embeddable package...
-        echo.
-
-        curl --fail --location --progress-bar ^
-            -o python-embed.zip ^
-            "https://www.python.org/ftp/python/%PYTHON_VER%/python-%PYTHON_VER%-embed-!ARCH!.zip"
-        if !errorlevel! neq 0 (
-            echo ERROR: Download failed. Check your internet connection.
-            if exist python-embed.zip del python-embed.zip
-            pause
-            exit /b 1
-        )
-
-        echo Extracting...
-        powershell -NoProfile -Command ^
-            "Expand-Archive -Path 'python-embed.zip' -DestinationPath '%EMBED_DIR%' -Force"
-        del python-embed.zip
-
-        :: Enable site-packages in the embeddable distribution.
-        :: The .pth file ships with 'import site' commented out.
-        powershell -NoProfile -Command ^
-            "(Get-Content '%EMBED_DIR%\python311._pth') -replace '#import site','import site' | Set-Content '%EMBED_DIR%\python311._pth'"
-
-        :: Bootstrap pip (not included in the embeddable package)
-        echo Bootstrapping pip...
-        curl --fail --location --silent ^
-            -o get-pip.py ^
-            "https://bootstrap.pypa.io/get-pip.py"
-        if !errorlevel! neq 0 (
-            echo ERROR: Could not download get-pip.py.
-            pause
-            exit /b 1
-        )
-        "%EMBED_DIR%\python.exe" get-pip.py --no-warn-script-location -q
-        if !errorlevel! neq 0 (
-            echo ERROR: pip bootstrap failed.
-            del get-pip.py
-            pause
-            exit /b 1
-        )
-        del get-pip.py
-    ) else (
-        echo Using existing embedded Python.
+    echo Downloading uv (!ARCH!)...
+    curl --fail --location --progress-bar ^
+        -o uv.zip ^
+        "https://github.com/astral-sh/uv/releases/latest/download/uv-!ARCH!-pc-windows-msvc.zip"
+    if !errorlevel! neq 0 (
+        echo ERROR: Download failed. Check your internet connection.
+        if exist uv.zip del uv.zip
+        pause
+        exit /b 1
     )
 
-    set BASE_PYTHON=%EMBED_DIR%\python.exe
-)
-
-:: ── Step 3: Create venv (system Python only) or use embed directly ───────────
-
-if %USE_EMBED%==0 (
-    if not exist "%VENV_DIR%\Scripts\python.exe" (
-        echo Creating virtual environment...
-        "%BASE_PYTHON%" -m venv "%VENV_DIR%"
-        if !errorlevel! neq 0 (
-            echo ERROR: Could not create virtual environment.
-            pause
-            exit /b 1
-        )
-    )
-    set RUN_PYTHON=%VENV_DIR%\Scripts\python.exe
+    powershell -NoProfile -Command ^
+        "Expand-Archive -Path 'uv.zip' -DestinationPath '%UV_DIR%' -Force"
+    del uv.zip
 ) else (
-    :: Embeddable Python is already self-contained; no separate venv needed.
-    set RUN_PYTHON=%EMBED_DIR%\python.exe
+    echo Using existing uv.
 )
 
-:: ── Step 4: Install dependencies ─────────────────────────────────────────────
+:: ── Step 3: Create venv with Python 3.11 and install dependencies ─────────────
+
+echo Setting up Python 3.11...
+"%UV_DIR%\uv.exe" python install 3.11
+if !errorlevel! neq 0 (
+    echo ERROR: Could not install Python 3.11.
+    pause
+    exit /b 1
+)
+
+echo Creating virtual environment...
+"%UV_DIR%\uv.exe" venv "%VENV_DIR%" --python 3.11
+if !errorlevel! neq 0 (
+    echo ERROR: Could not create virtual environment.
+    pause
+    exit /b 1
+)
 
 echo Installing dependencies (this may take a minute)...
-echo.
-
-"%RUN_PYTHON%" -m pip install --upgrade pip -q
-"%RUN_PYTHON%" -m pip install -r requirements.txt
-
+"%UV_DIR%\uv.exe" pip install -r requirements.txt --python "%VENV_DIR%\Scripts\python.exe"
 if !errorlevel! neq 0 (
     echo.
-    echo ERROR: pip install failed.
+    echo ERROR: Dependency install failed.
     echo.
     echo Common causes:
     echo   - git not on PATH  ^(needed for the playsound GitHub dependency^)
@@ -187,17 +118,7 @@ echo.
 echo Setup complete.
 echo.
 
-:: ── Step 5: Run ───────────────────────────────────────────────────────────────
+:: ── Step 4: Run ───────────────────────────────────────────────────────────────
 
 :run
-if exist "%VENV_DIR%\Scripts\python.exe" (
-    set RUN_PYTHON=%VENV_DIR%\Scripts\python.exe
-) else (
-    set RUN_PYTHON=%EMBED_DIR%\python.exe
-)
-
-:: Strip --force-embed before passing args to main.py
-set MAIN_ARGS=
-for %%a in (%*) do if not "%%a"=="--force-embed" set MAIN_ARGS=!MAIN_ARGS! %%a
-
-"%RUN_PYTHON%" main.py !MAIN_ARGS!
+"%VENV_DIR%\Scripts\python.exe" main.py %*
