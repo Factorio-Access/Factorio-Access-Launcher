@@ -2,6 +2,7 @@ import os
 import json
 from typing import Final
 import re
+from pathlib import Path
 
 import config
 import player_data
@@ -69,7 +70,7 @@ def multiplayer_join(game_id):
         launch_and_monitor.connect_to_address(game["host_address"])
 
 
-def multiplayer_host(game):
+def multiplayer_host(game: Path):
     with config.current_conf as conf:
         if conf.multiplayer_lobby.name == "":
             conf.multiplayer_lobby.name = "FactorioAccessDefault"
@@ -93,7 +94,7 @@ def multiplayer_host(game):
                 "autosave-interval": int(conf.other.autosave_interval),
                 "afk-autokick-interval": int(conf.multiplayer_lobby.afk_auto_kick),
             },
-            "save-name": game[:-4],
+            "save-name": game.stem,
         }
     player_data.save_player_data(player)
     return launch_and_monitor.launch_with_params(
