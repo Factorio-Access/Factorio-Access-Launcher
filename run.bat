@@ -11,6 +11,7 @@ setlocal enabledelayedexpansion
 ::  Requirements:
 ::    - Internet access (first run only)
 ::    - git (for the git+https://... playsound dependency and submodules)
+::    - Microsoft C++ Build Tools (for the fa_launcher_audio C extension)
 :: ─────────────────────────────────────────────────────────────────────────────
 
 set VENV_DIR=venv
@@ -131,8 +132,26 @@ if not exist "%VENV_DIR%\Scripts\python.exe" (
     exit /b 1
 )
 
-:: Verify key packages installed correctly. playsound is the most likely
-:: to fail since it installs from git rather than PyPI.
+:: Verify key packages installed correctly.
+:: fa_launcher_audio requires Microsoft C++ Build Tools to compile its C extension.
+:: playsound requires git to install from GitHub.
+"%VENV_DIR%\Scripts\python.exe" -c "import fa_launcher_audio" >nul 2>&1
+if !errorlevel! neq 0 (
+    echo.
+    echo ERROR: Dependencies did not install correctly ^(fa_launcher_audio is missing^).
+    echo This package requires Microsoft C++ Build Tools to compile.
+    echo.
+    echo Cleaning up so the next run retries setup...
+    rmdir /s /q "%VENV_DIR%"
+    echo.
+    echo Please install Microsoft C++ Build Tools, then run this script again.
+    echo Get them from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+    echo ^(Install the "Desktop development with C++" workload^)
+    echo.
+    pause
+    exit /b 1
+)
+
 "%VENV_DIR%\Scripts\python.exe" -c "import playsound" >nul 2>&1
 if !errorlevel! neq 0 (
     echo.
