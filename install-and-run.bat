@@ -11,7 +11,6 @@ setlocal enabledelayedexpansion
 ::  Requirements:
 ::    - Internet access (first run only)
 ::    - git (for the git+https://... playsound dependency and submodules)
-::    - Microsoft C++ Build Tools (for the fa_launcher_audio C extension)
 :: ─────────────────────────────────────────────────────────────────────────────
 
 set VENV_DIR=venv
