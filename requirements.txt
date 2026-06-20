@@ -5,4 +5,7 @@ PyInstaller
 pyperclip
 packaging
 
-./launcher-audio
+# On Windows, install the pre-built wheel from GitHub Releases to avoid
+# requiring Microsoft C++ Build Tools. On other platforms, build from source.
+fa_launcher_audio @ https://github.com/Factorio-Access/launcher-audio/releases/latest/download/fa_launcher_audio-0.1.0-cp311-cp311-win_amd64.whl ; sys_platform == "win32"
+fa_launcher_audio @ git+https://github.com/Factorio-Access/launcher-audio.git ; sys_platform != "win32"

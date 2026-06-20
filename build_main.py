@@ -44,6 +44,8 @@ if sys.base_prefix == sys.prefix and "GITHUB_RUN_ID" not in os.environ:  # not i
             print(copy_cmd)
             if os.system(copy_cmd):
                 raise RuntimeError()
+    if "--setup-only" in sys.argv:
+        raise SystemExit()
     cmd = f"{venv_python} {__file__}"
     os.system(cmd)
     raise SystemExit()
