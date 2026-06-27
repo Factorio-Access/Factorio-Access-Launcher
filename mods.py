@@ -110,6 +110,7 @@ class DependencyType(StrEnum):
     CONFLICT = "!"
     HIDDEN_OPTIONAL = "(?)"
     OPTIONAL = "?"
+    RECOMMENDED = "+"
     UNORDERED = "~"
     NORMAL = ""
 
